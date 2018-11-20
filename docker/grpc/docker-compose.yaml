@@ -30,7 +30,7 @@ services:
     networks:
       - internal
     ports:
-      - 5000:5000
+      - 7101:7101
     depends_on:
       - conductor-server
 

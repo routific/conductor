@@ -31,7 +31,7 @@ services:
     networks:
       - internal
     ports:
-      - 5000:5000
+      - 7101:7101
     links:
       - conductor-server
 

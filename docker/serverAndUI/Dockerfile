@@ -48,7 +48,7 @@ RUN git clone https://github.com/Netflix/conductor.git \
   && rm -rf conductor
 
 
-EXPOSE 5000 8080
+EXPOSE 7101 8080
 
 CMD ["/app/startup.sh"]
 ENTRYPOINT ["/bin/bash"]

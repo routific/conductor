@@ -39,7 +39,7 @@ docker-compose up
 
 This will create a docker container network that consists of the following images: conductor:server, conductor:ui, [elasticsearch:2.4](https://hub.docker.com/_/elasticsearch/), and dynomite.
 
-To view the UI, navigate to [localhost:5000](http://localhost:5000/), to view the Swagger docs, navigate to [localhost:8080](http://localhost:8080/).
+To view the UI, navigate to [localhost:7101](http://localhost:7101/), to view the Swagger docs, navigate to [localhost:8080](http://localhost:8080/).
 
 # Configuration
 Conductor server uses a property file based configuration.  The property file is passed to the Main class as a command line argument.

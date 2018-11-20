@@ -41,7 +41,7 @@ gulp.task('browserSync', ['serve'], () => {
   const bundler = webpack(config[0]);
   browserSync({
     proxy: {
-      target: 'localhost:5000',
+      target: 'localhost:7101',
       middleware: [
         webpackDevMiddleware(bundler, {
           publicPath: '/',
