@@ -41,7 +41,7 @@ cd docker
 docker-compose up
 ```
 
-If you ran it locally, launch UI at [http://localhost:3000/](http://localhost:3000/) or if you have ran it using docker-compose launch the UI at [http://localhost:7101/](http://localhost:5000/)
+If you ran it locally, launch UI at [http://localhost:3000/](http://localhost:3000/) or if you have ran it using docker-compose launch the UI at [http://localhost:7101/](http://localhost:7101/)
 
 !!!Note:
 	The server will load a sample kitchen sink workflow definition by default.  See [here](/metadata/kitchensink/) for details.
