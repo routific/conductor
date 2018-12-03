@@ -37,7 +37,7 @@ RUN cd /app/ui \
   && npm install \
   && npm run build --server
 
-EXPOSE 7101
+EXPOSE 5000
 
 CMD [ "/app/startup.sh" ]
 ENTRYPOINT ["/bin/sh"]

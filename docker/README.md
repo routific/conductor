@@ -20,7 +20,7 @@ This builds the images:
 ## Running conductor
 Running the images:
  - `docker run -p 8080:8080 -d -t conductor:server`
- - `docker run -p 7101:7101 -d -t conductor:ui` (requires elasticsearch running locally)
+ - `docker run -p 5000:5000 -d -t conductor:ui` (requires elasticsearch running locally)
 
 Using compose:
 `docker-compose up`
@@ -35,4 +35,4 @@ To ensure images are stopped do:
 ## Running in Interactive Mode
 In interactive mode the default startup script for the container do not run
  - `docker run -p 8080:8080 -t -i conductor:server -`
- - `docker run -p 7101:7101 -t -i conductor:ui -`
+ - `docker run -p 5000:5000 -t -i conductor:ui -`
