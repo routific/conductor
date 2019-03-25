@@ -13,7 +13,9 @@
 package com.netflix.conductor.dao;
 
 import com.google.inject.AbstractModule;
+import com.netflix.conductor.core.utils.LockingService;
 import com.netflix.conductor.dao.dynomite.RedisExecutionDAO;
+import com.netflix.conductor.dao.dynomite.RedisLockingService;
 import com.netflix.conductor.dao.dynomite.RedisMetadataDAO;
 import com.netflix.conductor.dao.dynomite.queue.DynoQueueDAO;
 import com.netflix.conductor.dyno.DynoProxy;
@@ -29,6 +31,7 @@ public class RedisWorkflowModule extends AbstractModule {
         bind(MetadataDAO.class).to(RedisMetadataDAO.class);
         bind(ExecutionDAO.class).to(RedisExecutionDAO.class);
         bind(QueueDAO.class).to(DynoQueueDAO.class);
+        bind(LockingService.class).to(RedisLockingService.class);
 
         bind(RedisQueues.class).toProvider(RedisQueuesProvider.class).asEagerSingleton();
         bind(DynoProxy.class).asEagerSingleton();

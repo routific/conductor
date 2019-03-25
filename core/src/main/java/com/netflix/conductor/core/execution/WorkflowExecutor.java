@@ -34,6 +34,7 @@ import com.netflix.conductor.core.metadata.MetadataMapperService;
 import com.netflix.conductor.core.orchestration.ExecutionDAOFacade;
 import com.netflix.conductor.core.utils.ExternalPayloadStorageUtils;
 import com.netflix.conductor.core.utils.IDGenerator;
+import com.netflix.conductor.core.utils.LockingService;
 import com.netflix.conductor.core.utils.QueueUtils;
 import com.netflix.conductor.dao.MetadataDAO;
 import com.netflix.conductor.dao.QueueDAO;
@@ -84,6 +85,7 @@ public class WorkflowExecutor {
     private final Configuration config;
     private final MetadataMapperService metadataMapperService;
     private final ExecutionDAOFacade executionDAOFacade;
+    private final LockingService lockingService;
 
     private WorkflowStatusListener workflowStatusListener;
     private ExternalPayloadStorageUtils externalPayloadStorageUtils;
@@ -101,6 +103,7 @@ public class WorkflowExecutor {
             WorkflowStatusListener workflowStatusListener,
             ExecutionDAOFacade executionDAOFacade,
             ExternalPayloadStorageUtils externalPayloadStorageUtils,
+            LockingService lockingService,
             Configuration config
     ) {
         this.deciderService = deciderService;
@@ -112,6 +115,7 @@ public class WorkflowExecutor {
         this.activeWorkerLastPollInSecs = config.getIntProperty("tasks.active.worker.lastpoll", 10);
         this.workflowStatusListener = workflowStatusListener;
         this.externalPayloadStorageUtils = externalPayloadStorageUtils;
+        this.lockingService = lockingService;
     }
 
     /**
@@ -790,6 +794,10 @@ public class WorkflowExecutor {
      */
     public boolean decide(String workflowId) {
 
+        if(!lockingService.acquire(workflowId)) {
+            return false;
+        }
+
         // If it is a new workflow, the tasks will be still empty even though include tasks is true
         Workflow workflow = executionDAOFacade.getWorkflowById(workflowId, true);
 
@@ -855,7 +863,7 @@ public class WorkflowExecutor {
             if (stateChanged) {
                 decide(workflowId);
             }
-
+            lockingService.release(workflowId);
         } catch (TerminateWorkflowException twe) {
             LOGGER.info("Execution terminated of workflow: {} of type: {}", workflowId, workflow.getWorkflowDefinition().getName(), twe);
             terminate(workflow, twe);
