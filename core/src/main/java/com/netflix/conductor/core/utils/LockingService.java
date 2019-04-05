@@ -7,5 +7,7 @@ public interface LockingService {
 
     boolean acquire(String key);
 
+    boolean acquire(String key, int expireDuration);
+
     boolean release(String key);
 }

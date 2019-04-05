@@ -787,6 +787,11 @@ public class WorkflowExecutor {
         return executionDAOFacade.getRunningWorkflowIdsByName(workflowName);
     }
 
+    private boolean isDeciderLockingEnabled() {
+        // TODO Use Fast properties for this key.
+        return true;
+    }
+
     /**
      * @param workflowId ID of the workflow to evaluate the state for
      * @return true if the workflow has completed (success or failed), false otherwise.
@@ -794,7 +799,7 @@ public class WorkflowExecutor {
      */
     public boolean decide(String workflowId) {
 
-        if(!lockingService.acquire(workflowId)) {
+        if(isDeciderLockingEnabled() && !lockingService.acquire(workflowId)) {
             return false;
         }
 

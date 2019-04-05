@@ -9,6 +9,7 @@ import javax.inject.Inject;
 public class RedisLockingService extends BaseDynoDAO implements LockingService {
 
     private final static String DECIDER_LOCKING_SET = "DECIDER_LOCKING_SET";
+    private final int DEFAULT_KEY_EXPIRE = 5;
 
     @Inject
     public RedisLockingService(DynoProxy dynoClient, ObjectMapper objectMapper, Configuration config) {
@@ -17,6 +18,16 @@ public class RedisLockingService extends BaseDynoDAO implements LockingService {
 
     @Override
     public boolean acquire(String key) {
+        return acquire(key, DEFAULT_KEY_EXPIRE);
+    }
+
+    @Override
+    public boolean acquire(String key, int expireDuration) {
+//        dynoClient.
+        // TODO Do this in a transaction?
+        dynoClient.setnx("", "");
+        dynoClient.expire("", expireDuration);
+
         String workflowToTaskKey = nsKey(DECIDER_LOCKING_SET);
         Long result = dynoClient.sadd(workflowToTaskKey, key);
         logger.debug("");
