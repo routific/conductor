@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * 
+ *
  */
 package com.netflix.conductor.core.events;
 
@@ -38,20 +38,23 @@ public class TestScriptEval {
 		app.put("name", "conductor");
 		app.put("version", 2.0);
 		app.put("license", "Apace 2.0");
-		
+
 		payload.put("app", app);
 		payload.put("author", "Netflix");
 		payload.put("oss", true);
-		
+		payload.put("category", 1);
+
 		String script1 = "$.app.name == 'conductor'";		//true
 		String script2 = "$.version > 3";					//false
 		String script3 = "$.oss";							//true
 		String script4 = "$.author == 'me'";				//false
-		
+		String script5 = "if ($.category == 1){ 'Movie' } else { 'Show' }";
+
 		assertTrue(ScriptEvaluator.evalBool(script1, payload));
 		assertFalse(ScriptEvaluator.evalBool(script2, payload));
 		assertTrue(ScriptEvaluator.evalBool(script3, payload));
 		assertFalse(ScriptEvaluator.evalBool(script4, payload));
-		
+		assertEquals(ScriptEvaluator.eval(script5, payload), "Movie");
+
 	}
 }
