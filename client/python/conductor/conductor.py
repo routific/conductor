@@ -28,13 +28,20 @@ class BaseClient(object):
     printUrl = False
     headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
 
-    def __init__(self, baseURL, baseResource):
+    def __init__(self, baseURL, baseResource, session=None):
         self.baseURL = baseURL
         self.baseResource = baseResource
+        if session is not None:
+            if not isinstance(session, requests.Session):
+                raise TypeError("'session' provided must be of type 'requests.Session'")
+            else:
+                self.session = session
+        else:
+            self.session = requests.Session()
 
     def get(self, resPath, queryParams=None):
         theUrl = "{}/{}".format(self.baseURL, resPath)
-        resp = requests.get(theUrl, params=queryParams)
+        resp = self.session.get(theUrl, params=queryParams)
         self.__checkForSuccess(resp)
         if(resp.content == b''):
             return None
@@ -48,9 +55,9 @@ class BaseClient(object):
             theHeader = self.mergeTwoDicts(self.headers, headers)
         if body is not None:
             jsonBody = json.dumps(body, ensure_ascii=False)
-            resp = requests.post(theUrl, params=queryParams, data=jsonBody, headers=theHeader)
+            resp = self.session.post(theUrl, params=queryParams, data=jsonBody, headers=theHeader)
         else:
-            resp = requests.post(theUrl, params=queryParams, headers=theHeader)
+            resp = self.session.post(theUrl, params=queryParams, headers=theHeader)
 
         self.__checkForSuccess(resp)
         return self.__return(resp, theHeader)
@@ -63,16 +70,16 @@ class BaseClient(object):
 
         if body is not None:
             jsonBody = json.dumps(body, ensure_ascii=False)
-            resp = requests.put(theUrl, params=queryParams, data=jsonBody, headers=theHeader)
+            resp = self.session.put(theUrl, params=queryParams, data=jsonBody, headers=theHeader)
         else:
-            resp = requests.put(theUrl, params=queryParams, headers=theHeader)
+            resp = self.session.put(theUrl, params=queryParams, headers=theHeader)
 
         self.__print(resp)
         self.__checkForSuccess(resp)
 
     def delete(self, resPath, queryParams):
         theUrl = "{}/{}".format(self.baseURL, resPath)
-        resp = requests.delete(theUrl, params=queryParams)
+        resp = self.session.delete(theUrl, params=queryParams)
         self.__print(resp)
         self.__checkForSuccess(resp)
 
