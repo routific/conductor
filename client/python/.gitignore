@@ -1,1 +1,6 @@
 .pytest_cache
+.eggs/
+.setupmeta.version
+dist/
+build/
+*.egg-info/

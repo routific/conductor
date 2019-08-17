@@ -7,7 +7,7 @@ Python client for Conductor provides two sets of functions:
 ## Install
 
 ```shell
-pip install conductor
+pip install nflx-conductor
 ```
 
 ## Using Workflow Management API
