@@ -21,3 +21,5 @@ bin/
 target/
 .DS_Store
 .vscode/
+dist/
+*.egg-info
