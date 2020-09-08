@@ -1017,7 +1017,7 @@ public class WorkflowExecutor {
                             	if(TaskType.SUB_WORKFLOW.name().equals(workflowTask.getTaskType()) && StringUtils.isNotBlank(workflowTask.getSubWorkflowId())) {
                                		Workflow subWorkflow = executionDAOFacade.getWorkflowById(workflowTask.getSubWorkflowId(), true);
                             		if(subWorkflow != null) {
-                            			skipTasksAffectedByTerminateTask(subWorkflow);                                		
+                            			skipTasksAffectedByTerminateTask(subWorkflow);
                             		}
                             	}
                             }
@@ -1071,7 +1071,7 @@ public class WorkflowExecutor {
     }
 
     /**
-     * When a TERMINATE task runs, it only affects the workflow in which it runs; it does not do anything with 
+     * When a TERMINATE task runs, it only affects the workflow in which it runs; it does not do anything with
      * in-progress tasks and subworkflows that are still running. This recursive method will ensure that all tasks within
      * all subworkflows are set to SKIPPED status so they can complete.
      * @param workflow a subworkflow within the hierarchy of the original workflow containing the TERMINATE task
@@ -1431,6 +1431,8 @@ public class WorkflowExecutor {
                     tasksToBeQueued.add(task);
                 }
             }
+
+            addTaskToQueue(tasksToBeQueued);
         } catch (Exception e) {
             List<String> taskIds = tasks.stream()
                     .map(Task::getTaskId)
@@ -1441,21 +1443,21 @@ public class WorkflowExecutor {
             // TODO Provide a better implementation of rollbackTasks considering all the edge cases.
             // Throwing exception to avoid workflow ending up in irrecoverable state.
             // rollbackTasks(workflow.getWorkflowId(), createdTasks);
-            throw new TerminateWorkflowException(errorMsg);
+            // throw new TerminateWorkflowException(errorMsg);
         }
 
         // On addTaskToQueue failures, ignore the exceptions and let WorkflowRepairService take care of republishing the messages to the queue.
-        try {
-            addTaskToQueue(tasksToBeQueued);
-        } catch (Exception e) {
-            List<String> taskIds = tasksToBeQueued.stream()
-                    .map(Task::getTaskId)
-                    .collect(Collectors.toList());
-            String errorMsg = String.format("Error pushing tasks to the queue: %s, for workflow: %s", taskIds, workflow.getWorkflowId());
-            LOGGER.warn(errorMsg, e);
-            Monitors.error(className, "scheduleTask");
-            return false;
-        }
+//        try {
+//            addTaskToQueue(tasksToBeQueued);
+//        } catch (Exception e) {
+//            List<String> taskIds = tasksToBeQueued.stream()
+//                    .map(Task::getTaskId)
+//                    .collect(Collectors.toList());
+//            String errorMsg = String.format("Error pushing tasks to the queue: %s, for workflow: %s", taskIds, workflow.getWorkflowId());
+//            LOGGER.warn(errorMsg, e);
+//            Monitors.error(className, "scheduleTask");
+//            return false;
+//        }
         return startedSystemTasks;
     }
 

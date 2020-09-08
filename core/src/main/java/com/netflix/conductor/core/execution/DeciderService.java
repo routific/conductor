@@ -160,12 +160,14 @@ public class DeciderService {
                 executedTaskRefNames.remove(pendingTask.getReferenceTaskName());
             }
 
+            // Get task definition
             Optional<TaskDef> taskDefinition = pendingTask.getTaskDefinition();
             if (!taskDefinition.isPresent()) {
                taskDefinition = Optional.ofNullable(workflow.getWorkflowDefinition().getTaskByRefName(pendingTask.getReferenceTaskName()))
                        .map(WorkflowTask::getTaskDefinition);
             }
 
+            // Check for timeouts, if a taskDefinition exists
             if (taskDefinition.isPresent()) {
                 checkTaskTimeout(taskDefinition.get(), pendingTask);
                 checkTaskPollTimeout(taskDefinition.get(), pendingTask);
@@ -175,31 +177,78 @@ public class DeciderService {
                 }
             }
 
-            if (!pendingTask.getStatus().isSuccessful()) {
-                WorkflowTask workflowTask = pendingTask.getWorkflowTask();
+            // If task is not successful, retry or update to COMPLETED_WITH_ERRORS
+//            if (!pendingTask.getStatus().isSuccessful()) {
+//                WorkflowTask workflowTask = pendingTask.getWorkflowTask();
+//                if (workflowTask == null) {
+//                    workflowTask = workflow.getWorkflowDefinition().getTaskByRefName(pendingTask.getReferenceTaskName());
+//                }
+//
+//                Optional<Task> retryTask = retry(taskDefinition.orElse(null), workflowTask, pendingTask, workflow);
+//                if (retryTask.isPresent()) {
+//                    tasksToBeScheduled.put(retryTask.get().getReferenceTaskName(), retryTask.get());
+//                    executedTaskRefNames.remove(retryTask.get().getReferenceTaskName());
+//                    outcome.tasksToBeUpdated.add(pendingTask);
+//                } else {
+//                    pendingTask.setStatus(COMPLETED_WITH_ERRORS);
+//                }
+//            }
+
+            // If the task is terminal, and not marked as executed or retried, get next task(s)
+//            if (!pendingTask.isExecuted() && !pendingTask.isRetried() && pendingTask.getStatus().isTerminal()) {
+//                pendingTask.setExecuted(true);
+//                List<Task> nextTasks = getNextTask(workflow, pendingTask);
+//                if (pendingTask.isLoopOverTask() && !TaskType.DO_WHILE.name().equals(pendingTask.getTaskType()) && !nextTasks.isEmpty()) {
+//                    nextTasks = filterNextLoopOverTasks(nextTasks, pendingTask, workflow);
+//                }
+//                nextTasks.forEach(nextTask -> tasksToBeScheduled.putIfAbsent(nextTask.getReferenceTaskName(), nextTask));
+//                outcome.tasksToBeUpdated.add(pendingTask);
+//                LOGGER.debug("Scheduling Tasks from {}, next = {} for workflowId: {}", pendingTask.getTaskDefName(),
+//                        nextTasks.stream()
+//                                .map(Task::getTaskDefName)
+//                                .collect(Collectors.toList()),
+//                        workflow.getWorkflowId());
+//            }
+        }
+
+        // Get last task and perform actions as neccessary
+        Optional<Task> lastTask = getLastTask(workflow);
+        if (lastTask.isPresent()) {
+            // TODO check if last task is a subTask
+            Task task = lastTask.get();
+            // Get task definition
+            Optional<TaskDef> taskDefinition = task.getTaskDefinition();
+            if (!taskDefinition.isPresent()) {
+                taskDefinition = Optional.ofNullable(workflow.getWorkflowDefinition().getTaskByRefName(task.getReferenceTaskName()))
+                        .map(WorkflowTask::getTaskDefinition);
+            }
+
+            // If task is not successful, retry or update to COMPLETED_WITH_ERRORS
+            if (!task.getStatus().isSuccessful()) {
+                WorkflowTask workflowTask = task.getWorkflowTask();
                 if (workflowTask == null) {
-                    workflowTask = workflow.getWorkflowDefinition().getTaskByRefName(pendingTask.getReferenceTaskName());
+                    workflowTask = workflow.getWorkflowDefinition().getTaskByRefName(task.getReferenceTaskName());
                 }
 
-                Optional<Task> retryTask = retry(taskDefinition.orElse(null), workflowTask, pendingTask, workflow);
+                Optional<Task> retryTask = retry(taskDefinition.orElse(null), workflowTask, task, workflow);
                 if (retryTask.isPresent()) {
                     tasksToBeScheduled.put(retryTask.get().getReferenceTaskName(), retryTask.get());
                     executedTaskRefNames.remove(retryTask.get().getReferenceTaskName());
-                    outcome.tasksToBeUpdated.add(pendingTask);
+                    outcome.tasksToBeUpdated.add(task);
                 } else {
-                    pendingTask.setStatus(COMPLETED_WITH_ERRORS);
+                    task.setStatus(COMPLETED_WITH_ERRORS);
                 }
             }
 
-            if (!pendingTask.isExecuted() && !pendingTask.isRetried() && pendingTask.getStatus().isTerminal()) {
-                pendingTask.setExecuted(true);
-                List<Task> nextTasks = getNextTask(workflow, pendingTask);
-                if (pendingTask.isLoopOverTask() && !TaskType.DO_WHILE.name().equals(pendingTask.getTaskType()) && !nextTasks.isEmpty()) {
-                    nextTasks = filterNextLoopOverTasks(nextTasks, pendingTask, workflow);
+            if (task.getStatus().isTerminal() && task.getStatus().isSuccessful()) {
+                task.setExecuted(true);
+                List<Task> nextTasks = getNextTask(workflow, task);
+                if (task.isLoopOverTask() && !TaskType.DO_WHILE.name().equals(task.getTaskType()) && !nextTasks.isEmpty()) {
+                    nextTasks = filterNextLoopOverTasks(nextTasks, task, workflow);
                 }
                 nextTasks.forEach(nextTask -> tasksToBeScheduled.putIfAbsent(nextTask.getReferenceTaskName(), nextTask));
-                outcome.tasksToBeUpdated.add(pendingTask);
-                LOGGER.debug("Scheduling Tasks from {}, next = {} for workflowId: {}", pendingTask.getTaskDefName(),
+                outcome.tasksToBeUpdated.add(task);
+                LOGGER.debug("Scheduling Tasks from {}, next = {} for workflowId: {}", task.getTaskDefName(),
                         nextTasks.stream()
                                 .map(Task::getTaskDefName)
                                 .collect(Collectors.toList()),
@@ -699,6 +748,15 @@ public class DeciderService {
             throw new TerminateWorkflowException(e.getMessage());
         }
 
+    }
+
+    private Optional<Task> getLastTask(Workflow workflow) {
+        List<Task> allTasks = workflow.getTasks();
+        if (allTasks.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(allTasks.get(allTasks.size() - 1));
     }
 
 
