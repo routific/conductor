@@ -202,6 +202,8 @@ public interface ElasticSearchConfiguration extends Configuration {
     default int getElasticsearchRestClientConnectionRequestTimeout() {
         return getIntProperty(ELASTIC_SEARCH_REST_CLIENT_CONNECTION_REQUEST_TIMEOUT_PROPERTY_NAME,
                 ELASTIC_SEARCH_REST_CLIENT_CONNECTION_REQUEST_TIMEOUT_DEFAULT_VALUE);
+    }
+
     default boolean getElasticSearchSSLEnabled() {
         return getBooleanProperty(ELASTIC_SEARCH_SSL_ENABLED, DEFAULT_ELASTIC_SEARCH_SSL_ENABLED);
     }
