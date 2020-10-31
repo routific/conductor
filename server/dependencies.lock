@@ -10,7 +10,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -456,7 +456,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -902,7 +902,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -1348,7 +1348,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -1833,12 +1833,14 @@
     },
     "jacocoAgent": {
         "org.jacoco:org.jacoco.agent": {
-            "locked": "0.8.1"
+            "locked": "0.8.1",
+            "requested": "0.8.1"
         }
     },
     "jacocoAnt": {
         "org.jacoco:org.jacoco.ant": {
-            "locked": "0.8.1"
+            "locked": "0.8.1",
+            "requested": "0.8.1"
         }
     },
     "providedCompile": {
@@ -1864,7 +1866,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -2310,7 +2312,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -2756,7 +2758,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -3202,7 +3204,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -3656,7 +3658,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -4110,7 +4112,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
@@ -4564,7 +4566,7 @@
             "firstLevelTransitive": [
                 "com.netflix.conductor:conductor-contribs"
             ],
-            "locked": "1.11.868"
+            "locked": "1.11.877"
         },
         "com.datastax.cassandra:cassandra-driver-core": {
             "firstLevelTransitive": [
