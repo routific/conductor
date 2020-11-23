@@ -272,20 +272,20 @@
             "requested": "2.9.1"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:transport": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.glassfish:javax.el": {
             "firstLevelTransitive": [
@@ -303,20 +303,20 @@
     },
     "compileOnly": {
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:transport": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         }
     },
     "default": {
@@ -762,20 +762,20 @@
     },
     "shadow": {
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:transport": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         }
     },
     "testCompile": {
@@ -916,20 +916,20 @@
             "requested": "3.1.2"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:transport": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.glassfish:javax.el": {
             "firstLevelTransitive": [
@@ -1091,20 +1091,20 @@
             "requested": "3.1.2"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:transport": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.glassfish:javax.el": {
             "firstLevelTransitive": [
@@ -1266,20 +1266,20 @@
             "requested": "3.1.2"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:transport": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.glassfish:javax.el": {
             "firstLevelTransitive": [
@@ -1441,20 +1441,20 @@
             "requested": "3.1.2"
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch.client:transport": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.5.1",
-            "requested": "6.5.1"
+            "locked": "6.8.12",
+            "requested": "6.8.12"
         },
         "org.glassfish:javax.el": {
             "firstLevelTransitive": [
