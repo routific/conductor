@@ -137,6 +137,9 @@ public interface Configuration {
     String KAFKA_DEFAULT_BOOTSTRAP_SERVERS_PROPERTY_NAME = "kafka.default.bootstrap.servers";
     String KAFKA_DEFAULT_BOOTSTRAP_SERVERS_DEFAULT_VALUE = "localhost:9092";
 
+    String KAFKA_EVENTS_TRUSTSTORE_PATH_PROPERTY_NAME = "kafka.events.truststore.path";
+    String KAFKA_EVENTS_TRUSTSTORE_PASSWORD_PROPERTY_NAME = "kafka.events.truststore.password";
+
     String KAFKA_EVENTS_CONSUMER_GROUP_ID_PROPERTY_NAME = "kafka.events.consumer.group.id";
     String KAFKA_DEFAULT_CONSUMER_GROUP_ID_PROPERTY_NAME = "kafka.default.consumer.group.id";
     String KAFKA_DEFAULT_CONSUMER_GROUP_ID_DEFAULT_VALUE = "";
@@ -444,6 +447,24 @@ public interface Configuration {
    default String getKafkaEventsBootstrapServers() {
        return getProperty(KAFKA_EVENTS_BOOTSTRAP_SERVERS_PROPERTY_NAME,
            getKafkaDefaultBootstrapServers());
+   }
+
+    /**
+    * Get the Kafka trust store path
+    *
+    * @return
+    */
+   default String getKafkaEventsTrustStorePath() {
+       return getProperty(KAFKA_EVENTS_TRUSTSTORE_PATH_PROPERTY_NAME, "");
+   }
+
+   /**
+    * Get the Kafka trust store password
+    *
+    * @return
+    */
+   default String getKafkaEventsTrustStorePassword() {
+       return getProperty(KAFKA_EVENTS_TRUSTSTORE_PASSWORD_PROPERTY_NAME, "");
    }
 
    /**
