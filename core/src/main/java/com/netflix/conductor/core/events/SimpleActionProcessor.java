@@ -129,6 +129,8 @@ public class SimpleActionProcessor implements ActionProcessor {
         Map<String, Object> output = new HashMap<>();
         try {
             Map<String, Object> inputParams = params.getInput();
+            inputParams.put("workflowName", params.getName());
+            inputParams.put("version", "${version}");
             Map<String, Object> workflowInput = parametersUtils.replace(inputParams, payload);
 
             Map<String, Object> paramsMap = new HashMap<>();
@@ -136,15 +138,21 @@ public class SimpleActionProcessor implements ActionProcessor {
                     .ifPresent(value -> paramsMap.put("correlationId", value));
             Map<String, Object> replaced = parametersUtils.replace(paramsMap, payload);
 
+            String workflowName = (String) workflowInput.get("workflowName");
+            Integer version = (Integer) workflowInput.get("version");
+
             workflowInput.put("conductor.event.messageId", messageId);
             workflowInput.put("conductor.event.name", event);
 
-            String workflowId = executor.startWorkflow(params.getName(), params.getVersion(),
+            params.setName(workflowName);
+            params.setVersion(version);
+
+            String workflowId = executor.startWorkflow(workflowName, params.getVersion(),
                     Optional.ofNullable(replaced.get("correlationId")).map(Object::toString)
                             .orElse(params.getCorrelationId()),
                     workflowInput, null, event, params.getTaskToDomain());
             output.put("workflowId", workflowId);
-            logger.debug("Started workflow: {}/{}/{} for event: {} for message:{}", params.getName(), params.getVersion(), workflowId, event, messageId);
+            logger.debug("Started workflow: {}/{}/{} for event: {} for message:{}", workflowName, params.getVersion(), workflowId, event, messageId);
 
         } catch (RuntimeException e) {
             Monitors.recordEventActionError(action.getAction().name(), params.getName(), event);
