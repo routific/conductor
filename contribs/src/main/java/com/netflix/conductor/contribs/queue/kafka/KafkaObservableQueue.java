@@ -37,6 +37,9 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
@@ -117,11 +120,21 @@ public class KafkaObservableQueue implements ObservableQueue {
 	
 	private KafkaErrorEmailSender errorEmailSender;
 
+	private static final String KAFKA_PUBLISH_SASL_USERNAME = "kafka.publish.sasl.username";
+	private static final String KAFKA_PUBLISH_SASL_PASSWORD = "kafka.publish.sasl.password";
+
+	private final String saslUsernameConfig;
+	private final String saslPasswordConfig;
+
 	@Inject
 	public KafkaObservableQueue(String queueName, Configuration config) {
 		this.queueName = queueName;
 		this.pollIntervalInMS = config.getKafkaEventsPollingIntervalMS();
 		this.pollTimeoutInMs = config.getKafkaEventsPollTimeoutMS();
+
+		this.saslUsernameConfig = config.getProperty(KAFKA_PUBLISH_SASL_USERNAME, "");
+		this.saslPasswordConfig = config.getProperty(KAFKA_PUBLISH_SASL_PASSWORD, "");
+
 		init(config);
 	}
 
@@ -134,14 +147,11 @@ public class KafkaObservableQueue implements ObservableQueue {
 	private void init(Configuration config) {
 		try {
 			Properties consumerProperties = new Properties();
-			/**
-			 * A JAAS configuration file can be specified that contains authentication instructions for the Kafka topic 
-			 */
-			String filename = config.getKafkaEventsJaasConfigFile();
-			if(filename != null) {
-				URL jaasConfigUrl = this.getClass().getResource(filename);
-				System.setProperty("java.security.auth.login.config", jaasConfigUrl == null ? filename : jaasConfigUrl.toExternalForm());
-			}
+
+			consumerProperties.put("sasl.jaas.config",
+					"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
+							+ "\" password=\"" + saslPasswordConfig + "\";");
+
 			String prop = config.getKafkaEventsBootstrapServers();
 			if(prop != null) {
 				consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, prop);
@@ -154,7 +164,11 @@ public class KafkaObservableQueue implements ObservableQueue {
 			if(prop != null) {
 				consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, prop);
 			}
-			consumerProperties.put("security.protocol", SecurityProtocol.SASL_PLAINTEXT.name);
+			consumerProperties.put("security.protocol", SecurityProtocol.SASL_SSL.name);
+			consumerProperties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+			consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, config.getKafkaEventsTrustStorePath());
+			consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, config.getKafkaEventsTrustStorePassword());
+			consumerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 			consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 			consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 			consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
@@ -194,11 +208,21 @@ public class KafkaObservableQueue implements ObservableQueue {
 			 * Create a producer to put events on the topic for testing purposes or to put errors on the error topic.
 			 */
 			Properties producerProperties = new Properties();
+
+			producerProperties.put("sasl.jaas.config",
+					"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
+							+ "\" password=\"" + saslPasswordConfig + "\";");
+
 			prop = config.getKafkaEventsBootstrapServers();
 			if(prop != null) {
 				producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, prop);
 			}
-			producerProperties.put("security.protocol", SecurityProtocol.SASL_PLAINTEXT.name);
+
+			producerProperties.put("security.protocol", SecurityProtocol.SASL_SSL.name);
+			producerProperties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+			producerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, config.getKafkaEventsTrustStorePath());
+			producerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, config.getKafkaEventsTrustStorePassword());
+  		producerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 			producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 			producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 			checkProducerProps(producerProperties);
