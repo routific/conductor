@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class KafkaPublishTask extends WorkflowSystemTask {
-
 	static final String REQUEST_PARAMETER_NAME = "kafka_request";
 	private static final String NAME = "KAFKA_PUBLISH";
 	private static final String MISSING_REQUEST = "Missing Kafka request. Task input MUST have a '" + REQUEST_PARAMETER_NAME + "' key with KafkaTask.Input as value. See documentation for KafkaTask for required input parameters";
@@ -44,6 +43,7 @@ public class KafkaPublishTask extends WorkflowSystemTask {
 	private ObjectMapper objectMapper;
 	private Configuration config;
 	private String requestParameter;
+	private String defaultBootStrapServer;
 	KafkaProducerManager producerManager;
 
 	private static final Logger logger = LoggerFactory.getLogger(KafkaPublishTask.class);
@@ -56,6 +56,8 @@ public class KafkaPublishTask extends WorkflowSystemTask {
 		this.requestParameter = REQUEST_PARAMETER_NAME;
 		this.producerManager = clientManager;
 		this.objectMapper = objectMapper;
+		this.defaultBootStrapServer = config.getKafkaEventsBootstrapServers();
+
 		logger.info("KafkaTask initialized...");
 	}
 
@@ -74,8 +76,12 @@ public class KafkaPublishTask extends WorkflowSystemTask {
 		KafkaPublishTask.Input input = objectMapper.convertValue(request, KafkaPublishTask.Input.class);
 
 		if (StringUtils.isBlank(input.getBootStrapServers())) {
-			markTaskAsFailed(task, MISSING_BOOT_STRAP_SERVERS);
-			return;
+			if (!StringUtils.isBlank(this.defaultBootStrapServer)) {
+				input.setBootStrapServers(this.defaultBootStrapServer);
+			} else {
+				markTaskAsFailed(task, MISSING_BOOT_STRAP_SERVERS);
+				return;
+			}
 		}
 
 		if (StringUtils.isBlank(input.getTopic())) {
