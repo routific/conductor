@@ -75,6 +75,10 @@ public class KafkaPublishTask extends WorkflowSystemTask {
 
 		KafkaPublishTask.Input input = objectMapper.convertValue(request, KafkaPublishTask.Input.class);
 
+		if (Objects.isNull(input.getKey())) {
+			input.setKey(workflow.getInput().get("key"));
+		}
+
 		if (StringUtils.isBlank(input.getBootStrapServers())) {
 			if (!StringUtils.isBlank(this.defaultBootStrapServer)) {
 				input.setBootStrapServers(this.defaultBootStrapServer);
