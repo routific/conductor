@@ -33,18 +33,17 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.RoundRobinAssignor;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.KafkaException;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.TopicAuthorizationException;
-import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
@@ -71,24 +70,24 @@ import rx.Observable.OnSubscribe;
  * topic in the Kafka cluster identified by the 'kafka.events.bootstrap.servers' property (you can also set the
  * 'kafka.default.bootstrap.servers' property if the same cluster is used for all Kafka topics including the events
  * topics).
- * 
+ *
  * Kafka security is supported using JAAS. If the 'kafka.default.jaas.config.file' property is set to the location of
  * a JAAS configuration file (in the classpath), the 'java.security.auth.login.config' system property will be set to
- * that file location. That config file can specify a login module. If the login module chosen is 
+ * that file location. That config file can specify a login module. If the login module chosen is
  * com.netflix.conductor.contribs.kafka.KafkaLoginModule, setting the kafka.events.jaas.username (or kafka.default.jaas.username
  * if all Kafka topics use the same login) and kafka.events.jaas.password (or kafka.default.jaas.password
- * if all Kafka topics use the same password) will allow those credentials to be used to connect to the Kafka topics.  
- * 
+ * if all Kafka topics use the same password) will allow those credentials to be used to connect to the Kafka topics.
+ *
  * If there are errors processing the events picked up from the event handler's topic and a topic was set up that has the same
  * name as the topic but with a '-errors' suffix, the error (in the form of a serialized
- * com.netflix.conductor.core.events.queue.MessageEventFailure JSON will be written to that error topic. 
- * 
+ * com.netflix.conductor.core.events.queue.MessageEventFailure JSON will be written to that error topic.
+ *
  * The 'kafka.events.pollingInterval' property (or the kafka.default.pollingInterval property if all Kafka consumers use
  * the same value) can be used to specify how many milliseconds elapses before the next attempt at consuming events happens.
- * 
+ *
  * The 'kafka.events.longPollTimeout' property (or the kafka.default.longPollTimeout property if all Kafka consumers use
  * the same value) can be used to specify how many milliseconds the consumer will wait for an event to arrive.
- * 
+ *
  * @author preeth, rickfish
  *
  */
@@ -100,9 +99,17 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	private final String queueName;
 
-	private int pollIntervalInMS;
+	private final int pollIntervalInMS;
 
 	private final int pollTimeoutInMs;
+
+	private final String autoOffset;
+
+	private final Boolean autoCommit;
+
+	private final String securityProtocol;
+
+	private final String trustStorePath;
 
 	private KafkaProducer<String, String> producer;
 
@@ -121,6 +128,10 @@ public class KafkaObservableQueue implements ObservableQueue {
 		this.queueName = queueName;
 		this.pollIntervalInMS = config.getKafkaEventsPollingIntervalMS();
 		this.pollTimeoutInMs = config.getKafkaEventsPollTimeoutMS();
+		this.securityProtocol = config.getKafkaSecurityProtocol();
+		this.trustStorePath = config.getKafkaEventsTrustStorePath();
+		this.autoOffset = config.getKafkaAutoOffsetResetConfig();
+		this.autoCommit = config.getKafkaAutoCommitConfig();
 
 		this.saslUsernameConfig = config.getProperty(KAFKA_PUBLISH_SASL_USERNAME, "");
 		this.saslPasswordConfig = config.getProperty(KAFKA_PUBLISH_SASL_PASSWORD, "");
@@ -131,16 +142,13 @@ public class KafkaObservableQueue implements ObservableQueue {
 	/**
 	 * Initializes the kafka producer with the defaults. Fails in case of any
 	 * mandatory configs are missing.
-	 * 
+	 *
 	 * @param config
 	 */
 	private void init(Configuration config) {
 		try {
 			Properties consumerProperties = new Properties();
 
-			consumerProperties.put("sasl.jaas.config",
-					"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
-							+ "\" password=\"" + saslPasswordConfig + "\";");
 
 			String prop = config.getKafkaEventsBootstrapServers();
 			if(prop != null) {
@@ -150,71 +158,94 @@ public class KafkaObservableQueue implements ObservableQueue {
 			if(prop != null) {
 				consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, prop);
 			}
-			prop = config.getKafkaAutoOffsetResetConfig();
-			if(prop != null) {
-				consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, prop);
-			}
-			consumerProperties.put("security.protocol", SecurityProtocol.SASL_SSL.name);
-			consumerProperties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
-			consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, config.getKafkaEventsTrustStorePath());
-			consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, config.getKafkaEventsTrustStorePassword());
-			consumerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+
+			consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, autoOffset);
+			consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, autoCommit);
 			consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 			consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-			consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+			consumerProperties.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, RoundRobinAssignor.class.getName());
+
+
+			if (Objects.nonNull(securityProtocol)) {
+				consumerProperties.put("sasl.jaas.config",
+						"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
+								+ "\" password=\"" + saslPasswordConfig + "\";");
+
+				consumerProperties.put("security.protocol", securityProtocol);
+				consumerProperties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+				consumerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+			} else {
+				consumerProperties.put("security.protocl", "PLAINTEXT");
+			}
+
+			if (!trustStorePath.isEmpty()) {
+				consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, config.getKafkaEventsTrustStorePath());
+				consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, config.getKafkaEventsTrustStorePassword());
+			}
+
 			checkConsumerProps(consumerProperties);
 
 			consumerProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, queueName + "_consumer_" + config.getServerId() + "_0");
-			
+
 			/**
 			 * Create a consumer for each of the topic's partitions. Create one consumer first so that we can use it
 			 * to get the partition information.
 			 */
+			this.consumers = new ArrayList<KafkaConsumer<String, String>>();
 			KafkaConsumer<String, String> firstConsumer = new KafkaConsumer<String, String>(consumerProperties);
 			firstConsumer.subscribe(Collections.singletonList(queueName));
-			Map<String, List<PartitionInfo>> topics = firstConsumer.listTopics();
-			if (topics != null && topics.get(queueName) != null) {
-				List<PartitionInfo> partitions = topics.get(queueName);
-				if (partitions != null && partitions.size() > 0) {
-					this.consumers = new ArrayList<KafkaConsumer<String, String>>();
-					this.consumers.add(firstConsumer);
-					for (int i = 1; i < partitions.size(); i++) {
-						consumerProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, queueName + "_consumer_" + config.getServerId() + "_" + i);
-						KafkaConsumer<String, String> newConsumer = new KafkaConsumer<String, String>(
-								consumerProperties);
-						newConsumer.subscribe(Collections.singletonList(queueName));
-						this.consumers.add(newConsumer);
-					}
-				} else {
-					logger.error("The topic '" + queueName + "' does not have any partitions!");
-				}
-			} else {
-				logger.error("The topic '" + queueName + "' was not found!");
-				firstConsumer.unsubscribe();
-				firstConsumer.close();
-			}
+			this.consumers.add(firstConsumer);
+
+			// firstConsumer.subscribe(Collections.singletonList(queueName));
+			// Map<String, List<PartitionInfo>> topics = firstConsumer.listTopics();
+			// if (topics != null && topics.get(queueName) != null) {
+			// 	List<PartitionInfo> partitions = topics.get(queueName);
+			// 	if (partitions != null && partitions.size() > 0) {
+			// 		this.consumers = new ArrayList<KafkaConsumer<String, String>>();
+			// 		this.consumers.add(firstConsumer);
+			// 		for (int i = 1; i < partitions.size(); i++) {
+			// 			consumerProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, queueName + "_consumer_" + config.getServerId() + "_" + i);
+			// 			KafkaConsumer<String, String> newConsumer = new KafkaConsumer<String, String>(
+			// 					consumerProperties);
+			// 			newConsumer.subscribe(Collections.singletonList(queueName));
+			// 			this.consumers.add(newConsumer);
+			// 		}
+			// 	} else {
+			// 		logger.error("The topic '" + queueName + "' does not have any partitions!");
+			// 	}
+			// } else {
+			// 	logger.error("The topic '" + queueName + "' was not found!");
+			// 	firstConsumer.unsubscribe();
+			// 	firstConsumer.close();
+			// }
 
 			/**
 			 * Create a producer to put events on the topic for testing purposes or to put errors on the error topic.
 			 */
 			Properties producerProperties = new Properties();
 
-			producerProperties.put("sasl.jaas.config",
-					"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
-							+ "\" password=\"" + saslPasswordConfig + "\";");
-
 			prop = config.getKafkaEventsBootstrapServers();
 			if(prop != null) {
 				producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, prop);
 			}
 
-			producerProperties.put("security.protocol", SecurityProtocol.SASL_SSL.name);
-			producerProperties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
-			producerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, config.getKafkaEventsTrustStorePath());
-			producerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, config.getKafkaEventsTrustStorePassword());
-  		producerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 			producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 			producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
+			if (Objects.nonNull(securityProtocol)) {
+				producerProperties.put("sasl.jaas.config",
+						"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
+								+ "\" password=\"" + saslPasswordConfig + "\";");
+				producerProperties.put("security.protocol", securityProtocol);
+				producerProperties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+				producerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+			}
+
+			if (!trustStorePath.isEmpty()) {
+				producerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, config.getKafkaEventsTrustStorePath());
+				producerProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, config.getKafkaEventsTrustStorePassword());
+			}
+
 			checkProducerProps(producerProperties);
 			producerProperties.put(ProducerConfig.CLIENT_ID_CONFIG, queueName + "_producer_" + config.getServerId());
 			this.producer = new KafkaProducer<String, String>(producerProperties);
@@ -225,7 +256,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	/**
 	 * Checks mandatory configs are available for kafka consumer.
-	 * 
+	 *
 	 * @param consumerProps
 	 */
 	private void checkConsumerProps(Properties consumerProps) {
@@ -240,7 +271,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	/**
 	 * Checks mandatory configurations are available for kafka producer.
-	 * 
+	 *
 	 * @param producerProps
 	 */
 	private void checkProducerProps(Properties producerProps) {
@@ -255,7 +286,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	/**
 	 * Validates whether the property has given keys.
-	 * 
+	 *
 	 * @param prop
 	 * @param keys
 	 * @return
@@ -280,14 +311,24 @@ public class KafkaObservableQueue implements ObservableQueue {
 	@Override
 	public List<String> ack(List<Message> messages) {
 		List<String> messageIds = new ArrayList<String>();
+
+		if (autoCommit) {
+			for (Message message : messages) {
+				messageIds.add(message.getId());
+			}
+
+			return messageIds;
+		}
+
 		/*
-		 * For each message, get the partition number, find the consumer that subscribes to that partition
-		 * and have that consumer commit the offset for that partition.
-		 */
+			* For each message, get the partition number, find the consumer that subscribes
+			* to that partition and have that consumer commit the offset for that
+			* partition.
+			*/
 		for (Message message : messages) {
 			String[] idParts = message.getId().split(":");
 			int partitionNumber = Integer.valueOf(idParts[2]);
-			if(this.consumers != null) {
+			if (this.consumers != null) {
 				for (KafkaConsumer<String, String> consumer : this.consumers) {
 					boolean didIt = false;
 					for (PartitionInfo partition : consumer.partitionsFor(queueName)) {
@@ -311,6 +352,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 				}
 			}
 		}
+
 		return messageIds;
 	}
 
@@ -344,7 +386,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	/**
 	 * Polls the topics and retrieve the messages for all consumers of the topic.
-	 * 
+	 *
 	 * @return List of messages
 	 */
 	@VisibleForTesting()
@@ -363,7 +405,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	/**
 	 * Polls the topics and retrieve the messages for a consumer.
-	 * 
+	 *
 	 * @return List of messages
 	 */
 	@VisibleForTesting()
@@ -393,7 +435,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	/**
 	 * Publish the messages to the given topic.
-	 * 
+	 *
 	 * @param messages
 	 */
 	@VisibleForTesting()
@@ -428,8 +470,8 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	@Override
 	public void processFailures(List<Message> messages, EventProcessingFailures failures) {
-		processFailures(messages, failures.getTransientFailures());
-		processFailures(messages, failures.getFailures());
+		// processFailures(messages, failures.getTransientFailures());
+		// processFailures(messages, failures.getFailures());
 	}
 
 	public void processFailures(List<Message> messages, List<EventExecution> failures) {
@@ -455,8 +497,8 @@ public class KafkaObservableQueue implements ObservableQueue {
 						if(e.getCause() instanceof TopicAuthorizationException) {
 							validErrorTopic = false;
 							/*
-							 * This exception (although it is an 'authorization' exception, also means that the topic does not exist. 
-							 * Teams do not have to set up an error topic if they don't want to.  
+							 * This exception (although it is an 'authorization' exception, also means that the topic does not exist.
+							 * Teams do not have to set up an error topic if they don't want to.
 							 */
 						} else {
 							logger.error("Publish message to kafka topic {} failed with an error: {}", errorQueueName, e.getMessage(), e);
@@ -479,7 +521,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 	 */
 	protected void processFailure(String topicName, String errorTopicName, MessageEventFailure failure) {
 	}
-	
+
 	private Optional<MessageEventFailure> getMessageEventFailure(EventExecution eventExecution, List<Message> messages) {
 		Optional<MessageEventFailure> messageEventFailure = Optional.empty();
 		Optional<Message> foundMessage = messages.stream().filter(message -> eventExecution.getMessageId().equals(message.getId())).findFirst();
@@ -488,12 +530,12 @@ public class KafkaObservableQueue implements ObservableQueue {
 		}
 		return messageEventFailure;
 	}
-	
+
 	@VisibleForTesting
 	OnSubscribe<Message> getOnSubscribe() {
-		if (this.consumers != null && this.consumers.size() > 1) {
-			this.pollIntervalInMS *= this.consumers.size();
-		}
+		// if (this.consumers != null && this.consumers.size() > 1) {
+		// 	this.pollIntervalInMS *= this.consumers.size();
+		// }
 		return subscriber -> {
 			Observable<Long> interval = Observable.interval(pollIntervalInMS, TimeUnit.MILLISECONDS);
 			interval.flatMap((Long x) -> {
