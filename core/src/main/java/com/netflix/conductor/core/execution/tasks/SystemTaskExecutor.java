@@ -40,6 +40,7 @@ class SystemTaskExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemTaskExecutor.class);
 
     private final int callbackTime;
+    private final int pollInterval;
     private final QueueDAO queueDAO;
 
     ExecutionConfig defaultExecutionConfig;
@@ -54,6 +55,7 @@ class SystemTaskExecutor {
         this.config = config;
         int threadCount = config.getSystemTaskWorkerThreadCount();
         this.callbackTime = config.getSystemTaskWorkerCallbackSeconds();
+        this.pollInterval = config.getSystemTaskWorkerPollInterval();
 
         String threadNameFormat = "system-task-worker-%d";
         this.defaultExecutionConfig = new ExecutionConfig(threadCount, threadNameFormat);
@@ -91,7 +93,7 @@ class SystemTaskExecutor {
             }
             LOGGER.debug("Polling queue: {} with {} slots acquired", queueName, acquiredSlots);
 
-            List<String> polledTaskIds = queueDAO.pop(queueName, acquiredSlots, 200);
+            List<String> polledTaskIds = queueDAO.pop(queueName, acquiredSlots, 0);
 
             Monitors.recordTaskPoll(queueName);
             LOGGER.debug("Polling queue:{}, got {} tasks", queueName, polledTaskIds.size());
