@@ -44,9 +44,6 @@ public class KafkaProducerManager {
 	private static final String KAFKA_PUBLISH_MAX_BLOCK_MS = "kafka.publish.max.block.ms";
 	private static final String DEFAULT_MAX_BLOCK_MS = "500";
 
-	private static final String KAFKA_PUBLISH_SECURITY_PROTOCOL = "kafka.publish.security.protocol";
-	private static final String DEFAULT_SECURITY_PROTOCOL = null;
-
 	private static final String KAFKA_PUBLISH_SASL_MECHANISM = "kafka.publish.sasl.mechanism";
 	private static final String DEFAULT_SASL_MECHANISM = "PLAIN";
 
@@ -67,7 +64,7 @@ public class KafkaProducerManager {
 	public KafkaProducerManager(Configuration configuration) {
 		this.requestTimeoutConfig = configuration.getProperty(KAFKA_PUBLISH_REQUEST_TIMEOUT_MS, DEFAULT_REQUEST_TIMEOUT);
 		this.maxBlockMsConfig = configuration.getProperty(KAFKA_PUBLISH_MAX_BLOCK_MS, DEFAULT_MAX_BLOCK_MS);
-		this.securityProtocolConfig = configuration.getProperty(KAFKA_PUBLISH_SECURITY_PROTOCOL, DEFAULT_SECURITY_PROTOCOL);
+		this.securityProtocolConfig = configuration.getKafkaSecurityProtocol();
 		this.sslTruststorePath = configuration.getKafkaEventsTrustStorePath();
 		this.sslTruststorePassword = configuration.getKafkaEventsTrustStorePassword();
 		this.saslMechanismConfig = configuration.getProperty(KAFKA_PUBLISH_SASL_MECHANISM, DEFAULT_SASL_MECHANISM);
@@ -125,11 +122,14 @@ public class KafkaProducerManager {
 
 		if (Objects.nonNull(securityProtocolConfig)) {
 			configProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocolConfig);
-			configProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, sslTruststorePath);
-			configProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTruststorePassword);
 			configProperties.put(SaslConfigs.SASL_MECHANISM, saslMechanismConfig);
 			configProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 			configProperties.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.plain.PlainLoginModule required username=\""+saslUsernameConfig+"\" password=\""+saslPasswordConfig+"\";");
+		}
+
+		if (!sslTruststorePath.isEmpty()) {
+			configProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, sslTruststorePath);
+			configProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTruststorePassword);
 		}
 
 		return configProperties;
