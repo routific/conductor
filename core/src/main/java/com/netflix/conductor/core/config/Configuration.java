@@ -137,6 +137,8 @@ public interface Configuration {
     String KAFKA_DEFAULT_BOOTSTRAP_SERVERS_PROPERTY_NAME = "kafka.default.bootstrap.servers";
     String KAFKA_DEFAULT_BOOTSTRAP_SERVERS_DEFAULT_VALUE = "localhost:9092";
 
+    String KAFKA_PUBLISH_SECURITY_PROTOCOL = "kafka.publish.security.protocol";
+
     String KAFKA_EVENTS_TRUSTSTORE_PATH_PROPERTY_NAME = "kafka.events.truststore.path";
     String KAFKA_EVENTS_TRUSTSTORE_PASSWORD_PROPERTY_NAME = "kafka.events.truststore.password";
 
@@ -147,6 +149,11 @@ public interface Configuration {
     String KAFKA_EVENTS_JAAS_CONFIG_FILE_PROPERTY_NAME = "kafka.events.jaas.config.file";
     String KAFKA_DEFAULT_JAAS_CONFIG_FILE_PROPERTY_NAME = "kafka.default.jaas.config.file";
     String KAFKA_DEFAULT_JAAS_CONFIG_FILE_DEFAULT_VALUE = "";
+
+
+    String KAFKA_EVENTS_AUTO_OFFSET_PROPERTY_NAME = "kafka.events.autoOffset";
+
+    String KAFKA_EVENTS_AUTO_COMMIT_PROPERTY_NAME = "kafka.events.autoCommit";
 
     String KAFKA_EVENTS_POLLING_INTERVAL_MS_PROPERTY_NAME = "kafka.events.pollingInterval";
     String KAFKA_DEFAULT_POLLING_INTERVAL_MS_PROPERTY_NAME = "kafka.default.pollingInterval";
@@ -167,10 +174,10 @@ public interface Configuration {
 
     String EMAIL_SMTP_HOST_PROPERTY_NAME = "email.smtp.host";
     String EMAIL_SMTP_HOST_DEFAULT_VALUE = "";
-    
+
     String EMAIL_ADDRESS_FROM_PROPERTY_NAME = "email.address.from";
     String EMAIL_ADDRESS_FROM_DEFAULT_VALUE = "";
-    
+
     String EMAIL_ADDRESS_REPLYTO_PROPERTY_NAME = "email.address.replyto";
     String EMAIL_ADDRESS_REPLYTO_DEFAULT_VALUE = "";
 
@@ -449,6 +456,11 @@ public interface Configuration {
            getKafkaDefaultBootstrapServers());
    }
 
+
+   default String getKafkaSecurityProtocol() {
+       return getProperty(KAFKA_PUBLISH_SECURITY_PROTOCOL, null);
+   }
+
     /**
     * Get the Kafka trust store path
     *
@@ -472,7 +484,11 @@ public interface Configuration {
     * @return
     */
    default String getKafkaAutoOffsetResetConfig() {
-       return getProperty(KAFKA_EVENTS_POLLING_INTERVAL_MS_PROPERTY_NAME, "latest");
+       return getProperty(KAFKA_EVENTS_AUTO_OFFSET_PROPERTY_NAME, "latest");
+   }
+
+   default Boolean getKafkaAutoCommitConfig() {
+       return getBooleanProperty(KAFKA_EVENTS_AUTO_COMMIT_PROPERTY_NAME, false);
    }
 
    /**
@@ -524,7 +540,7 @@ public interface Configuration {
     * Otherwise, the polling interval for each specific use should be used.
     */
    default int getKafkaEventsPollingIntervalMS() {
-       return getIntProperty(KAFKA_DEFAULT_POLLING_INTERVAL_MS_PROPERTY_NAME,
+       return getIntProperty(KAFKA_EVENTS_POLLING_INTERVAL_MS_PROPERTY_NAME,
            getKafkaDefaultPollingIntervalMS());
    }
 
@@ -542,7 +558,7 @@ public interface Configuration {
     * @return
     */
    default int getKafkaEventsPollTimeoutMS() {
-       return getIntProperty(KAFKA_EVENTS_POLL_TIMEOUT_MS_PROPERTY_NAME, 
+       return getIntProperty(KAFKA_EVENTS_POLL_TIMEOUT_MS_PROPERTY_NAME,
       		getKafkaDefaultPollTimeoutMS());
    }
 
@@ -596,7 +612,7 @@ public interface Configuration {
    default String getEmailAddressReplyTo() {
 	   return getProperty(EMAIL_ADDRESS_REPLYTO_PROPERTY_NAME, EMAIL_ADDRESS_REPLYTO_DEFAULT_VALUE);
    }
-   
+
     /**
      * @param name         Name of the property
      * @param defaultValue Default value when not specified
