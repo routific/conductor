@@ -60,6 +60,8 @@ public class KafkaProducerManager {
 	private final String sslTruststorePassword;
 	private final String saslUsernameConfig;
 	private final String saslPasswordConfig;
+	private final String jaasTemplate;
+
 
 	public KafkaProducerManager(Configuration configuration) {
 		this.requestTimeoutConfig = configuration.getProperty(KAFKA_PUBLISH_REQUEST_TIMEOUT_MS, DEFAULT_REQUEST_TIMEOUT);
@@ -70,6 +72,7 @@ public class KafkaProducerManager {
 		this.saslMechanismConfig = configuration.getProperty(KAFKA_PUBLISH_SASL_MECHANISM, DEFAULT_SASL_MECHANISM);
 		this.saslUsernameConfig = configuration.getProperty(KAFKA_PUBLISH_SASL_USERNAME, "");
 		this.saslPasswordConfig = configuration.getProperty(KAFKA_PUBLISH_SASL_PASSWORD, "");
+		this.jaasTemplate = configuration.getKafkaJaasTemplate();
 
 		int cacheSize = configuration.getIntProperty(KAFKA_PRODUCER_CACHE_SIZE, DEFAULT_CACHE_SIZE);
 		int cacheTimeInMs = configuration.getIntProperty(KAFKA_PRODUCER_CACHE_TIME_IN_MILLIS, DEFAULT_CACHE_TIME_IN_MILLIS);
@@ -124,7 +127,7 @@ public class KafkaProducerManager {
 			configProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocolConfig);
 			configProperties.put(SaslConfigs.SASL_MECHANISM, saslMechanismConfig);
 			configProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
-			configProperties.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.plain.PlainLoginModule required username=\""+saslUsernameConfig+"\" password=\""+saslPasswordConfig+"\";");
+			configProperties.put(SaslConfigs.SASL_JAAS_CONFIG, jaasTemplate + " required username=\""+saslUsernameConfig+"\" password=\""+saslPasswordConfig+"\";");
 		}
 
 		if (!sslTruststorePath.isEmpty()) {
