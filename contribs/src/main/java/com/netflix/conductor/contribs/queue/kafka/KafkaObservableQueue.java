@@ -107,6 +107,8 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	private final Boolean autoCommit;
 
+	private final String saslMechanismConfig;
+
 	private final String securityProtocol;
 
 	private final String trustStorePath;
@@ -120,6 +122,8 @@ public class KafkaObservableQueue implements ObservableQueue {
 	private static final String KAFKA_PUBLISH_SASL_USERNAME = "kafka.publish.sasl.username";
 	private static final String KAFKA_PUBLISH_SASL_PASSWORD = "kafka.publish.sasl.password";
 
+	private static final String KAFKA_PUBLISH_SASL_MECHANISM = "kafka.publish.sasl.mechanism";
+
 	private final String saslUsernameConfig;
 	private final String saslPasswordConfig;
 
@@ -132,6 +136,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 		this.trustStorePath = config.getKafkaEventsTrustStorePath();
 		this.autoOffset = config.getKafkaAutoOffsetResetConfig();
 		this.autoCommit = config.getKafkaAutoCommitConfig();
+		this.saslMechanismConfig = config.getProperty(KAFKA_PUBLISH_SASL_MECHANISM, "PLAIN");
 
 		this.saslUsernameConfig = config.getProperty(KAFKA_PUBLISH_SASL_USERNAME, "");
 		this.saslPasswordConfig = config.getProperty(KAFKA_PUBLISH_SASL_PASSWORD, "");
@@ -172,10 +177,8 @@ public class KafkaObservableQueue implements ObservableQueue {
 								+ "\" password=\"" + saslPasswordConfig + "\";");
 
 				consumerProperties.put("security.protocol", securityProtocol);
-				consumerProperties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+				consumerProperties.put(SaslConfigs.SASL_MECHANISM, saslMechanismConfig);
 				consumerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
-			} else {
-				consumerProperties.put("security.protocl", "PLAINTEXT");
 			}
 
 			if (!trustStorePath.isEmpty()) {
@@ -237,7 +240,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 						"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
 								+ "\" password=\"" + saslPasswordConfig + "\";");
 				producerProperties.put("security.protocol", securityProtocol);
-				producerProperties.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
+				producerProperties.put(SaslConfigs.SASL_MECHANISM, saslMechanismConfig);
 				producerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 			}
 
@@ -421,7 +424,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 			logger.info("polled {} messages from kafka topic.", records.count());
 			records.forEach(record -> {
-				logger.debug("Consumer Record: " + "key: {}, " + "value: {}, " + "partition: {}, " + "offset: {}",
+				logger.info("Consumer Record: " + "key: {}, " + "value: {}, " + "partition: {}, " + "offset: {}",
 						record.key(), record.value(), record.partition(), record.offset());
 				String id = record.key() + ":" + record.topic() + ":" + record.partition() + ":" + record.offset();
 				Message message = new Message(id, String.valueOf(record.value()), "");
