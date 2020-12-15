@@ -31,6 +31,7 @@ import javax.inject.Inject;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.RoundRobinAssignor;
@@ -121,14 +122,19 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 	private static final String KAFKA_PUBLISH_SASL_USERNAME = "kafka.publish.sasl.username";
 	private static final String KAFKA_PUBLISH_SASL_PASSWORD = "kafka.publish.sasl.password";
-
+	private static final String KAFKA_TOPIC_NAMESPACE = "kafka.topic.namespace";
 	private static final String KAFKA_PUBLISH_SASL_MECHANISM = "kafka.publish.sasl.mechanism";
 
 	private final String saslUsernameConfig;
 	private final String saslPasswordConfig;
 
+	private final String kafkaNamespace;
+	private final String jaasTemplate;
+
 	@Inject
 	public KafkaObservableQueue(String queueName, Configuration config) {
+		this.kafkaNamespace = config.getProperty(KAFKA_TOPIC_NAMESPACE, "");
+		this.jaasTemplate = config.getKafkaJaasTemplate();
 		this.queueName = queueName;
 		this.pollIntervalInMS = config.getKafkaEventsPollingIntervalMS();
 		this.pollTimeoutInMs = config.getKafkaEventsPollTimeoutMS();
@@ -172,11 +178,11 @@ public class KafkaObservableQueue implements ObservableQueue {
 
 
 			if (Objects.nonNull(securityProtocol)) {
-				consumerProperties.put("sasl.jaas.config",
-						"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
+				consumerProperties.put(SaslConfigs.SASL_JAAS_CONFIG,
+						jaasTemplate + " required username=\"" + saslUsernameConfig
 								+ "\" password=\"" + saslPasswordConfig + "\";");
 
-				consumerProperties.put("security.protocol", securityProtocol);
+				consumerProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
 				consumerProperties.put(SaslConfigs.SASL_MECHANISM, saslMechanismConfig);
 				consumerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 			}
@@ -196,7 +202,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 			 */
 			this.consumers = new ArrayList<KafkaConsumer<String, String>>();
 			KafkaConsumer<String, String> firstConsumer = new KafkaConsumer<String, String>(consumerProperties);
-			firstConsumer.subscribe(Collections.singletonList(queueName));
+			firstConsumer.subscribe(Collections.singletonList(kafkaNamespace + queueName));
 			this.consumers.add(firstConsumer);
 
 			// firstConsumer.subscribe(Collections.singletonList(queueName));
@@ -236,10 +242,10 @@ public class KafkaObservableQueue implements ObservableQueue {
 			producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
 			if (Objects.nonNull(securityProtocol)) {
-				producerProperties.put("sasl.jaas.config",
-						"org.apache.kafka.common.security.plain.PlainLoginModule required username=\"" + saslUsernameConfig
+				producerProperties.put(SaslConfigs.SASL_JAAS_CONFIG,
+						jaasTemplate + " required username=\"" + saslUsernameConfig
 								+ "\" password=\"" + saslPasswordConfig + "\";");
-				producerProperties.put("security.protocol", securityProtocol);
+				producerProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
 				producerProperties.put(SaslConfigs.SASL_MECHANISM, saslMechanismConfig);
 				producerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 			}
@@ -334,7 +340,7 @@ public class KafkaObservableQueue implements ObservableQueue {
 			if (this.consumers != null) {
 				for (KafkaConsumer<String, String> consumer : this.consumers) {
 					boolean didIt = false;
-					for (PartitionInfo partition : consumer.partitionsFor(queueName)) {
+					for (PartitionInfo partition : consumer.partitionsFor(kafkaNamespace + queueName)) {
 						if (partitionNumber == partition.partition()) {
 							Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 							currentOffsets.put(new TopicPartition(idParts[1], partitionNumber),

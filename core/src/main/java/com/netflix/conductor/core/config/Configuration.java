@@ -156,6 +156,8 @@ public interface Configuration {
 
     String KAFKA_EVENTS_AUTO_COMMIT_PROPERTY_NAME = "kafka.events.autoCommit";
 
+    String KAFKA_JAAS_TEMPLATE = "kafka.jaas.template";
+
     String KAFKA_EVENTS_POLLING_INTERVAL_MS_PROPERTY_NAME = "kafka.events.pollingInterval";
     String KAFKA_DEFAULT_POLLING_INTERVAL_MS_PROPERTY_NAME = "kafka.default.pollingInterval";
     int KAFKA_DEFAULT_POLLING_INTERVAL_MS_DEFAULT_VALUE = 1000;
@@ -460,6 +462,11 @@ public interface Configuration {
 
    default String getKafkaSecurityProtocol() {
        return getProperty(KAFKA_PUBLISH_SECURITY_PROTOCOL, null);
+   }
+
+
+   default String getKafkaJaasTemplate() {
+       return getProperty(KAFKA_JAAS_TEMPLATE, null);
    }
 
     /**

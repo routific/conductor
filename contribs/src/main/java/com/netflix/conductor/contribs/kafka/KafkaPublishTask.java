@@ -39,11 +39,14 @@ public class KafkaPublishTask extends WorkflowSystemTask {
 	private static final String MISSING_KAFKA_TOPIC = "Missing Kafka topic. See documentation for KafkaTask for required input parameters";
 	private static final String MISSING_KAFKA_VALUE = "Missing Kafka value.  See documentation for KafkaTask for required input parameters";
 	private static final String FAILED_TO_INVOKE = "Failed to invoke kafka task due to: ";
+	private static final String KAFKA_TOPIC_NAMESPACE = "kafka.topic.namespace";
+
 
 	private ObjectMapper objectMapper;
 	private Configuration config;
 	private String requestParameter;
 	private String defaultBootStrapServer;
+	private final String kafkaNamespace;
 	KafkaProducerManager producerManager;
 
 	private static final Logger logger = LoggerFactory.getLogger(KafkaPublishTask.class);
@@ -57,6 +60,7 @@ public class KafkaPublishTask extends WorkflowSystemTask {
 		this.producerManager = clientManager;
 		this.objectMapper = objectMapper;
 		this.defaultBootStrapServer = config.getKafkaEventsBootstrapServers();
+		this.kafkaNamespace= config.getProperty(KAFKA_TOPIC_NAMESPACE, "");
 
 		logger.info("KafkaTask initialized...");
 	}
@@ -145,7 +149,7 @@ public class KafkaPublishTask extends WorkflowSystemTask {
 		Iterable<Header> headers = input.getHeaders().entrySet().stream()
 				.map(header -> new RecordHeader(header.getKey(), String.valueOf(header.getValue()).getBytes()))
 				.collect(Collectors.toList());
-		ProducerRecord rec = new ProducerRecord(input.getTopic(), null,
+		ProducerRecord rec = new ProducerRecord(kafkaNamespace + input.getTopic(), null,
 				null, key, objectMapper.writeValueAsString(input.getValue()), headers);
 
 		Future send = producer.send(rec);
