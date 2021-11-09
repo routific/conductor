@@ -1,6 +1,8 @@
 buildscript {
 	repositories {
-        jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
 
     dependencies {
@@ -25,12 +27,31 @@ allprojects {
     apply plugin: 'eclipse'
 
     repositories {
-        jcenter()
+        mavenCentral()
 
         // oss-candidate for -rc.* verions:
         maven {
-            url "https://dl.bintray.com/netflixoss/oss-candidate"
+            url "https://artifactory-oss.prod.netflix.net/artifactory/maven-oss-candidates"
         }
+       maven {
+                    url "https://artifactory-oss.prod.netflix.net/artifactory/required-jcenter-modules-backup"
+                }
+        jcenter()
+
+        // /**
+        //  * This repository locates artifacts that don't exist in maven central but we had to backup from jcenter
+        //  * The exclusiveContent
+        //  */
+        // exclusiveContent {
+        //     forRepository {
+        //         maven {
+        //             url "https://artifactory-oss.prod.netflix.net/artifactory/required-jcenter-modules-backup"
+        //         }
+        //     }
+        //     filter {
+        //         includeGroupByRegex "com\\.github\\.vmg.*"
+        //     }
+        // }
     }
 }
 
@@ -132,4 +153,3 @@ tasks.coveralls {
     description = "Uploads the aggregated coverage report to Coveralls"
     dependsOn codeCoverageReport
 }
-

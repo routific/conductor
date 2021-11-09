@@ -53,6 +53,8 @@ public class KafkaPublishTaskMapper implements TaskMapper  {
 
 		Map<String, Object> input = parametersUtils.getTaskInputV2(taskToSchedule.getInputParameters(), workflowInstance, taskId, taskDefinition);
 
+		Object inputStartDelay = input.get("startDelay");
+
 		Task kafkaPublishTask = new Task();
 		kafkaPublishTask.setTaskType(taskToSchedule.getType());
 		kafkaPublishTask.setTaskDefName(taskToSchedule.getName());
@@ -65,9 +67,13 @@ public class KafkaPublishTaskMapper implements TaskMapper  {
 		kafkaPublishTask.setInputData(input);
 		kafkaPublishTask.setStatus(Task.Status.SCHEDULED);
 		kafkaPublishTask.setRetryCount(retryCount);
-		kafkaPublishTask.setCallbackAfterSeconds(taskToSchedule.getStartDelay());
 		kafkaPublishTask.setWorkflowTask(taskToSchedule);
 		kafkaPublishTask.setWorkflowPriority(workflowInstance.getPriority());
+		if (!Objects.isNull(inputStartDelay)) {
+			kafkaPublishTask.setCallbackAfterSeconds(((Number) inputStartDelay).longValue());
+		} else {
+			kafkaPublishTask.setCallbackAfterSeconds(taskToSchedule.getStartDelay());
+		}
 		if (Objects.nonNull(taskDefinition)) {
 			kafkaPublishTask.setExecutionNameSpace(taskDefinition.getExecutionNameSpace());
 			kafkaPublishTask.setIsolationGroupId(taskDefinition.getIsolationGroupId());
