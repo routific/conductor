@@ -131,6 +131,8 @@ public class SimpleActionProcessor implements ActionProcessor {
             Map<String, Object> inputParams = params.getInput();
             inputParams.put("workflowName", params.getName());
             inputParams.put("version", "${version}");
+            inputParams.put("params", "${params}");
+
             Map<String, Object> workflowInput = parametersUtils.replace(inputParams, payload);
 
             Map<String, Object> paramsMap = new HashMap<>();

@@ -23,6 +23,7 @@ import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -73,21 +74,23 @@ public class ElasticSearchRestClientBuilderProvider implements Provider<RestClie
             credentialsProvider.setCredentials(AuthScope.ANY,
                     new UsernamePasswordCredentials(configuration.getElasticSearchBasicAuthUsername(), configuration.getElasticSearchBasicAuthPassword()));
 
-            String keyStorePass = configuration.getJavaKeystorePassword();
+            // String keyStorePass = configuration.getJavaKeystorePassword();
 
             try {
-                InputStream is = Files.newInputStream(Paths.get(configuration.getJavaKeystorePath()));
-                KeyStore truststore = KeyStore.getInstance("jks");
-                truststore.load(is, keyStorePass.toCharArray());
-                SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
+                logger.info("Found path {}", configuration.getJavaKeystorePath());
 
-                SSLContext sslContext = sslBuilder.build();
+
+                 SSLContextBuilder sslBuilder = SSLContexts.custom()
+                        .loadTrustMaterial(null, (x509Certificates, s) -> true);
+                        final SSLContext sslContext = sslBuilder.build();
+
 
                 return builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
                     @Override
                     public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
                         return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
-                                .setSSLContext(sslContext);
+                                   .setSSLContext(sslContext)
+                                         .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
                     }
                 });
             } catch (Exception e) {
