@@ -1,0 +1,20 @@
+version: 2.1
+
+jobs:
+  build:
+    resource_class: arm.medium
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          name: "Build image"
+          command: "cd ./docker && docker-compose build --platform linux/arm64"
+  
+workflows:
+  build-and-deploy-image:
+    jobs:
+      - build
+    filters:
+      branches: 
+        - routific
