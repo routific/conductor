@@ -1,7 +1,7 @@
 ## Backend
 Conductor provides a pluggable backend.  The current implementation uses Dynomite.
 
-There are 4 interfaces that needs to be implemented for each backend:
+There are 4 interfaces that need to be implemented for each backend:
 
 ```java
 //Store for workflow and task definitions
@@ -56,4 +56,4 @@ for eg., with Dynomite and Redlock:
 
 * Implement ```Lock``` interface.
 * Add a binding similar to [this](https://github.com/Netflix/conductor/blob/master/server/src/main/java/com/netflix/conductor/bootstrap/ModulesProvider.java#L115-L129)
-* Enable locking service: ```decider.locking.enabled: true```
+* Enable locking service: ```conductor.app.workflowExecutionLockEnabled: true```

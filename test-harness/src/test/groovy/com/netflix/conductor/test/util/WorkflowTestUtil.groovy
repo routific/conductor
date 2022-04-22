@@ -1,38 +1,36 @@
 /*
- * Copyright 2020 Netflix, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2022 Netflix, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package com.netflix.conductor.test.util
 
+import javax.annotation.PostConstruct
+
+import org.apache.commons.lang3.StringUtils
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+
 import com.netflix.conductor.common.metadata.tasks.Task
 import com.netflix.conductor.common.metadata.tasks.TaskDef
+import com.netflix.conductor.common.metadata.tasks.TaskResult
 import com.netflix.conductor.common.metadata.workflow.WorkflowDef
-import com.netflix.conductor.common.run.Workflow
 import com.netflix.conductor.core.WorkflowContext
-import com.netflix.conductor.core.execution.ApplicationException
+import com.netflix.conductor.core.exception.ApplicationException
 import com.netflix.conductor.core.execution.WorkflowExecutor
 import com.netflix.conductor.dao.QueueDAO
+import com.netflix.conductor.model.WorkflowModel
 import com.netflix.conductor.service.ExecutionService
 import com.netflix.conductor.service.MetadataService
-import com.netflix.conductor.tests.utils.JsonUtils
-import org.apache.commons.lang.StringUtils
 
-import javax.annotation.PostConstruct
-import javax.inject.Inject
-import javax.inject.Singleton
-
-import static com.netflix.conductor.common.metadata.tasks.Task.Status.COMPLETED
+import com.fasterxml.jackson.databind.ObjectMapper
 
 /**
  * This is a helper class used to initialize task definitions required by the tests when loaded up.
@@ -46,29 +44,32 @@ import static com.netflix.conductor.common.metadata.tasks.Task.Status.COMPLETED
  *     <li> verifyPolledAndAcknowledgedTask </li>
  * </ul>
  *
- * Usage: Inject this class in any Spock based specification:
+ * Usage: Autowire this class in any Spock based specification:
  * <code>
- *      @Inject
- *     WorkflowTestUtil workflowTestUtil
+ * {@literal @}Autowired
+ * WorkflowTestUtil workflowTestUtil
  * </code>
  */
-@Singleton
+@Component
 class WorkflowTestUtil {
 
     private final MetadataService metadataService
     private final ExecutionService workflowExecutionService
     private final WorkflowExecutor workflowExecutor
     private final QueueDAO queueDAO
+    private final ObjectMapper objectMapper
     private static final int RETRY_COUNT = 1
     private static final String TEMP_FILE_PATH = "/input.json"
+    private static final String DEFAULT_EMAIL_ADDRESS = "test@harness.com"
 
-    @Inject
+    @Autowired
     WorkflowTestUtil(MetadataService metadataService, ExecutionService workflowExecutionService,
-                     WorkflowExecutor workflowExecutor, QueueDAO queueDAO) {
+                     WorkflowExecutor workflowExecutor, QueueDAO queueDAO, ObjectMapper objectMapper) {
         this.metadataService = metadataService
         this.workflowExecutionService = workflowExecutionService
         this.workflowExecutor = workflowExecutor
         this.queueDAO = queueDAO
+        this.objectMapper = objectMapper
     }
 
     /**
@@ -80,15 +81,15 @@ class WorkflowTestUtil {
 
         (0..20).collect { "integration_task_$it" }
                 .findAll { !getPersistedTaskDefinition(it).isPresent() }
-                .collect { new TaskDef(it, it, 1, 120) }
+                .collect { new TaskDef(it, it, DEFAULT_EMAIL_ADDRESS, 1, 120, 120) }
                 .forEach { metadataService.registerTaskDef([it]) }
 
         (0..4).collect { "integration_task_0_RT_$it" }
                 .findAll { !getPersistedTaskDefinition(it).isPresent() }
-                .collect { new TaskDef(it, it, 0, 120) }
+                .collect { new TaskDef(it, it, DEFAULT_EMAIL_ADDRESS, 0, 120, 120) }
                 .forEach { metadataService.registerTaskDef([it]) }
 
-        metadataService.registerTaskDef([new TaskDef('short_time_out', 'short_time_out', 1, 5)])
+        metadataService.registerTaskDef([new TaskDef('short_time_out', 'short_time_out', DEFAULT_EMAIL_ADDRESS, 1, 5, 5)])
 
         //This taskWithResponseTimeOut is required by the integration test which exercises the response time out scenarios
         TaskDef taskWithResponseTimeOut = new TaskDef()
@@ -97,6 +98,7 @@ class WorkflowTestUtil {
         taskWithResponseTimeOut.retryCount = RETRY_COUNT
         taskWithResponseTimeOut.retryDelaySeconds = 0
         taskWithResponseTimeOut.responseTimeoutSeconds = 10
+        taskWithResponseTimeOut.ownerEmail = DEFAULT_EMAIL_ADDRESS
 
         TaskDef optionalTask = new TaskDef()
         optionalTask.setName("task_optional")
@@ -104,49 +106,61 @@ class WorkflowTestUtil {
         optionalTask.setRetryCount(1)
         optionalTask.setTimeoutPolicy(TaskDef.TimeoutPolicy.RETRY)
         optionalTask.setRetryDelaySeconds(0)
+        optionalTask.setResponseTimeoutSeconds(5)
+        optionalTask.setOwnerEmail(DEFAULT_EMAIL_ADDRESS)
 
         TaskDef simpleSubWorkflowTask = new TaskDef()
         simpleSubWorkflowTask.setName('simple_task_in_sub_wf')
         simpleSubWorkflowTask.setRetryCount(0)
+        simpleSubWorkflowTask.setOwnerEmail(DEFAULT_EMAIL_ADDRESS)
 
         TaskDef subWorkflowTask = new TaskDef()
         subWorkflowTask.setName('sub_workflow_task')
         subWorkflowTask.setRetryCount(1)
         subWorkflowTask.setResponseTimeoutSeconds(5)
         subWorkflowTask.setRetryDelaySeconds(0)
+        subWorkflowTask.setOwnerEmail(DEFAULT_EMAIL_ADDRESS)
 
         TaskDef waitTimeOutTask = new TaskDef()
         waitTimeOutTask.name = 'waitTimeout'
         waitTimeOutTask.timeoutSeconds = 2
+        waitTimeOutTask.responseTimeoutSeconds = 2
         waitTimeOutTask.retryCount = 1
         waitTimeOutTask.timeoutPolicy = TaskDef.TimeoutPolicy.RETRY
         waitTimeOutTask.retryDelaySeconds = 10
+        waitTimeOutTask.ownerEmail = DEFAULT_EMAIL_ADDRESS
 
         TaskDef userTask = new TaskDef()
         userTask.setName("user_task")
         userTask.setTimeoutSeconds(20)
+        userTask.setResponseTimeoutSeconds(20)
         userTask.setRetryCount(1)
         userTask.setTimeoutPolicy(TaskDef.TimeoutPolicy.RETRY)
         userTask.setRetryDelaySeconds(10)
-
+        userTask.setOwnerEmail(DEFAULT_EMAIL_ADDRESS)
 
         TaskDef concurrentExecutionLimitedTask = new TaskDef()
         concurrentExecutionLimitedTask.name = "test_task_with_concurrency_limit"
         concurrentExecutionLimitedTask.concurrentExecLimit = 1
+        concurrentExecutionLimitedTask.ownerEmail = DEFAULT_EMAIL_ADDRESS
 
         TaskDef rateLimitedTask = new TaskDef()
         rateLimitedTask.name = 'test_task_with_rateLimits'
         rateLimitedTask.rateLimitFrequencyInSeconds = 10
         rateLimitedTask.rateLimitPerFrequency = 1
+        rateLimitedTask.ownerEmail = DEFAULT_EMAIL_ADDRESS
 
         TaskDef rateLimitedSimpleTask = new TaskDef()
         rateLimitedSimpleTask.name = 'test_simple_task_with_rateLimits'
         rateLimitedSimpleTask.rateLimitFrequencyInSeconds = 10
         rateLimitedSimpleTask.rateLimitPerFrequency = 1
+        rateLimitedSimpleTask.ownerEmail = DEFAULT_EMAIL_ADDRESS
 
         TaskDef eventTaskX = new TaskDef()
         eventTaskX.name = 'eventX'
         eventTaskX.timeoutSeconds = 1
+        eventTaskX.responseTimeoutSeconds = 1
+        eventTaskX.ownerEmail = DEFAULT_EMAIL_ADDRESS
 
         metadataService.registerTaskDef(
                 [taskWithResponseTimeOut, optionalTask, simpleSubWorkflowTask,
@@ -169,7 +183,7 @@ class WorkflowTestUtil {
             int version = Integer.parseInt(StringUtils.substringAfter(workflowWithVersion, ":"))
             List<String> running = workflowExecutionService.getRunningWorkflows(workflowName, version)
             for (String workflowId : running) {
-                Workflow workflow = workflowExecutor.getWorkflow(workflowId, false)
+                WorkflowModel workflow = workflowExecutor.getWorkflow(workflowId, false)
                 if (!workflow.getStatus().isTerminal()) {
                     workflowExecutor.terminateWorkflow(workflowId, "cleanup")
                 }
@@ -200,12 +214,17 @@ class WorkflowTestUtil {
     }
 
     /**
-     * A helper methods that registers that workflows based on the paths of the json file representing a workflow definition
+     * A helper methods that registers workflows based on the paths of the json file representing a workflow definition
      * @param workflowJsonPaths a comma separated var ags of the paths of the workflow definitions
      */
     void registerWorkflows(String... workflowJsonPaths) {
-        workflowJsonPaths.collect { JsonUtils.fromJson(it, WorkflowDef.class) }
+        workflowJsonPaths.collect { readFile(it) }
                 .forEach { metadataService.updateWorkflowDef(it) }
+    }
+
+    WorkflowDef readFile(String path) {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)
+        return objectMapper.readValue(inputStream, WorkflowDef.class)
     }
 
     /**
@@ -217,19 +236,20 @@ class WorkflowTestUtil {
      * @param failureReason the reason to fail the task that will added to the task update
      * @param outputParams An optional output parameters if available will be added to the task before updating to failed
      * @param waitAtEndSeconds an optional delay before the method returns, if the value is 0 skips the delay
-     * @return A Tuple of polledTask and acknowledgement of the poll
+     * @return A Tuple of taskResult and acknowledgement of the poll
      */
     Tuple pollAndFailTask(String taskName, String workerId, String failureReason, Map<String, Object> outputParams = null, int waitAtEndSeconds = 0) {
         def polledIntegrationTask = workflowExecutionService.poll(taskName, workerId)
         def ackPolledIntegrationTask = workflowExecutionService.ackTaskReceived(polledIntegrationTask.taskId)
-        polledIntegrationTask.status = Task.Status.FAILED
-        polledIntegrationTask.reasonForIncompletion = failureReason
+        def taskResult = new TaskResult(polledIntegrationTask)
+        taskResult.status = TaskResult.Status.FAILED
+        taskResult.reasonForIncompletion = failureReason
         if (outputParams) {
             outputParams.forEach { k, v ->
-                polledIntegrationTask.outputData[k] = v
+                taskResult.outputData[k] = v
             }
         }
-        workflowExecutionService.updateTask(polledIntegrationTask)
+        workflowExecutionService.updateTask(taskResult)
         return waitAtEndSecondsAndReturn(waitAtEndSeconds, polledIntegrationTask, ackPolledIntegrationTask)
     }
 
@@ -237,7 +257,7 @@ class WorkflowTestUtil {
      * A helper method to introduce delay and convert the polledIntegrationTask and ackPolledIntegrationTask
      * into a tuple. This method is intended to be used by pollAndFailTask and pollAndCompleteTask
      * @param waitAtEndSeconds The total seconds of delay before the method returns
-     * @param polledIntegrationTask  instance of polled task
+     * @param ackedTaskResult the task result created after ack
      * @param ackPolledIntegrationTask a acknowledgement of a poll
      * @return A Tuple of polledTask and acknowledgement of the poll
      */
@@ -264,35 +284,36 @@ class WorkflowTestUtil {
             return new Tuple(null, null)
         }
         def ackPolledIntegrationTask = workflowExecutionService.ackTaskReceived(polledIntegrationTask.taskId)
-        polledIntegrationTask.status = COMPLETED
+        def taskResult = new TaskResult(polledIntegrationTask)
+        taskResult.status = TaskResult.Status.COMPLETED
         if (outputParams) {
             outputParams.forEach { k, v ->
-                polledIntegrationTask.outputData[k] = v
+                taskResult.outputData[k] = v
             }
         }
-        workflowExecutionService.updateTask(polledIntegrationTask)
+        workflowExecutionService.updateTask(taskResult)
         return waitAtEndSecondsAndReturn(waitAtEndSeconds, polledIntegrationTask, ackPolledIntegrationTask)
     }
 
     Tuple pollAndCompleteLargePayloadTask(String taskName, String workerId, String outputPayloadPath) {
         def polledIntegrationTask = workflowExecutionService.poll(taskName, workerId)
         def ackPolledIntegrationTask = workflowExecutionService.ackTaskReceived(polledIntegrationTask.taskId)
-        polledIntegrationTask.status = COMPLETED
-        polledIntegrationTask.outputData = null
-        polledIntegrationTask.externalOutputPayloadStoragePath = outputPayloadPath
-        polledIntegrationTask.status = COMPLETED
-        workflowExecutionService.updateTask(polledIntegrationTask)
+        def taskResult = new TaskResult(polledIntegrationTask)
+        taskResult.status = TaskResult.Status.COMPLETED
+        taskResult.outputData = null
+        taskResult.externalOutputPayloadStoragePath = outputPayloadPath
+        workflowExecutionService.updateTask(taskResult)
         return new Tuple(polledIntegrationTask, ackPolledIntegrationTask)
     }
 
     /**
      * A helper method intended to be used in the <tt>then:</tt> block of the spock test feature, ideally intended to be called after either:
-     * pollAndCompleteTask function or  pollAndFailTask function
+     * pollAndCompleteTask function or pollAndFailTask function
      * @param completedTaskAndAck A Tuple of polledTask and acknowledgement of the poll
      * @param expectedTaskInputParams a map of input params that are verified against the polledTask that is part of the completedTaskAndAck tuple
      */
     static void verifyPolledAndAcknowledgedTask(Tuple completedTaskAndAck, Map<String, String> expectedTaskInputParams = null) {
-        assert completedTaskAndAck[0] : "The task polled cannot be null"
+        assert completedTaskAndAck[0]: "The task polled cannot be null"
         def polledIntegrationTask = completedTaskAndAck[0] as Task
         def ackPolledIntegrationTask = completedTaskAndAck[1] as boolean
         assert polledIntegrationTask
@@ -307,7 +328,7 @@ class WorkflowTestUtil {
     }
 
     static void verifyPolledAndAcknowledgedLargePayloadTask(Tuple completedTaskAndAck) {
-        assert completedTaskAndAck[0] : "The task polled cannot be null"
+        assert completedTaskAndAck[0]: "The task polled cannot be null"
         def polledIntegrationTask = completedTaskAndAck[0] as Task
         def ackPolledIntegrationTask = completedTaskAndAck[1] as boolean
         assert polledIntegrationTask

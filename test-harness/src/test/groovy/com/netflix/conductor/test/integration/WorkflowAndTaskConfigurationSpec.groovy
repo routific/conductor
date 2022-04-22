@@ -1,70 +1,45 @@
 /*
- * Copyright 2020 Netflix, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2022 Netflix, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package com.netflix.conductor.test.integration
+
+import org.springframework.beans.factory.annotation.Autowired
 
 import com.netflix.conductor.common.metadata.tasks.Task
 import com.netflix.conductor.common.metadata.tasks.TaskDef
 import com.netflix.conductor.common.metadata.tasks.TaskResult
+import com.netflix.conductor.common.metadata.tasks.TaskType
 import com.netflix.conductor.common.metadata.workflow.RerunWorkflowRequest
-import com.netflix.conductor.common.metadata.workflow.TaskType
 import com.netflix.conductor.common.metadata.workflow.WorkflowDef
 import com.netflix.conductor.common.metadata.workflow.WorkflowTask
 import com.netflix.conductor.common.run.Workflow
-import com.netflix.conductor.core.execution.WorkflowExecutor
-import com.netflix.conductor.core.execution.WorkflowRepairService
-import com.netflix.conductor.core.execution.WorkflowSweeper
+import com.netflix.conductor.core.utils.Utils
 import com.netflix.conductor.dao.QueueDAO
-import com.netflix.conductor.service.ExecutionService
-import com.netflix.conductor.service.MetadataService
-import com.netflix.conductor.test.util.WorkflowTestUtil
-import com.netflix.conductor.tests.utils.TestModule
-import com.netflix.governator.guice.test.ModulesForTesting
-import spock.lang.Shared
-import spock.lang.Specification
+import com.netflix.conductor.test.base.AbstractSpecification
 
-import javax.inject.Inject
+import spock.lang.Shared
 
 import static com.netflix.conductor.test.util.WorkflowTestUtil.verifyPolledAndAcknowledgedTask
 
-@ModulesForTesting([TestModule.class])
-class WorkflowAndTaskConfigurationSpec extends Specification {
+class WorkflowAndTaskConfigurationSpec extends AbstractSpecification {
 
-    @Inject
-    ExecutionService workflowExecutionService
-
-    @Inject
-    MetadataService metadataService
-
-    @Inject
-    WorkflowExecutor workflowExecutor
-
-    @Inject
-    WorkflowSweeper workflowSweeper
-
-    @Inject
-    WorkflowRepairService workflowRepairService
-
-    @Inject
-    WorkflowTestUtil workflowTestUtil
-
-    @Inject
+    @Autowired
     QueueDAO queueDAO
 
     @Shared
     def LINEAR_WORKFLOW_T1_T2 = 'integration_test_wf'
+
+    @Shared
+    def TEMPLATED_LINEAR_WORKFLOW = 'integration_test_template_wf'
 
     @Shared
     def WORKFLOW_WITH_OPTIONAL_TASK = 'optional_task_wf'
@@ -79,13 +54,10 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         //Register LINEAR_WORKFLOW_T1_T2, TEST_WORKFLOW, RTOWF, WORKFLOW_WITH_OPTIONAL_TASK
         workflowTestUtil.registerWorkflows(
                 'simple_workflow_1_integration_test.json',
+                'simple_workflow_1_input_template_integration_test.json',
                 'simple_workflow_3_integration_test.json',
                 'simple_workflow_with_optional_task_integration_test.json',
                 'simple_wait_task_workflow_integration_test.json')
-    }
-
-    def cleanup() {
-        workflowTestUtil.clearWorkflows()
     }
 
     def "Test simple workflow which has an optional task"() {
@@ -160,12 +132,39 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         }
     }
 
+    def "test workflow with input template parsing"() {
+        given: "Input parameters for a workflow with input template"
+        def correlationId = 'integration_test' + UUID.randomUUID().toString()
+        def workflowInput = new HashMap()
+        // leave other params blank on purpose to test input templates
+        workflowInput['param3'] = 'external string'
+
+        when: "Is executed and completes"
+        def workflowInstanceId = workflowExecutor.startWorkflow(TEMPLATED_LINEAR_WORKFLOW, 1,
+                correlationId, workflowInput,
+                null, null, null)
+        workflowExecutor.decide(workflowInstanceId)
+        def pollAndCompleteTask1Try1 = workflowTestUtil.pollAndCompleteTask('integration_task_1', 'task1.integration.worker', ['op': 'task1.done'])
+
+        then: "Verify that input template is processed"
+        verifyPolledAndAcknowledgedTask(pollAndCompleteTask1Try1)
+        with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
+            status == Workflow.WorkflowStatus.COMPLETED
+            output == [
+                    output: "task1.done",
+                    param3: 'external string',
+                    param2: ['list', 'of', 'strings'],
+                    param1: [nested_object: [nested_key: "nested_value"]]
+            ]
+        }
+    }
+
     def "Test simple workflow with task time out configuration"() {
 
         setup: "Register a task definition with retry policy on time out"
         def persistedTask1Definition = workflowTestUtil.getPersistedTaskDefinition('integration_task_1').get()
         def modifiedTaskDefinition = new TaskDef(persistedTask1Definition.name, persistedTask1Definition.description,
-                1, 1)
+                persistedTask1Definition.ownerEmail, 1, 1, 1)
         modifiedTaskDefinition.retryDelaySeconds = 0
         modifiedTaskDefinition.timeoutPolicy = TaskDef.TimeoutPolicy.RETRY
         metadataService.updateTaskDef(modifiedTaskDefinition)
@@ -191,7 +190,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         }
 
         and: "The decider queue has one task that is ready to be polled"
-        queueDAO.getSize(WorkflowExecutor.DECIDER_QUEUE) == 1
+        queueDAO.getSize(Utils.DECIDER_QUEUE) == 1
 
         when: "The the first task 'integration_task_1' is polled and acknowledged"
         def task1Try1 = workflowExecutionService.poll('integration_task_1', 'task1.worker')
@@ -203,11 +202,11 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         task1Try1Acknowledgment
 
         and: "Ensure that the decider size queue is 1 to to enable the evaluation"
-        queueDAO.getSize(WorkflowExecutor.DECIDER_QUEUE) == 1
+        queueDAO.getSize(Utils.DECIDER_QUEUE) == 1
 
         when: "There is a delay of 3 seconds introduced and the workflow is sweeped to run the evaluation"
         Thread.sleep(3000)
-        workflowSweeper.sweep([workflowInstanceId], workflowExecutor, workflowRepairService)
+        sweep(workflowInstanceId)
 
         then: "Ensure that the first task has been TIMED OUT and the next task is SCHEDULED"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
@@ -230,7 +229,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
 
         when: "There is a delay of 3 seconds introduced and the workflow is swept to run the evaluation"
         Thread.sleep(3000)
-        workflowSweeper.sweep([workflowInstanceId], workflowExecutor, workflowRepairService)
+        sweep(workflowInstanceId)
 
         then: "Ensure that the first task has been TIMED OUT and the next task is SCHEDULED"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
@@ -284,7 +283,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
 
         when: "There is a delay of 6 seconds introduced and the workflow is swept to run the evaluation"
         Thread.sleep(6000)
-        workflowSweeper.sweep([workflowInstanceId], workflowExecutor, workflowRepairService)
+        sweep(workflowInstanceId)
 
         then: "Ensure that the workflow has timed out"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
@@ -336,7 +335,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
 
         when: "There is a delay of 6 seconds introduced and the workflow is swept to run the evaluation"
         Thread.sleep(6000)
-        workflowSweeper.sweep([workflowInstanceId], workflowExecutor, workflowRepairService)
+        sweep(workflowInstanceId)
 
         then: "Ensure that the workflow has timed out"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
@@ -348,7 +347,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         }
 
         when: "Retrying the workflow"
-        workflowExecutor.retry(workflowInstanceId)
+        workflowExecutor.retry(workflowInstanceId, false)
 
         then: "Ensure that the workflow is RUNNING and task is retried"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
@@ -358,6 +357,74 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
             tasks[0].taskType == 'integration_task_1'
             tasks[0].status == Task.Status.CANCELED
             tasks[1].taskType == 'integration_task_1'
+            tasks[1].status == Task.Status.SCHEDULED
+        }
+
+        cleanup: "Ensure that the workflow configuration changes are reverted"
+        testWorkflowDefinition.timeoutPolicy = WorkflowDef.TimeoutPolicy.ALERT_ONLY
+        testWorkflowDefinition.timeoutSeconds = 0
+        metadataService.updateWorkflowDef(testWorkflowDefinition)
+    }
+
+    def "Test retrying a timed out workflow due to workflow timeout without unsuccessful tasks"() {
+        setup: "Get the workflow definition and change the workflow configuration"
+        def testWorkflowDefinition = metadataService.getWorkflowDef(TEST_WORKFLOW, 1)
+        testWorkflowDefinition.timeoutPolicy = WorkflowDef.TimeoutPolicy.TIME_OUT_WF
+        testWorkflowDefinition.timeoutSeconds = 5
+        metadataService.updateWorkflowDef(testWorkflowDefinition)
+
+        when: "A simple workflow is started that has a workflow timeout configured"
+        String correlationId = 'retry_timeout_wf'
+        def input = new HashMap()
+        String inputParam1 = 'p1 value'
+        input['param1'] = inputParam1
+        input['param2'] = 'p2 value'
+
+        def workflowInstanceId = workflowExecutor.startWorkflow(TEST_WORKFLOW, 1,
+                correlationId, input, null, null, null)
+
+        then: "Ensure that the workflow has started"
+        with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
+            status == Workflow.WorkflowStatus.RUNNING
+            tasks.size() == 1
+            tasks[0].taskType == 'integration_task_1'
+            tasks[0].status == Task.Status.SCHEDULED
+        }
+
+        when: "The the first task 'integration_task_1' is polled and acknowledged"
+        def task1 = workflowExecutionService.poll('integration_task_1', 'task1.worker')
+        def task1Ack = workflowExecutionService.ackTaskReceived(task1)
+
+        then: "Ensure that a task was polled"
+        task1
+        task1.workflowInstanceId == workflowInstanceId
+        task1Ack
+
+        when: "There is a delay of 6 seconds introduced and the task is completed"
+        Thread.sleep(6000)
+        task1.status = Task.Status.COMPLETED
+        workflowExecutor.updateTask(new TaskResult(task1))
+
+        then: "verify that the workflow is TIMED_OUT and the task is COMPLETED"
+        with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
+            status == Workflow.WorkflowStatus.TIMED_OUT
+            tasks.size() == 1
+            tasks[0].taskType == 'integration_task_1'
+            tasks[0].status == Task.Status.COMPLETED
+        }
+
+        when: "Retrying the workflow"
+        workflowExecutor.retry(workflowInstanceId, false)
+        sweep(workflowInstanceId)
+
+        then: "Ensure that the workflow is RUNNING and next task is scheduled"
+        with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
+            status == Workflow.WorkflowStatus.RUNNING
+            lastRetriedTime != 0
+            tasks.size() == 2
+            tasks[0].taskType == 'integration_task_1'
+            tasks[0].status == Task.Status.COMPLETED
+            tasks[1].taskType == 'integration_task_2'
             tasks[1].status == Task.Status.SCHEDULED
         }
 
@@ -647,7 +714,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
     }
 
     def "Test wait time out task based simple workflow"() {
-        when: "Start a workflow based on a task that has a registered wiat time out"
+        when: "Start a workflow based on a task that has a registered wait time out"
         def workflowInstanceId = workflowExecutor.startWorkflow(WAIT_TIME_OUT_WORKFLOW, 1,
                 '', [:], null, null, null)
 
@@ -731,7 +798,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         def task1Try1 = workflowExecutionService.poll('integration_task_1', 'task1.worker')
         task1Try1.status = Task.Status.IN_PROGRESS
         task1Try1.callbackAfterSeconds = 2L
-        workflowExecutionService.updateTask(task1Try1)
+        workflowExecutionService.updateTask(new TaskResult(task1Try1))
 
         then: "verify that the workflow is in running state and the task is in SCHEDULED"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
@@ -778,7 +845,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         def task2Try1 = workflowExecutionService.poll('integration_task_2', 'task2.worker')
         task2Try1.status = Task.Status.IN_PROGRESS
         task2Try1.callbackAfterSeconds = 5L
-        workflowExecutionService.updateTask(task2Try1)
+        workflowExecutionService.updateTask(new TaskResult(task2Try1))
 
         then: "Verify that the workflow is in running state and the task is in scheduled state"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
@@ -846,6 +913,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         body['outputPath'] = '${workflow.input.outputPath}'
         httpRequest['body'] = body
         templatedTask.inputTemplate['http_request'] = httpRequest
+        templatedTask.ownerEmail = "test@harness.com"
         metadataService.registerTaskDef(Arrays.asList(templatedTask))
 
         and: "set a system property for STACK2"
@@ -861,6 +929,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         templateWorkflowDef.setName("template_workflow")
         templateWorkflowDef.getTasks().add(workflowTask)
         templateWorkflowDef.setSchemaVersion(2)
+        templateWorkflowDef.setOwnerEmail("test@harness.com")
         metadataService.registerWorkflowDef(templateWorkflowDef)
 
         and: "the input to the workflow is curated"
@@ -868,7 +937,7 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
         requestDetails['key1'] = 'value1'
         requestDetails['key2'] = 42
 
-        def input = new HashMap<>()
+        Map<String, Object> input = new HashMap<>()
         input['path1'] = 'file://path1'
         input['path2'] = 'file://path2'
         input['outputPath'] = 's3://bucket/outputPath'
@@ -896,5 +965,4 @@ class WorkflowAndTaskConfigurationSpec extends Specification {
             tasks[0].inputData.get('http_request')['uri'] == '/get/something'
         }
     }
-
 }
