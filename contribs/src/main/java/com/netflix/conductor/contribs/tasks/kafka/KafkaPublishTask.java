@@ -65,6 +65,8 @@ public class KafkaPublishTask extends WorkflowSystemTask {
     private final ObjectMapper objectMapper;
     private final String requestParameter;
     private final KafkaProducerManager producerManager;
+    private String defaultBootStrapServer;
+    private final String topicNamespace;
 
     @Autowired
     public KafkaPublishTask(KafkaProducerManager clientManager, ObjectMapper objectMapper) {
@@ -72,6 +74,8 @@ public class KafkaPublishTask extends WorkflowSystemTask {
         this.requestParameter = REQUEST_PARAMETER_NAME;
         this.producerManager = clientManager;
         this.objectMapper = objectMapper;
+        this.defaultBootStrapServer = clientManager.getBootstrapServers();
+        this.topicNamespace = clientManager.getTopicNamespace();
         LOGGER.info("KafkaTask initialized.");
     }
 
@@ -90,8 +94,12 @@ public class KafkaPublishTask extends WorkflowSystemTask {
         Input input = objectMapper.convertValue(request, Input.class);
 
         if (StringUtils.isBlank(input.getBootStrapServers())) {
-            markTaskAsFailed(task, MISSING_BOOT_STRAP_SERVERS);
-            return;
+            if (!StringUtils.isBlank(this.defaultBootStrapServer)) {
+                input.setBootStrapServers(this.defaultBootStrapServer);
+            } else {
+                markTaskAsFailed(task, MISSING_BOOT_STRAP_SERVERS);
+                return;
+            }
         }
 
         if (StringUtils.isBlank(input.getTopic())) {
@@ -165,7 +173,7 @@ public class KafkaPublishTask extends WorkflowSystemTask {
                         .collect(Collectors.toList());
         ProducerRecord rec =
                 new ProducerRecord(
-                        input.getTopic(),
+                        topicNamespace + input.getTopic(),
                         null,
                         null,
                         key,

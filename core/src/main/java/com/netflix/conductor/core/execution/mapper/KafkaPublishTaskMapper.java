@@ -86,7 +86,7 @@ public class KafkaPublishTaskMapper implements TaskMapper {
         kafkaPublishTask.setRetryCount(retryCount);
 
         Object inputStartDelay = input.get("startDelay");
-        if(!Objects.isNull(inputStartDelay)) {
+        if (!Objects.isNull(inputStartDelay)) {
             kafkaPublishTask.setCallbackAfterSeconds(((Number) inputStartDelay).longValue());
         } else {
             kafkaPublishTask.setCallbackAfterSeconds(workflowTask.getStartDelay());

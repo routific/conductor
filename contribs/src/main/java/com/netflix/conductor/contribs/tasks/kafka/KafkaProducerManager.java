@@ -19,9 +19,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,15 @@ public class KafkaProducerManager {
     private final String requestTimeoutConfig;
     private final Cache<Properties, Producer> kafkaProducerCache;
     private final String maxBlockMsConfig;
+    private String topicNamespace = "";
+    private String bootstrapServers;
+    private String securityProtocol;
+    private String saslMechanism;
+    private String saslUsername;
+    private String saslPassword;
+    private String jaasTemplate;
+    private String sslTrustStorePath;
+    private String sslTrustStorePassword;
 
     private static final String STRING_SERIALIZER =
             "org.apache.kafka.common.serialization.StringSerializer";
@@ -58,9 +70,30 @@ public class KafkaProducerManager {
             @Value("${conductor.tasks.kafka-publish.requestTimeout:100ms}") Duration requestTimeout,
             @Value("${conductor.tasks.kafka-publish.maxBlock:500ms}") Duration maxBlock,
             @Value("${conductor.tasks.kafka-publish.cacheSize:10}") int cacheSize,
-            @Value("${conductor.tasks.kafka-publish.cacheTime:120000ms}") Duration cacheTime) {
+            @Value("${conductor.tasks.kafka-publish.cacheTime:120000ms}") Duration cacheTime,
+            @Value("${conductor.tasks.kafka-publish.bootstrapServers:localhost:9092}")
+                    String bootstrapServers,
+            @Value("${conductor.tasks.kafka-publish.securityProtocol:SASL_SSL}")
+                    String securityProtocol,
+            @Value("${conductor.tasks.kafka-publish.saslMechanism:PLAIN}") String saslMechanism,
+            @Value("${conductor.tasks.kafka-publish.saslUsername}") String saslUsername,
+            @Value("${conductor.tasks.kafka-publish.saslPassword") String saslPassword,
+            @Value("${conductor.tasks.kafka-publish.jaasTemplate") String jaasTemplate,
+            @Value("${conductor.tasks.kafka-publish.topicNamespace}") String topicNamespace,
+            @Value("${conductor.tasks.kafka-publish.trustStorePath}") String trustStorePath,
+            @Value("${conductor.tasks.kafka-publish.trustStorePassword}")
+                    String trustStorePassword) {
         this.requestTimeoutConfig = String.valueOf(requestTimeout.toMillis());
         this.maxBlockMsConfig = String.valueOf(maxBlock.toMillis());
+        this.securityProtocol = securityProtocol;
+        this.topicNamespace = topicNamespace;
+        this.bootstrapServers = bootstrapServers;
+        this.saslMechanism = saslMechanism;
+        this.saslUsername = saslUsername;
+        this.saslPassword = saslPassword;
+        this.jaasTemplate = jaasTemplate;
+        this.sslTrustStorePath = trustStorePath;
+        this.sslTrustStorePassword = trustStorePassword;
         this.kafkaProducerCache =
                 CacheBuilder.newBuilder()
                         .removalListener(LISTENER)
@@ -72,6 +105,14 @@ public class KafkaProducerManager {
     public Producer getProducer(KafkaPublishTask.Input input) {
         Properties configProperties = getProducerProperties(input);
         return getFromCache(configProperties, () -> new KafkaProducer(configProperties));
+    }
+
+    public String getTopicNamespace() {
+        return this.topicNamespace;
+    }
+
+    public String getBootstrapServers() {
+        return this.bootstrapServers;
     }
 
     @VisibleForTesting
@@ -106,6 +147,26 @@ public class KafkaProducerManager {
         configProperties.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, requestTimeoutMs);
         configProperties.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, maxBlockMs);
         configProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, STRING_SERIALIZER);
+
+        if (Objects.nonNull(securityProtocol)) {
+            configProperties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
+            configProperties.put(SaslConfigs.SASL_MECHANISM, saslMechanism);
+            configProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+            configProperties.put(
+                    SaslConfigs.SASL_JAAS_CONFIG,
+                    jaasTemplate
+                            + " required username=\""
+                            + saslUsername
+                            + "\" password=\""
+                            + saslPassword
+                            + "\";");
+        }
+
+        if (!sslTrustStorePath.isEmpty()) {
+            configProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, sslTrustStorePath);
+            configProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTrustStorePassword);
+        }
+
         return configProperties;
     }
 }

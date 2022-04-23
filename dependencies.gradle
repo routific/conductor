@@ -43,7 +43,7 @@ ext {
     revJsonPath = '2.4.0'
     revJq = '0.0.13'
     revJsr311Api = '1.1.1'
-    revKafka = '2.6.0'
+    revKafka = '3.1.0'
     revMicrometer = '1.6.2'
     revMockServerClient = '5.11.2'
     revNatsStreaming = '0.5.0'
