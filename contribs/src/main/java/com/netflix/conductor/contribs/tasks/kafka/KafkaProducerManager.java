@@ -52,8 +52,8 @@ public class KafkaProducerManager {
     private String saslUsername;
     private String saslPassword;
     private String jaasTemplate;
-    private String sslTrustStorePath;
-    private String sslTrustStorePassword;
+    private String sslTruststorePath;
+    private String sslTruststorePassword;
 
     private static final String STRING_SERIALIZER =
             "org.apache.kafka.common.serialization.StringSerializer";
@@ -76,13 +76,13 @@ public class KafkaProducerManager {
             @Value("${conductor.tasks.kafka-publish.securityProtocol:SASL_SSL}")
                     String securityProtocol,
             @Value("${conductor.tasks.kafka-publish.saslMechanism:PLAIN}") String saslMechanism,
-            @Value("${conductor.tasks.kafka-publish.saslUsername}") String saslUsername,
-            @Value("${conductor.tasks.kafka-publish.saslPassword") String saslPassword,
-            @Value("${conductor.tasks.kafka-publish.jaasTemplate") String jaasTemplate,
-            @Value("${conductor.tasks.kafka-publish.topicNamespace}") String topicNamespace,
-            @Value("${conductor.tasks.kafka-publish.trustStorePath}") String trustStorePath,
-            @Value("${conductor.tasks.kafka-publish.trustStorePassword}")
-                    String trustStorePassword) {
+            @Value("${conductor.tasks.kafka-publish.saslUsername:#{null}}") String saslUsername,
+            @Value("${conductor.tasks.kafka-publish.saslPassword:#{null}") String saslPassword,
+            @Value("${conductor.tasks.kafka-publish.jaasTemplate:#{null}") String jaasTemplate,
+            @Value("${conductor.tasks.kafka-publish.topicNamespace:#{null}}") String topicNamespace,
+            @Value("${conductor.tasks.kafka-publish.truststorePath:#{null}}") String truststorePath,
+            @Value("${conductor.tasks.kafka-publish.truststorePassword:#{null}}")
+                    String truststorePassword) {
         this.requestTimeoutConfig = String.valueOf(requestTimeout.toMillis());
         this.maxBlockMsConfig = String.valueOf(maxBlock.toMillis());
         this.securityProtocol = securityProtocol;
@@ -92,8 +92,8 @@ public class KafkaProducerManager {
         this.saslUsername = saslUsername;
         this.saslPassword = saslPassword;
         this.jaasTemplate = jaasTemplate;
-        this.sslTrustStorePath = trustStorePath;
-        this.sslTrustStorePassword = trustStorePassword;
+        this.sslTruststorePath = truststorePath;
+        this.sslTruststorePassword = truststorePassword;
         this.kafkaProducerCache =
                 CacheBuilder.newBuilder()
                         .removalListener(LISTENER)
@@ -162,9 +162,9 @@ public class KafkaProducerManager {
                             + "\";");
         }
 
-        if (!sslTrustStorePath.isEmpty()) {
-            configProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, sslTrustStorePath);
-            configProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTrustStorePassword);
+        if (!sslTruststorePath.isEmpty()) {
+            configProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, sslTruststorePath);
+            configProperties.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTruststorePassword);
         }
 
         return configProperties;

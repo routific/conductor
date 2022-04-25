@@ -97,7 +97,8 @@ public class KafkaObservableQueue implements ObservableQueue {
 
     private final String securityProtocol;
 
-    private final String trustStorePath;
+    private final String truststorePath;
+    private final String truststorePassword;
 
     private List<KafkaConsumer<String, String>> consumers;
 
@@ -116,7 +117,8 @@ public class KafkaObservableQueue implements ObservableQueue {
         this.pollIntervalInMs = properties.getPollIntervalInMs();
         this.pollTimeoutInMs = properties.getPollTimeoutInMs();
         this.securityProtocol = properties.getSecurityProtocol();
-        this.trustStorePath = properties.getTrustStorePath();
+        this.truststorePath = properties.getTruststorePath();
+        this.truststorePassword = properties.getTruststorePassword();
         // this.autoOffset = properties.getAutoOffsetReset();
         this.autoCommit = properties.getAutoCommit();
         this.saslMechanismConfig = properties.getSaslMechanism();
@@ -174,12 +176,10 @@ public class KafkaObservableQueue implements ObservableQueue {
                 consumerProperties.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
             }
 
-            if (!trustStorePath.isEmpty()) {
+            if (!truststorePath.isEmpty()) {
+                consumerProperties.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, truststorePath);
                 consumerProperties.put(
-                        SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, properties.getTrustStorePath());
-                consumerProperties.put(
-                        SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
-                        properties.getTrustStorePassword());
+                        SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, truststorePassword);
             }
 
             checkConsumerProps(consumerProperties);

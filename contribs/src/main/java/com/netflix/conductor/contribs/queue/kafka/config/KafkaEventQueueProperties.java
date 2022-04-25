@@ -16,8 +16,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("conductor.event-queues.kafka")
 public class KafkaEventQueueProperties {
-    private String trustStorePath;
-    private String trustStorePassword;
+    private String truststorePath;
+    private String truststorePassword;
 
     private String bootstrapServers = "localhost:9092";
     private String securityProtocol = "SASL_SSL";
@@ -34,12 +34,20 @@ public class KafkaEventQueueProperties {
     private boolean autoOffsetReset = false;
     private boolean autoCommit = false;
 
-    public String getTrustStorePath() {
-        return trustStorePath;
+    public String getTruststorePath() {
+        return truststorePath;
     }
 
-    public String getTrustStorePassword() {
-        return trustStorePassword;
+    public void setTruststorePath(String truststorePath) {
+        this.truststorePath = truststorePath;
+    }
+
+    public String getTruststorePassword() {
+        return truststorePassword;
+    }
+
+    public void setTruststorePassword(String truststorePassword) {
+        this.truststorePassword = truststorePassword;
     }
 
     public String getBootstrapServers() {
