@@ -76,9 +76,6 @@
         "com.netflix.conductor:conductor-core": {
             "project": true
         },
-        "com.netflix.conductor:conductor-es6-persistence": {
-            "project": true
-        },
         "com.netflix.conductor:conductor-es7-persistence": {
             "project": true
         },
@@ -255,16 +252,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7"
+            "locked": "1.6.8"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -301,7 +298,6 @@
         "org.springframework.boot:spring-boot-starter": {
             "locked": "2.3.12.RELEASE",
             "transitive": [
-                "com.netflix.conductor:conductor-es7-persistence",
                 "org.springframework.boot:spring-boot-starter-actuator",
                 "org.springframework.boot:spring-boot-starter-json",
                 "org.springframework.boot:spring-boot-starter-validation",
@@ -472,7 +468,7 @@
             ]
         },
         "com.carrotsearch:hppc": {
-            "locked": "0.7.1",
+            "locked": "0.8.1",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -513,6 +509,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-core",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.eureka:eureka-client",
@@ -528,7 +525,6 @@
                 "com.amazonaws:jmespath-java",
                 "com.datastax.cassandra:cassandra-driver-core",
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor",
-                "com.fasterxml.jackson.dataformat:jackson-dataformat-smile",
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
                 "com.fasterxml.jackson.datatype:jackson-datatype-jdk8",
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310",
@@ -536,6 +532,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-core",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.dyno-queues:dyno-queues-redis",
@@ -644,7 +641,7 @@
             ]
         },
         "com.github.spullara.mustache.java:compiler": {
-            "locked": "0.9.3",
+            "locked": "0.9.6",
             "transitive": [
                 "org.elasticsearch.plugin:lang-mustache-client"
             ]
@@ -718,7 +715,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.netflix-commons:netflix-infix",
@@ -812,7 +809,7 @@
                 "com.netflix.conductor:conductor-cassandra-persistence",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -830,7 +827,7 @@
             "transitive": [
                 "com.netflix.conductor:conductor-cassandra-persistence",
                 "com.netflix.conductor:conductor-contribs",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-external-storage",
@@ -839,9 +836,6 @@
                 "com.netflix.conductor:conductor-redis-persistence",
                 "com.netflix.conductor:conductor-rest"
             ]
-        },
-        "com.netflix.conductor:conductor-es6-persistence": {
-            "project": true
         },
         "com.netflix.conductor:conductor-es7-persistence": {
             "project": true
@@ -1077,7 +1071,7 @@
             "locked": "2.7",
             "transitive": [
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.dyno:dyno-core"
             ]
         },
@@ -1210,7 +1204,6 @@
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
                 "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -1224,7 +1217,6 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -1238,8 +1230,7 @@
             "locked": "4.1.65.Final",
             "transitive": [
                 "io.netty:netty-codec-http2",
-                "io.netty:netty-handler-proxy",
-                "org.elasticsearch.plugin:transport-netty4-client"
+                "io.netty:netty-handler-proxy"
             ]
         },
         "io.netty:netty-codec-http2": {
@@ -1268,7 +1259,6 @@
                 "io.netty:netty-resolver",
                 "io.netty:netty-resolver-dns",
                 "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -1279,7 +1269,6 @@
                 "io.netty:netty-codec-http",
                 "io.netty:netty-codec-http2",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -1294,8 +1283,7 @@
             "transitive": [
                 "io.netty:netty-handler",
                 "io.netty:netty-resolver-dns",
-                "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client"
+                "io.netty:netty-transport"
             ]
         },
         "io.netty:netty-resolver-dns": {
@@ -1315,7 +1303,6 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -1438,7 +1425,7 @@
             ]
         },
         "joda-time:joda-time": {
-            "locked": "2.10.1",
+            "locked": "2.10.4",
             "transitive": [
                 "com.amazonaws:aws-java-sdk-core",
                 "com.netflix.dyno:dyno-contrib",
@@ -1513,7 +1500,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
@@ -1571,7 +1558,7 @@
             ]
         },
         "org.apache.kafka:kafka-clients": {
-            "locked": "2.5.1",
+            "locked": "3.1.0",
             "transitive": [
                 "com.netflix.conductor:conductor-contribs"
             ]
@@ -1584,7 +1571,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -1608,7 +1595,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -1630,7 +1617,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -1650,7 +1637,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -1670,7 +1657,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -1682,91 +1669,91 @@
             ]
         },
         "org.apache.lucene:lucene-analyzers-common": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-backward-codecs": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-core": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-grouping": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-highlighter": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-join": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-memory": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-misc": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-queries": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-queryparser": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-sandbox": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial-extras": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial3d": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-suggest": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -1810,112 +1797,88 @@
             ]
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence",
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.plugin:reindex-client"
+                "com.netflix.conductor:conductor-es7-persistence",
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence"
-            ]
-        },
-        "org.elasticsearch.client:transport": {
-            "locked": "6.8.12",
-            "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence"
+                "com.netflix.conductor:conductor-es7-persistence"
             ]
         },
         "org.elasticsearch.plugin:aggs-matrix-stats-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:lang-mustache-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
+            ]
+        },
+        "org.elasticsearch.plugin:mapper-extras-client": {
+            "locked": "7.6.2",
+            "transitive": [
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:parent-join-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:percolator-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:rank-eval-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:reindex-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:transport-netty4-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch:elasticsearch-cli": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:elasticsearch-core": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch",
                 "org.elasticsearch:elasticsearch-cli",
-                "org.elasticsearch:elasticsearch-ssl-config",
                 "org.elasticsearch:elasticsearch-x-content"
             ]
         },
-        "org.elasticsearch:elasticsearch-secure-sm": {
-            "locked": "6.8.12",
+        "org.elasticsearch:elasticsearch-geo": {
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
-        "org.elasticsearch:elasticsearch-ssl-config": {
-            "locked": "6.8.12",
+        "org.elasticsearch:elasticsearch-secure-sm": {
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.plugin:reindex-client"
+                "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:elasticsearch-x-content": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:jna": {
-            "locked": "5.5.0",
+            "locked": "4.5.1",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -2123,20 +2086,20 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "com.netflix.conductor:conductor-postgres-external-storage",
                 "com.netflix.conductor:conductor-rest"
             ]
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -2173,7 +2136,6 @@
         "org.springframework.boot:spring-boot-starter": {
             "locked": "2.3.12.RELEASE",
             "transitive": [
-                "com.netflix.conductor:conductor-es7-persistence",
                 "org.springframework.boot:spring-boot-starter-actuator",
                 "org.springframework.boot:spring-boot-starter-jdbc",
                 "org.springframework.boot:spring-boot-starter-json",
@@ -2406,7 +2368,7 @@
             ]
         },
         "com.carrotsearch:hppc": {
-            "locked": "0.7.1",
+            "locked": "0.8.1",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -2447,6 +2409,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-core",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.eureka:eureka-client",
@@ -2462,7 +2425,6 @@
                 "com.amazonaws:jmespath-java",
                 "com.datastax.cassandra:cassandra-driver-core",
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor",
-                "com.fasterxml.jackson.dataformat:jackson-dataformat-smile",
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
                 "com.fasterxml.jackson.datatype:jackson-datatype-jdk8",
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310",
@@ -2470,6 +2432,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-core",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.dyno-queues:dyno-queues-redis",
@@ -2578,7 +2541,7 @@
             ]
         },
         "com.github.spullara.mustache.java:compiler": {
-            "locked": "0.9.3",
+            "locked": "0.9.6",
             "transitive": [
                 "org.elasticsearch.plugin:lang-mustache-client"
             ]
@@ -2652,7 +2615,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.netflix-commons:netflix-infix",
@@ -2746,7 +2709,7 @@
                 "com.netflix.conductor:conductor-cassandra-persistence",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -2764,7 +2727,7 @@
             "transitive": [
                 "com.netflix.conductor:conductor-cassandra-persistence",
                 "com.netflix.conductor:conductor-contribs",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-external-storage",
@@ -2773,9 +2736,6 @@
                 "com.netflix.conductor:conductor-redis-persistence",
                 "com.netflix.conductor:conductor-rest"
             ]
-        },
-        "com.netflix.conductor:conductor-es6-persistence": {
-            "project": true
         },
         "com.netflix.conductor:conductor-es7-persistence": {
             "project": true
@@ -3011,7 +2971,7 @@
             "locked": "2.7",
             "transitive": [
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.dyno:dyno-core"
             ]
         },
@@ -3144,7 +3104,6 @@
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
                 "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -3158,7 +3117,6 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -3172,8 +3130,7 @@
             "locked": "4.1.65.Final",
             "transitive": [
                 "io.netty:netty-codec-http2",
-                "io.netty:netty-handler-proxy",
-                "org.elasticsearch.plugin:transport-netty4-client"
+                "io.netty:netty-handler-proxy"
             ]
         },
         "io.netty:netty-codec-http2": {
@@ -3202,7 +3159,6 @@
                 "io.netty:netty-resolver",
                 "io.netty:netty-resolver-dns",
                 "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -3213,7 +3169,6 @@
                 "io.netty:netty-codec-http",
                 "io.netty:netty-codec-http2",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -3228,8 +3183,7 @@
             "transitive": [
                 "io.netty:netty-handler",
                 "io.netty:netty-resolver-dns",
-                "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client"
+                "io.netty:netty-transport"
             ]
         },
         "io.netty:netty-resolver-dns": {
@@ -3249,7 +3203,6 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -3372,7 +3325,7 @@
             ]
         },
         "joda-time:joda-time": {
-            "locked": "2.10.1",
+            "locked": "2.10.4",
             "transitive": [
                 "com.amazonaws:aws-java-sdk-core",
                 "com.netflix.dyno:dyno-contrib",
@@ -3447,7 +3400,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
@@ -3505,7 +3458,7 @@
             ]
         },
         "org.apache.kafka:kafka-clients": {
-            "locked": "2.5.1",
+            "locked": "3.1.0",
             "transitive": [
                 "com.netflix.conductor:conductor-contribs"
             ]
@@ -3518,7 +3471,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -3542,7 +3495,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -3564,7 +3517,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -3584,7 +3537,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -3604,7 +3557,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -3616,91 +3569,91 @@
             ]
         },
         "org.apache.lucene:lucene-analyzers-common": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-backward-codecs": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-core": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-grouping": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-highlighter": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-join": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-memory": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-misc": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-queries": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-queryparser": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-sandbox": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial-extras": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial3d": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-suggest": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -3744,112 +3697,88 @@
             ]
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence",
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.plugin:reindex-client"
+                "com.netflix.conductor:conductor-es7-persistence",
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence"
-            ]
-        },
-        "org.elasticsearch.client:transport": {
-            "locked": "6.8.12",
-            "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence"
+                "com.netflix.conductor:conductor-es7-persistence"
             ]
         },
         "org.elasticsearch.plugin:aggs-matrix-stats-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:lang-mustache-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
+            ]
+        },
+        "org.elasticsearch.plugin:mapper-extras-client": {
+            "locked": "7.6.2",
+            "transitive": [
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:parent-join-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:percolator-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:rank-eval-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:reindex-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:transport-netty4-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch:elasticsearch-cli": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:elasticsearch-core": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch",
                 "org.elasticsearch:elasticsearch-cli",
-                "org.elasticsearch:elasticsearch-ssl-config",
                 "org.elasticsearch:elasticsearch-x-content"
             ]
         },
-        "org.elasticsearch:elasticsearch-secure-sm": {
-            "locked": "6.8.12",
+        "org.elasticsearch:elasticsearch-geo": {
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
-        "org.elasticsearch:elasticsearch-ssl-config": {
-            "locked": "6.8.12",
+        "org.elasticsearch:elasticsearch-secure-sm": {
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.plugin:reindex-client"
+                "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:elasticsearch-x-content": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:jna": {
-            "locked": "5.5.0",
+            "locked": "4.5.1",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -4057,20 +3986,20 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "com.netflix.conductor:conductor-postgres-external-storage",
                 "com.netflix.conductor:conductor-rest"
             ]
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -4107,7 +4036,6 @@
         "org.springframework.boot:spring-boot-starter": {
             "locked": "2.3.12.RELEASE",
             "transitive": [
-                "com.netflix.conductor:conductor-es7-persistence",
                 "org.springframework.boot:spring-boot-starter-actuator",
                 "org.springframework.boot:spring-boot-starter-jdbc",
                 "org.springframework.boot:spring-boot-starter-json",
@@ -4422,9 +4350,6 @@
             "project": true
         },
         "com.netflix.conductor:conductor-core": {
-            "project": true
-        },
-        "com.netflix.conductor:conductor-es6-persistence": {
             "project": true
         },
         "com.netflix.conductor:conductor-es7-persistence": {
@@ -4809,16 +4734,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7"
+            "locked": "1.6.8"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -4858,7 +4783,6 @@
         "org.springframework.boot:spring-boot-starter": {
             "locked": "2.3.12.RELEASE",
             "transitive": [
-                "com.netflix.conductor:conductor-es7-persistence",
                 "org.springframework.boot:spring-boot-starter-actuator",
                 "org.springframework.boot:spring-boot-starter-json",
                 "org.springframework.boot:spring-boot-starter-test",
@@ -5060,7 +4984,7 @@
             ]
         },
         "com.carrotsearch:hppc": {
-            "locked": "0.7.1",
+            "locked": "0.8.1",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -5101,6 +5025,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-core",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.eureka:eureka-client",
@@ -5116,7 +5041,6 @@
                 "com.amazonaws:jmespath-java",
                 "com.datastax.cassandra:cassandra-driver-core",
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-cbor",
-                "com.fasterxml.jackson.dataformat:jackson-dataformat-smile",
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
                 "com.fasterxml.jackson.datatype:jackson-datatype-jdk8",
                 "com.fasterxml.jackson.datatype:jackson-datatype-jsr310",
@@ -5124,6 +5048,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-core",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.dyno-queues:dyno-queues-redis",
@@ -5232,7 +5157,7 @@
             ]
         },
         "com.github.spullara.mustache.java:compiler": {
-            "locked": "0.9.3",
+            "locked": "0.9.6",
             "transitive": [
                 "org.elasticsearch.plugin:lang-mustache-client"
             ]
@@ -5306,7 +5231,7 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
                 "com.netflix.netflix-commons:netflix-infix",
@@ -5401,7 +5326,7 @@
                 "com.netflix.conductor:conductor-cassandra-persistence",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -5419,7 +5344,7 @@
             "transitive": [
                 "com.netflix.conductor:conductor-cassandra-persistence",
                 "com.netflix.conductor:conductor-contribs",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-external-storage",
@@ -5428,9 +5353,6 @@
                 "com.netflix.conductor:conductor-redis-persistence",
                 "com.netflix.conductor:conductor-rest"
             ]
-        },
-        "com.netflix.conductor:conductor-es6-persistence": {
-            "project": true
         },
         "com.netflix.conductor:conductor-es7-persistence": {
             "project": true
@@ -5672,7 +5594,7 @@
             "locked": "2.7",
             "transitive": [
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.dyno:dyno-core"
             ]
         },
@@ -5811,7 +5733,6 @@
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
                 "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -5825,7 +5746,6 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -5839,8 +5759,7 @@
             "locked": "4.1.65.Final",
             "transitive": [
                 "io.netty:netty-codec-http2",
-                "io.netty:netty-handler-proxy",
-                "org.elasticsearch.plugin:transport-netty4-client"
+                "io.netty:netty-handler-proxy"
             ]
         },
         "io.netty:netty-codec-http2": {
@@ -5869,7 +5788,6 @@
                 "io.netty:netty-resolver",
                 "io.netty:netty-resolver-dns",
                 "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -5880,7 +5798,6 @@
                 "io.netty:netty-codec-http",
                 "io.netty:netty-codec-http2",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -5895,8 +5812,7 @@
             "transitive": [
                 "io.netty:netty-handler",
                 "io.netty:netty-resolver-dns",
-                "io.netty:netty-transport",
-                "org.elasticsearch.plugin:transport-netty4-client"
+                "io.netty:netty-transport"
             ]
         },
         "io.netty:netty-resolver-dns": {
@@ -5916,7 +5832,6 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
-                "org.elasticsearch.plugin:transport-netty4-client",
                 "org.redisson:redisson"
             ]
         },
@@ -6040,7 +5955,7 @@
             ]
         },
         "joda-time:joda-time": {
-            "locked": "2.10.1",
+            "locked": "2.10.4",
             "transitive": [
                 "com.amazonaws:aws-java-sdk-core",
                 "com.netflix.dyno:dyno-contrib",
@@ -6129,7 +6044,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
                 "com.netflix.conductor:conductor-postgres-persistence",
@@ -6187,7 +6102,7 @@
             ]
         },
         "org.apache.kafka:kafka-clients": {
-            "locked": "2.5.1",
+            "locked": "3.1.0",
             "transitive": [
                 "com.netflix.conductor:conductor-contribs"
             ]
@@ -6200,7 +6115,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -6224,7 +6139,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -6246,7 +6161,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -6266,7 +6181,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -6286,7 +6201,7 @@
                 "com.netflix.conductor:conductor-common",
                 "com.netflix.conductor:conductor-contribs",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-es6-persistence",
+                "com.netflix.conductor:conductor-es7-persistence",
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-mysql-persistence",
@@ -6298,91 +6213,91 @@
             ]
         },
         "org.apache.lucene:lucene-analyzers-common": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-backward-codecs": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-core": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-grouping": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-highlighter": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-join": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-memory": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-misc": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-queries": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-queryparser": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-sandbox": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial-extras": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-spatial3d": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.apache.lucene:lucene-suggest": {
-            "locked": "7.7.3",
+            "locked": "8.4.0",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -6443,112 +6358,88 @@
             ]
         },
         "org.elasticsearch.client:elasticsearch-rest-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence",
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.plugin:reindex-client"
+                "com.netflix.conductor:conductor-es7-persistence",
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.client:elasticsearch-rest-high-level-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence"
-            ]
-        },
-        "org.elasticsearch.client:transport": {
-            "locked": "6.8.12",
-            "transitive": [
-                "com.netflix.conductor:conductor-es6-persistence"
+                "com.netflix.conductor:conductor-es7-persistence"
             ]
         },
         "org.elasticsearch.plugin:aggs-matrix-stats-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:lang-mustache-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
+            ]
+        },
+        "org.elasticsearch.plugin:mapper-extras-client": {
+            "locked": "7.6.2",
+            "transitive": [
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:parent-join-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:percolator-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch.plugin:rank-eval-client": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:reindex-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
-            ]
-        },
-        "org.elasticsearch.plugin:transport-netty4-client": {
-            "locked": "6.8.12",
-            "transitive": [
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch:elasticsearch": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.client:elasticsearch-rest-high-level-client",
-                "org.elasticsearch.client:transport"
+                "org.elasticsearch.client:elasticsearch-rest-high-level-client"
             ]
         },
         "org.elasticsearch:elasticsearch-cli": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:elasticsearch-core": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch",
                 "org.elasticsearch:elasticsearch-cli",
-                "org.elasticsearch:elasticsearch-ssl-config",
                 "org.elasticsearch:elasticsearch-x-content"
             ]
         },
-        "org.elasticsearch:elasticsearch-secure-sm": {
-            "locked": "6.8.12",
+        "org.elasticsearch:elasticsearch-geo": {
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
-        "org.elasticsearch:elasticsearch-ssl-config": {
-            "locked": "6.8.12",
+        "org.elasticsearch:elasticsearch-secure-sm": {
+            "locked": "7.6.2",
             "transitive": [
-                "org.elasticsearch.plugin:reindex-client"
+                "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:elasticsearch-x-content": {
-            "locked": "6.8.12",
+            "locked": "7.6.2",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
         },
         "org.elasticsearch:jna": {
-            "locked": "5.5.0",
+            "locked": "4.5.1",
             "transitive": [
                 "org.elasticsearch:elasticsearch"
             ]
@@ -6860,20 +6751,20 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "com.netflix.conductor:conductor-postgres-external-storage",
                 "com.netflix.conductor:conductor-rest"
             ]
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -6913,7 +6804,6 @@
         "org.springframework.boot:spring-boot-starter": {
             "locked": "2.3.12.RELEASE",
             "transitive": [
-                "com.netflix.conductor:conductor-es7-persistence",
                 "org.springframework.boot:spring-boot-starter-actuator",
                 "org.springframework.boot:spring-boot-starter-jdbc",
                 "org.springframework.boot:spring-boot-starter-json",

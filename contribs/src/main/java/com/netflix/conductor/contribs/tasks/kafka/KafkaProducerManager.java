@@ -77,8 +77,8 @@ public class KafkaProducerManager {
                     String securityProtocol,
             @Value("${conductor.tasks.kafka-publish.saslMechanism:PLAIN}") String saslMechanism,
             @Value("${conductor.tasks.kafka-publish.saslUsername:#{null}}") String saslUsername,
-            @Value("${conductor.tasks.kafka-publish.saslPassword:#{null}") String saslPassword,
-            @Value("${conductor.tasks.kafka-publish.jaasTemplate:#{null}") String jaasTemplate,
+            @Value("${conductor.tasks.kafka-publish.saslPassword:#{null}}") String saslPassword,
+            @Value("${conductor.tasks.kafka-publish.jaasTemplate:#{null}}") String jaasTemplate,
             @Value("${conductor.tasks.kafka-publish.topicNamespace:#{null}}") String topicNamespace,
             @Value("${conductor.tasks.kafka-publish.truststorePath:#{null}}") String truststorePath,
             @Value("${conductor.tasks.kafka-publish.truststorePassword:#{null}}")

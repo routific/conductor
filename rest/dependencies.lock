@@ -184,16 +184,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7"
+            "locked": "1.6.8"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -659,16 +659,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7"
+            "locked": "1.6.8"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -1141,16 +1141,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7"
+            "locked": "1.6.8"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -1797,16 +1797,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.7"
+            "locked": "1.6.8"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.7",
+            "locked": "1.6.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]

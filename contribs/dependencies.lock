@@ -87,12 +87,6 @@
                 "org.springframework.boot:spring-boot-starter-json"
             ]
         },
-        "com.github.luben:zstd-jni": {
-            "locked": "1.4.4-7",
-            "transitive": [
-                "org.apache.kafka:kafka-clients"
-            ]
-        },
         "com.google.code.findbugs:jsr305": {
             "locked": "3.0.2",
             "transitive": [
@@ -229,7 +223,7 @@
             ]
         },
         "org.apache.kafka:kafka-clients": {
-            "locked": "2.6.0"
+            "locked": "3.1.0"
         },
         "org.apache.logging.log4j:log4j-api": {
             "locked": "2.17.1",
@@ -298,12 +292,6 @@
                 "net.thisptr:jackson-jq"
             ]
         },
-        "org.lz4:lz4-java": {
-            "locked": "1.7.1",
-            "transitive": [
-                "org.apache.kafka:kafka-clients"
-            ]
-        },
         "org.slf4j:jul-to-slf4j": {
             "locked": "1.7.30",
             "transitive": [
@@ -315,7 +303,6 @@
             "transitive": [
                 "com.rabbitmq:amqp-client",
                 "io.dropwizard.metrics:metrics-core",
-                "org.apache.kafka:kafka-clients",
                 "org.apache.logging.log4j:log4j-slf4j-impl",
                 "org.slf4j:jul-to-slf4j"
             ]
@@ -424,12 +411,6 @@
                 "org.springframework.boot:spring-boot-starter-web"
             ]
         },
-        "org.xerial.snappy:snappy-java": {
-            "locked": "1.1.7.3",
-            "transitive": [
-                "org.apache.kafka:kafka-clients"
-            ]
-        },
         "org.yaml:snakeyaml": {
             "locked": "1.26",
             "transitive": [
@@ -506,7 +487,7 @@
             ]
         },
         "com.github.luben:zstd-jni": {
-            "locked": "1.4.4-7",
+            "locked": "1.5.0-4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -726,7 +707,7 @@
             ]
         },
         "org.apache.kafka:kafka-clients": {
-            "locked": "2.6.0"
+            "locked": "3.1.0"
         },
         "org.apache.logging.log4j:log4j-api": {
             "locked": "2.17.1",
@@ -805,7 +786,7 @@
             ]
         },
         "org.lz4:lz4-java": {
-            "locked": "1.7.1",
+            "locked": "1.8.0",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -830,7 +811,7 @@
             ]
         },
         "org.xerial.snappy:snappy-java": {
-            "locked": "1.1.7.3",
+            "locked": "1.1.8.4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -1014,12 +995,6 @@
             "locked": "0.10",
             "transitive": [
                 "com.github.java-json-tools:json-schema-core"
-            ]
-        },
-        "com.github.luben:zstd-jni": {
-            "locked": "1.4.4-7",
-            "transitive": [
-                "org.apache.kafka:kafka-clients"
             ]
         },
         "com.google.code.findbugs:jsr305": {
@@ -1490,7 +1465,7 @@
             ]
         },
         "org.apache.kafka:kafka-clients": {
-            "locked": "2.6.0"
+            "locked": "3.1.0"
         },
         "org.apache.logging.log4j:log4j-api": {
             "locked": "2.17.1",
@@ -1658,12 +1633,6 @@
                 "org.junit.vintage:junit-vintage-engine"
             ]
         },
-        "org.lz4:lz4-java": {
-            "locked": "1.7.1",
-            "transitive": [
-                "org.apache.kafka:kafka-clients"
-            ]
-        },
         "org.mock-server:mockserver-client-java": {
             "locked": "5.11.2"
         },
@@ -1749,7 +1718,6 @@
                 "io.swagger:swagger-core",
                 "io.swagger:swagger-models",
                 "io.swagger:swagger-parser",
-                "org.apache.kafka:kafka-clients",
                 "org.apache.logging.log4j:log4j-slf4j-impl",
                 "org.apache.velocity:velocity-engine-core",
                 "org.mock-server:mockserver-client-java",
@@ -1907,12 +1875,6 @@
             "locked": "1.15.3",
             "transitive": [
                 "org.testcontainers:mockserver"
-            ]
-        },
-        "org.xerial.snappy:snappy-java": {
-            "locked": "1.1.7.3",
-            "transitive": [
-                "org.apache.kafka:kafka-clients"
             ]
         },
         "org.xmlunit:xmlunit-core": {
@@ -2125,7 +2087,7 @@
             ]
         },
         "com.github.luben:zstd-jni": {
-            "locked": "1.4.4-7",
+            "locked": "1.5.0-4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -2648,7 +2610,7 @@
             ]
         },
         "org.apache.kafka:kafka-clients": {
-            "locked": "2.6.0"
+            "locked": "3.1.0"
         },
         "org.apache.logging.log4j:log4j-api": {
             "locked": "2.17.1",
@@ -2852,7 +2814,7 @@
             ]
         },
         "org.lz4:lz4-java": {
-            "locked": "1.7.1",
+            "locked": "1.8.0",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -3106,7 +3068,7 @@
             ]
         },
         "org.xerial.snappy:snappy-java": {
-            "locked": "1.1.7.3",
+            "locked": "1.1.8.4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
