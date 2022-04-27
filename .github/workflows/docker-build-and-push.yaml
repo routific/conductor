@@ -27,7 +27,8 @@ jobs:
     # - name: Build and push conductor UI
     #   uses: docker/build-push-action@v2
     #   with:
-    #     context: ./docker/ui
+    #     context: .
+    #     file: ./docker/ui
     #     platforms: linux/amd64
     #     push: true
     #     tags: |
@@ -40,11 +41,12 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
     - name: Execute Gradle build
-      run: ./gradlew build
+      run: gradlew build
     - name: Build and push conductor server
       uses: docker/build-push-action@v2
       with:
-        context: ./docker/server
+        context: .
+        file: ./docker/server
         platforms: linux/amd64
         push: true
         tags: |
