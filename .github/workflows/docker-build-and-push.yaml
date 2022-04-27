@@ -1,0 +1,42 @@
+name: Build and push conductor docker images
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches:
+    - "routific"
+
+# Terraform jobs are queued per branch to prevent
+# concurrent actions on the same Terraform workspace
+concurrency: 
+  group: ci-${{ github.ref }}
+
+# if: github.event.pull_request.draft == false
+
+jobs:
+  docker-build-and-push:
+    name: Publish conductor docker image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Login to GAR
+      uses: docker/login-action@v1
+      with:
+        registry: us-central1-docker.pkg.dev/sandbox-347223
+        username: _json_key
+        password: ${{ secrets.GCP_CREDENTIALS }}
+    # - name: Build and push conductor UI
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     context: ./docker/ui
+    #     platforms: linux/amd64
+    #     push: true
+    #     tags: |
+    #       us-central1-docker.pkg.dev/sandbox-347223/planning-service-images/conductor-ui:dev
+    - name: Build and push conductor server
+      uses: docker/build-push-action@v2
+      with:
+        context: ./docker/server
+        platforms: linux/amd64
+        push: true
+        tags: |
+          us-central1-docker.pkg.dev/sandbox-347223/planning-service-images/conductor-server:dev
