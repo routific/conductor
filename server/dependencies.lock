@@ -629,7 +629,7 @@
             ]
         },
         "com.github.luben:zstd-jni": {
-            "locked": "1.4.4-7",
+            "locked": "1.5.0-4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -1115,7 +1115,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -1124,45 +1124,45 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-netty",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc-server"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-services": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc-server"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services"
@@ -1307,7 +1307,7 @@
             ]
         },
         "io.perfmark:perfmark-api": {
-            "locked": "0.23.0",
+            "locked": "0.25.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-netty"
@@ -1975,7 +1975,7 @@
             ]
         },
         "org.lz4:lz4-java": {
-            "locked": "1.7.1",
+            "locked": "1.8.0",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -2278,7 +2278,7 @@
             ]
         },
         "org.xerial.snappy:snappy-java": {
-            "locked": "1.1.7.3",
+            "locked": "1.1.8.4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -2529,7 +2529,7 @@
             ]
         },
         "com.github.luben:zstd-jni": {
-            "locked": "1.4.4-7",
+            "locked": "1.5.0-4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -3015,7 +3015,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -3024,45 +3024,45 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-netty",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc-server"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-services": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc-server"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services"
@@ -3207,7 +3207,7 @@
             ]
         },
         "io.perfmark:perfmark-api": {
-            "locked": "0.23.0",
+            "locked": "0.25.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-netty"
@@ -3875,7 +3875,7 @@
             ]
         },
         "org.lz4:lz4-java": {
-            "locked": "1.7.1",
+            "locked": "1.8.0",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -4178,7 +4178,7 @@
             ]
         },
         "org.xerial.snappy:snappy-java": {
-            "locked": "1.1.7.3",
+            "locked": "1.1.8.4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -4392,7 +4392,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -4401,34 +4401,34 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-testing"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-testing"
             ]
         },
         "io.grpc:grpc-testing": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.micrometer:micrometer-core": {
             "locked": "1.5.14",
@@ -5145,7 +5145,7 @@
             ]
         },
         "com.github.luben:zstd-jni": {
-            "locked": "1.4.4-7",
+            "locked": "1.5.0-4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -5638,7 +5638,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -5647,14 +5647,14 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api",
                 "io.grpc:grpc-testing"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-netty",
                 "io.grpc:grpc-services",
@@ -5662,32 +5662,32 @@
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc-server"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-services": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc-server"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services",
@@ -5695,7 +5695,7 @@
             ]
         },
         "io.grpc:grpc-testing": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.micrometer:micrometer-core": {
             "locked": "1.5.14",
@@ -5836,7 +5836,7 @@
             ]
         },
         "io.perfmark:perfmark-api": {
-            "locked": "0.23.0",
+            "locked": "0.25.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-netty"
@@ -6608,7 +6608,7 @@
             ]
         },
         "org.lz4:lz4-java": {
-            "locked": "1.7.1",
+            "locked": "1.8.0",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]
@@ -6971,7 +6971,7 @@
             ]
         },
         "org.xerial.snappy:snappy-java": {
-            "locked": "1.1.7.3",
+            "locked": "1.1.8.4",
             "transitive": [
                 "org.apache.kafka:kafka-clients"
             ]

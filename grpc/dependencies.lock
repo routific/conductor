@@ -61,7 +61,7 @@
             "project": true
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf",
                 "io.grpc:grpc-protobuf-lite",
@@ -69,22 +69,22 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "javax.annotation:javax.annotation-api": {
             "locked": "1.3.2"
@@ -228,7 +228,7 @@
             "project": true
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf",
                 "io.grpc:grpc-protobuf-lite",
@@ -236,22 +236,22 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "javax.annotation:javax.annotation-api": {
             "locked": "1.3.2"
@@ -330,7 +330,7 @@
     },
     "protobufToolsLocator_grpc": {
         "io.grpc:protoc-gen-grpc-java": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         }
     },
     "protobufToolsLocator_protoc": {
@@ -434,7 +434,7 @@
             "project": true
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf",
                 "io.grpc:grpc-protobuf-lite",
@@ -442,22 +442,22 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "javax.annotation:javax.annotation-api": {
             "locked": "1.3.2"
@@ -603,7 +603,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf",
                 "io.grpc:grpc-protobuf-lite",
@@ -611,22 +611,22 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "jakarta.activation:jakarta.activation-api": {
             "locked": "1.2.2",
@@ -1064,7 +1064,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf",
                 "io.grpc:grpc-protobuf-lite",
@@ -1072,22 +1072,22 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "jakarta.activation:jakarta.activation-api": {
             "locked": "1.2.2",
@@ -1561,7 +1561,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf",
                 "io.grpc:grpc-protobuf-lite",
@@ -1569,22 +1569,22 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.45.1",
+            "locked": "1.46.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.45.1"
+            "locked": "1.46.0"
         },
         "jakarta.activation:jakarta.activation-api": {
             "locked": "1.2.2",
