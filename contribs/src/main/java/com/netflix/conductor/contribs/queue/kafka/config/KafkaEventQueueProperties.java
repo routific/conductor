@@ -34,6 +34,16 @@ public class KafkaEventQueueProperties {
     private boolean autoOffsetReset = false;
     private boolean autoCommit = false;
 
+    private int kafkaThreadPoolCount = 20;
+
+    public int getKafkaThreadPoolCount() {
+        return kafkaThreadPoolCount;
+    }
+
+    public void setKafkaThreadPoolCount(int count) {
+        this.kafkaThreadPoolCount = count;
+    }
+
     public String getTruststorePath() {
         return truststorePath;
     }

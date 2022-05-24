@@ -127,6 +127,7 @@ public class SimpleActionProcessor implements ActionProcessor {
                 return replaced;
             }
             taskModel = workflow.getTaskByRefName(taskRefName);
+            // taskId = taskModel.getTaskId();
             // Task can be loopover task.In such case find corresponding task and update
             List<TaskModel> loopOverTaskList =
                     workflow.getTasks().stream()
@@ -166,9 +167,9 @@ public class SimpleActionProcessor implements ActionProcessor {
 
         try {
             workflowExecutor.updateTask(new TaskResult(taskModel.toTask()));
-            LOGGER.debug(
+            LOGGER.info(
                     "Updated task: {} in workflow:{} with status: {} for event: {} for message:{}",
-                    taskId,
+                    taskModel.getTaskId(),
                     workflowId,
                     status,
                     event,

@@ -20,16 +20,30 @@ import rx.Observable;
 
 public interface ObservableQueue extends Lifecycle {
 
-    /** @return An observable for the given queue */
+    /**
+     * @return An observable for the given queue
+     */
     Observable<Message> observe();
 
-    /** @return Type of the queue */
+    /**
+     * @return An observable for the given queue
+     */
+    default void observe(ObservableQueueHandler handler) {}
+    ;
+
+    /**
+     * @return Type of the queue
+     */
     String getType();
 
-    /** @return Name of the queue */
+    /**
+     * @return Name of the queue
+     */
     String getName();
 
-    /** @return URI identifier for the queue. */
+    /**
+     * @return URI identifier for the queue.
+     */
     String getURI();
 
     /**
@@ -38,7 +52,9 @@ public interface ObservableQueue extends Lifecycle {
      */
     List<String> ack(List<Message> messages);
 
-    /** @param messages Messages to be published */
+    /**
+     * @param messages Messages to be published
+     */
     void publish(List<Message> messages);
 
     /**

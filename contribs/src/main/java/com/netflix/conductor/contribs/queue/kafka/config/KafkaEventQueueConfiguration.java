@@ -19,13 +19,16 @@ import org.springframework.context.annotation.Configuration;
 
 import com.netflix.conductor.core.events.EventQueueProvider;
 
+import rx.Scheduler;
+
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(KafkaEventQueueProperties.class)
 @ConditionalOnProperty(name = "conductor.event-queues.kafka.enabled", havingValue = "true")
 public class KafkaEventQueueConfiguration {
 
     @Bean
-    public EventQueueProvider kafkaEventQueueProvider(KafkaEventQueueProperties properties) {
-        return new KafkaEventQueueProvider(properties);
+    public EventQueueProvider kafkaEventQueueProvider(
+            KafkaEventQueueProperties properties, Scheduler scheduler) {
+        return new KafkaEventQueueProvider(properties, scheduler);
     }
 }
