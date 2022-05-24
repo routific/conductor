@@ -618,22 +618,30 @@ public class PostgresExecutionDAO extends PostgresBaseDAO
     }
 
     private void updateTask(Connection connection, TaskModel task) {
-        Optional<TaskDef> taskDefinition = task.getTaskDefinition();
+        boolean didUpdate = false;
+        boolean isTerminal = task.getStatus() != null && task.getStatus().isTerminal();
+        boolean isInProgress =
+                task.getStatus() != null && task.getStatus().equals(TaskModel.Status.IN_PROGRESS);
 
-        if (taskDefinition.isPresent() && taskDefinition.get().concurrencyLimit() > 0) {
-            boolean inProgress =
-                    task.getStatus() != null
-                            && task.getStatus().equals(TaskModel.Status.IN_PROGRESS);
-            updateInProgressStatus(connection, task, inProgress);
+        if (isTerminal) {
+            removeTaskInProgress(connection, task);
+        }
+
+        if (isInProgress) {
+            didUpdate = updateInProgressStatus(connection, task, isInProgress);
+            // Prevent setting task back to IN_PROGRESS if row no longer exists
+            // in task_in_progress. It was previously removed by a terminal task.
+            if (!didUpdate) {
+                logger.info("Skipping update, task {} already completed", task.getTaskId());
+                return;
+            }
         }
 
         insertOrUpdateTaskData(connection, task);
 
-        if (task.getStatus() != null && task.getStatus().isTerminal()) {
-            removeTaskInProgress(connection, task);
-        }
-
         addWorkflowToTaskMapping(connection, task);
+
+        logger.info("Updated task {} to status: {}", task.getTaskId(), task.getStatus().toString());
     }
 
     private WorkflowModel readWorkflow(Connection connection, String workflowId) {
@@ -897,19 +905,22 @@ public class PostgresExecutionDAO extends PostgresBaseDAO
                                 .executeUpdate());
     }
 
-    private void updateInProgressStatus(Connection connection, TaskModel task, boolean inProgress) {
+    private boolean updateInProgressStatus(
+            Connection connection, TaskModel task, boolean inProgress) {
         String UPDATE_IN_PROGRESS_TASK_STATUS =
                 "UPDATE task_in_progress SET in_progress_status = ?, modified_on = CURRENT_TIMESTAMP "
                         + "WHERE task_def_name = ? AND task_id = ?";
 
-        execute(
-                connection,
-                UPDATE_IN_PROGRESS_TASK_STATUS,
-                q ->
-                        q.addParameter(inProgress)
-                                .addParameter(task.getTaskDefName())
-                                .addParameter(task.getTaskId())
-                                .executeUpdate());
+        int count =
+                executeWithResult(
+                        connection,
+                        UPDATE_IN_PROGRESS_TASK_STATUS,
+                        q ->
+                                q.addParameter(inProgress)
+                                        .addParameter(task.getTaskDefName())
+                                        .addParameter(task.getTaskId())
+                                        .executeUpdate());
+        return count > 0;
     }
 
     private boolean insertEventExecution(Connection connection, EventExecution eventExecution) {

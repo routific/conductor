@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.netflix.conductor.common.utils.RetryUtil;
 import com.netflix.conductor.core.exception.ApplicationException;
 import com.netflix.conductor.postgres.util.ExecuteFunction;
+import com.netflix.conductor.postgres.util.ExecuteFunctionResult;
 import com.netflix.conductor.postgres.util.LazyToString;
 import com.netflix.conductor.postgres.util.Query;
 import com.netflix.conductor.postgres.util.QueryFunction;
@@ -258,6 +259,15 @@ public abstract class PostgresBaseDAO {
     protected void execute(Connection tx, String query, ExecuteFunction function) {
         try (Query q = new Query(objectMapper, tx, query)) {
             function.apply(q);
+        } catch (SQLException ex) {
+            throw new ApplicationException(BACKEND_ERROR, ex);
+        }
+    }
+
+    protected <R> R executeWithResult(
+            Connection tx, String query, ExecuteFunctionResult<R> function) {
+        try (Query q = new Query(objectMapper, tx, query)) {
+            return function.apply(q);
         } catch (SQLException ex) {
             throw new ApplicationException(BACKEND_ERROR, ex);
         }
