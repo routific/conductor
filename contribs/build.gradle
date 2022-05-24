@@ -32,6 +32,8 @@ dependencies {
 
     implementation "com.rabbitmq:amqp-client:${revAmqpClient}"
 
+    implementation "com.spotify:completable-futures:${revSpotifyCompletableFutures}"
+
     implementation "io.nats:java-nats-streaming:${revNatsStreaming}"
 
     implementation "io.reactivex:rxjava:${revRxJava}"
