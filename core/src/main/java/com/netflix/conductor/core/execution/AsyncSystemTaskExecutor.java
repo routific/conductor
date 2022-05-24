@@ -62,13 +62,14 @@ public class AsyncSystemTaskExecutor {
      */
     public void execute(WorkflowSystemTask systemTask, String taskId) {
         TaskModel task = loadTaskQuietly(taskId);
+        String queueName = QueueUtils.getQueueName(task);
         if (task == null) {
             LOGGER.error("TaskId: {} could not be found while executing {}", taskId, systemTask);
+            queueDAO.remove(queueName, taskId);
             return;
         }
 
         LOGGER.debug("Task: {} fetched from execution DAO for taskId: {}", task, taskId);
-        String queueName = QueueUtils.getQueueName(task);
         if (task.getStatus().isTerminal()) {
             // Tune the SystemTaskWorkerCoordinator's queues - if the queue size is very big this
             // can happen!
@@ -134,6 +135,12 @@ public class AsyncSystemTaskExecutor {
             if (task.getStatus() == TaskModel.Status.SCHEDULED) {
                 task.setStartTime(System.currentTimeMillis());
                 Monitors.recordQueueWaitTime(task.getTaskDefName(), task.getQueueWaitTime());
+
+                if (task.getTaskType().equals("KAFKA_PUBLISH")) {
+                    task.setStatus((TaskModel.Status.IN_PROGRESS));
+                    executionDAOFacade.updateTask(task);
+                }
+
                 systemTask.start(workflow, task, workflowExecutor);
             } else if (task.getStatus() == TaskModel.Status.IN_PROGRESS) {
                 systemTask.execute(workflow, task, workflowExecutor);
@@ -159,16 +166,21 @@ public class AsyncSystemTaskExecutor {
                 LOGGER.debug("{} postponed in queue: {}", task, queueName);
             }
 
+        } catch (Exception e) {
+            Monitors.error(AsyncSystemTaskExecutor.class.getSimpleName(), "executeSystemTask");
+            LOGGER.error("Error executing system task - {}, with id: {}", systemTask, taskId, e);
+        } finally {
+            if (!task.getTaskType().equals("KAFKA_PUBLISH")
+                    || task.getStatus() == TaskModel.Status.FAILED) {
+                executionDAOFacade.updateTask(task);
+            }
+
             LOGGER.debug(
                     "Finished execution of {}/{}-{}",
                     systemTask,
                     task.getTaskId(),
                     task.getStatus());
-        } catch (Exception e) {
-            Monitors.error(AsyncSystemTaskExecutor.class.getSimpleName(), "executeSystemTask");
-            LOGGER.error("Error executing system task - {}, with id: {}", systemTask, taskId, e);
-        } finally {
-            executionDAOFacade.updateTask(task);
+
             // if the current task execution has completed, then the workflow needs to be evaluated
             if (hasTaskExecutionCompleted) {
                 workflowExecutor.decide(workflowId);
