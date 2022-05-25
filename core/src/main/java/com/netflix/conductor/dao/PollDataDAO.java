@@ -1,26 +1,22 @@
 /*
- * Copyright 2019 Netflix, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * Copyright 2022 Netflix, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 package com.netflix.conductor.dao;
 
-import com.netflix.conductor.common.metadata.tasks.PollData;
 import java.util.List;
 
-/**
- * An abstraction to enable different PollData store implementations
- */
+import com.netflix.conductor.common.metadata.tasks.PollData;
+
+/** An abstraction to enable different PollData store implementations */
 public interface PollDataDAO {
 
     /**
@@ -55,6 +51,9 @@ public interface PollDataDAO {
      * @return the {@link PollData} for all task types
      */
     default List<PollData> getAllPollData() {
-    	throw new UnsupportedOperationException("The selected PollDataDAO (" + this.getClass().getSimpleName() + ") does not implement the getAllPollData() method");
+        throw new UnsupportedOperationException(
+                "The selected PollDataDAO ("
+                        + this.getClass().getSimpleName()
+                        + ") does not implement the getAllPollData() method");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Netflix, Inc.
+ * Copyright 2022 Netflix, Inc.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -12,53 +12,25 @@
  */
 package com.netflix.conductor.test.integration
 
+import org.springframework.beans.factory.annotation.Autowired
+
 import com.netflix.conductor.common.metadata.tasks.Task
 import com.netflix.conductor.common.metadata.tasks.TaskResult
 import com.netflix.conductor.common.run.Workflow
-import com.netflix.conductor.core.execution.WorkflowExecutor
-import com.netflix.conductor.core.execution.WorkflowRepairService
-import com.netflix.conductor.core.execution.WorkflowSweeper
-import com.netflix.conductor.core.execution.tasks.SystemTaskWorkerCoordinator
-import com.netflix.conductor.core.execution.tasks.WorkflowSystemTask
 import com.netflix.conductor.dao.QueueDAO
-import com.netflix.conductor.service.ExecutionService
-import com.netflix.conductor.service.MetadataService
-import com.netflix.conductor.test.util.WorkflowTestUtil
-import com.netflix.conductor.tests.utils.TestModule
-import com.netflix.conductor.tests.utils.UserTask
-import com.netflix.governator.guice.test.ModulesForTesting
-import spock.lang.Shared
-import spock.lang.Specification
+import com.netflix.conductor.test.base.AbstractSpecification
+import com.netflix.conductor.test.utils.UserTask
 
-import javax.inject.Inject
+import spock.lang.Shared
 
 import static com.netflix.conductor.test.util.WorkflowTestUtil.verifyPolledAndAcknowledgedTask
 
-@ModulesForTesting([TestModule.class])
-class SystemTaskSpec extends Specification {
+class SystemTaskSpec extends AbstractSpecification {
 
-    @Inject
-    ExecutionService workflowExecutionService
-
-    @Inject
-    MetadataService metadataService
-
-    @Inject
-    WorkflowExecutor workflowExecutor
-
-    @Inject
-    WorkflowTestUtil workflowTestUtil
-
-    @Inject
+    @Autowired
     QueueDAO queueDAO
 
-    @Inject
-    WorkflowSweeper workflowSweeper
-
-    @Inject
-    WorkflowRepairService workflowRepairService
-
-    @Inject
+    @Autowired
     UserTask userTask
 
     @Shared
@@ -66,10 +38,6 @@ class SystemTaskSpec extends Specification {
 
     def setup() {
         workflowTestUtil.registerWorkflows('simple_workflow_with_async_complete_system_task_integration_test.json')
-    }
-
-    def cleanup() {
-        workflowTestUtil.clearWorkflows()
     }
 
     def "Test system task with asyncComplete set to true"() {
@@ -89,7 +57,7 @@ class SystemTaskSpec extends Specification {
                 correlationId, input, null, null, null)
 
         then: "ensure that the workflow has started"
-        with (workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
+        with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
             status == Workflow.WorkflowStatus.RUNNING
             tasks.size() == 1
             tasks[0].taskType == 'integration_task_1'
@@ -114,10 +82,9 @@ class SystemTaskSpec extends Specification {
 
         when: "the system task is started by issuing a system task call"
         List<String> polledTaskIds = queueDAO.pop("USER_TASK", 1, 200)
-        WorkflowSystemTask systemTask = SystemTaskWorkerCoordinator.taskNameWorkflowTaskMapping.get("USER_TASK")
-        workflowExecutor.executeSystemTask(systemTask, polledTaskIds.get(0), 30)
+        asyncSystemTaskExecutor.execute(userTask, polledTaskIds[0])
 
-        then: "verify that the system task is in a state"
+        then: "verify that the system task is in IN_PROGRESS state"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {
             status == Workflow.WorkflowStatus.RUNNING
             tasks.size() == 2
@@ -128,7 +95,7 @@ class SystemTaskSpec extends Specification {
         }
 
         when: "sweeper evaluates the workflow"
-        workflowSweeper.sweep([workflowInstanceId], workflowExecutor, workflowRepairService)
+        sweep(workflowInstanceId)
 
         then: "workflow state is unchanged"
         with(workflowExecutionService.getExecutionStatus(workflowInstanceId, true)) {

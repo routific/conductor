@@ -1,67 +1,83 @@
+/*
+ * Copyright 2020 Netflix, Inc.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ */
 package com.netflix.conductor.core.metadata;
 
-import com.google.common.collect.ImmutableList;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.matcher.Matchers;
-import com.netflix.conductor.annotations.Service;
-import com.netflix.conductor.common.metadata.tasks.TaskDef;
-import com.netflix.conductor.common.metadata.workflow.SubWorkflowParams;
-import com.netflix.conductor.common.metadata.workflow.TaskType;
-import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
-import com.netflix.conductor.common.metadata.workflow.WorkflowTask;
-import com.netflix.conductor.core.config.ValidationModule;
-import com.netflix.conductor.core.execution.ApplicationException;
-import com.netflix.conductor.core.execution.TerminateWorkflowException;
-import com.netflix.conductor.dao.MetadataDAO;
-import com.netflix.conductor.interceptors.ServiceInterceptor;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.netflix.conductor.utility.TestUtils.getConstraintViolationMessages;
+import javax.validation.ConstraintViolationException;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import com.netflix.conductor.common.metadata.tasks.TaskDef;
+import com.netflix.conductor.common.metadata.tasks.TaskType;
+import com.netflix.conductor.common.metadata.workflow.SubWorkflowParams;
+import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
+import com.netflix.conductor.common.metadata.workflow.WorkflowTask;
+import com.netflix.conductor.core.exception.ApplicationException;
+import com.netflix.conductor.core.exception.TerminateWorkflowException;
+import com.netflix.conductor.dao.MetadataDAO;
+
+import com.google.common.collect.ImmutableList;
+
+import static com.netflix.conductor.TestUtils.getConstraintViolationMessages;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("SpringJavaAutowiredMembersInspection")
+@RunWith(SpringRunner.class)
+@EnableAutoConfiguration
 public class MetadataMapperServiceTest {
 
-    @Mock
-    private MetadataDAO metadataDAO;
+    @TestConfiguration
+    static class TestMetadataMapperServiceConfiguration {
 
-    private MetadataMapperService metadataMapperService;
+        @Bean
+        public MetadataDAO metadataDAO() {
+            return mock(MetadataDAO.class);
+        }
 
-    @Before
-    public void before() {
-        metadataMapperService = Mockito.mock(MetadataMapperService.class);
-        Injector injector =
-                Guice.createInjector(
-                        new AbstractModule() {
-                            @Override
-                            protected void configure() {
-                                bind(MetadataDAO.class).toInstance(metadataDAO);
-                                install(new ValidationModule());
-                                bindInterceptor(Matchers.any(), Matchers.annotatedWith(Service.class), new ServiceInterceptor(getProvider(Validator.class)));
-                            }
-                        });
-        metadataMapperService = injector.getInstance(MetadataMapperService.class);
+        @Bean
+        public MetadataMapperService metadataMapperService(MetadataDAO metadataDAO) {
+            return new MetadataMapperService(metadataDAO);
+        }
+    }
+
+    @Autowired private MetadataDAO metadataDAO;
+
+    @Autowired private MetadataMapperService metadataMapperService;
+
+    @After
+    public void cleanUp() {
+        reset(metadataDAO);
     }
 
     @Test
@@ -150,7 +166,7 @@ public class MetadataMapperServiceTest {
     public void testVersionPopulationForSubworkflowTaskIfVersionIsNotAvailable() {
         String nameTaskDefinition = "taskSubworkflow6";
         String workflowDefinitionName = "subworkflow";
-        Integer version = 3;
+        int version = 3;
 
         WorkflowDef subWorkflowDefinition = createWorkflowDefinition("workflowDefinitionName");
         subWorkflowDefinition.setVersion(version);
@@ -164,7 +180,8 @@ public class MetadataMapperServiceTest {
         WorkflowDef workflowDefinition = createWorkflowDefinition("testMetadataPopulation");
         workflowDefinition.setTasks(ImmutableList.of(workflowTask));
 
-        when(metadataDAO.getLatestWorkflowDef(workflowDefinitionName)).thenReturn(Optional.of(subWorkflowDefinition));
+        when(metadataDAO.getLatestWorkflowDef(workflowDefinitionName))
+                .thenReturn(Optional.of(subWorkflowDefinition));
 
         metadataMapperService.populateTaskDefinitions(workflowDefinition);
 
@@ -173,7 +190,7 @@ public class MetadataMapperServiceTest {
         SubWorkflowParams params = workflowTasks.get(0).getSubWorkflowParam();
 
         assertEquals(workflowDefinitionName, params.getName());
-        assertEquals(version, params.getVersion());
+        assertEquals(version, params.getVersion().intValue());
 
         verify(metadataDAO).getLatestWorkflowDef(workflowDefinitionName);
         verify(metadataDAO).getTaskDef(nameTaskDefinition);
@@ -209,7 +226,6 @@ public class MetadataMapperServiceTest {
         verifyNoMoreInteractions(metadataDAO);
     }
 
-
     @Test(expected = TerminateWorkflowException.class)
     public void testExceptionWhenWorkflowDefinitionNotAvailable() {
         String nameTaskDefinition = "taskSubworkflow8";
@@ -235,8 +251,10 @@ public class MetadataMapperServiceTest {
     public void testLookupWorkflowDefinition() {
         try {
             String workflowName = "test";
-            when(metadataDAO.getWorkflowDef(workflowName, 0)).thenReturn(Optional.of(new WorkflowDef()));
-            Optional<WorkflowDef> optionalWorkflowDef = metadataMapperService.lookupWorkflowDefinition(workflowName, 0);
+            when(metadataDAO.getWorkflowDef(workflowName, 0))
+                    .thenReturn(Optional.of(new WorkflowDef()));
+            Optional<WorkflowDef> optionalWorkflowDef =
+                    metadataMapperService.lookupWorkflowDefinition(workflowName, 0);
             assertTrue(optionalWorkflowDef.isPresent());
             metadataMapperService.lookupWorkflowDefinition(null, 0);
         } catch (ConstraintViolationException ex) {
@@ -249,8 +267,10 @@ public class MetadataMapperServiceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testLookupLatestWorkflowDefinition() {
         String workflowName = "test";
-        when(metadataDAO.getLatestWorkflowDef(workflowName)).thenReturn(Optional.of(new WorkflowDef()));
-        Optional<WorkflowDef> optionalWorkflowDef = metadataMapperService.lookupLatestWorkflowDefinition(workflowName);
+        when(metadataDAO.getLatestWorkflowDef(workflowName))
+                .thenReturn(Optional.of(new WorkflowDef()));
+        Optional<WorkflowDef> optionalWorkflowDef =
+                metadataMapperService.lookupLatestWorkflowDefinition(workflowName);
         assertTrue(optionalWorkflowDef.isPresent());
 
         metadataMapperService.lookupLatestWorkflowDefinition(null);
@@ -282,7 +302,6 @@ public class MetadataMapperServiceTest {
     }
 
     private TaskDef createTaskDefinition(String name) {
-        TaskDef taskDefinition = new TaskDef(name);
-        return taskDefinition;
+        return new TaskDef(name);
     }
 }

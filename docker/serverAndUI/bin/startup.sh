@@ -1,17 +1,22 @@
 #!/bin/bash
 
-echo "Starting Conductor server and UI"
+#
+#  Copyright 2021 Netflix, Inc.
+#  <p>
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+#  the License. You may obtain a copy of the License at
+#  <p>
+#  http://www.apache.org/licenses/LICENSE-2.0
+#  <p>
+#  Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+#  an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+#  specific language governing permissions and limitations under the License.
+#
 
-# Start the UI
-cd /app/ui/dist
-if [ -z "$WF_SERVER" ];
-  then
-    export WF_SERVER=http://localhost:8080/api/
-  else
-    echo "using Conductor API server from '$WF_SERVER'"
-fi
-
-nohup node server.js 1>&2 > /app/logs/ui.log &
+echo "Starting Conductor Server and UI"
+echo "Running Nginx in background"
+# Start nginx as daemon
+nginx
 
 # Start the server
 cd /app/libs
@@ -28,4 +33,4 @@ if [ -z "$CONFIG_PROP" ];
     export config_file=/app/config/$CONFIG_PROP
 fi
 
-nohup java -jar conductor-server-*-all.jar $config_file 1>&2 > /app/logs/server.log
+nohup java -jar -DCONDUCTOR_CONFIG_FILE=$config_file conductor-server-*-boot.jar 1>&2 > /app/logs/server.log

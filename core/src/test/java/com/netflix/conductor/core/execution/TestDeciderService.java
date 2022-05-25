@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Netflix, Inc.
+ * Copyright 2022 Netflix, Inc.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -12,80 +12,127 @@
  */
 package com.netflix.conductor.core.execution;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.conductor.common.metadata.tasks.Task;
-import com.netflix.conductor.common.metadata.tasks.Task.Status;
-import com.netflix.conductor.common.metadata.tasks.TaskDef;
-import com.netflix.conductor.common.metadata.tasks.TaskDef.TimeoutPolicy;
-import com.netflix.conductor.common.metadata.workflow.SubWorkflowParams;
-import com.netflix.conductor.common.metadata.workflow.TaskType;
-import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
-import com.netflix.conductor.common.metadata.workflow.WorkflowTask;
-import com.netflix.conductor.common.run.Workflow;
-import com.netflix.conductor.common.run.Workflow.WorkflowStatus;
-import com.netflix.conductor.common.utils.JsonMapperProvider;
-import com.netflix.conductor.common.utils.TaskUtils;
-import com.netflix.conductor.core.config.Configuration;
-import com.netflix.conductor.core.execution.DeciderService.DeciderOutcome;
-import com.netflix.conductor.core.execution.mapper.*;
-import com.netflix.conductor.core.utils.ExternalPayloadStorageUtils;
-import com.netflix.conductor.dao.MetadataDAO;
-import com.netflix.spectator.api.Counter;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.Spectator;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Duration;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-/**
- * @author Viren
- *
- */
-@SuppressWarnings("Duplicates")
+import com.netflix.conductor.common.config.TestObjectMapperConfiguration;
+import com.netflix.conductor.common.metadata.tasks.TaskDef;
+import com.netflix.conductor.common.metadata.tasks.TaskDef.TimeoutPolicy;
+import com.netflix.conductor.common.metadata.tasks.TaskType;
+import com.netflix.conductor.common.metadata.workflow.SubWorkflowParams;
+import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
+import com.netflix.conductor.common.metadata.workflow.WorkflowTask;
+import com.netflix.conductor.common.utils.TaskUtils;
+import com.netflix.conductor.core.exception.TerminateWorkflowException;
+import com.netflix.conductor.core.execution.DeciderService.DeciderOutcome;
+import com.netflix.conductor.core.execution.mapper.TaskMapper;
+import com.netflix.conductor.core.execution.tasks.SubWorkflow;
+import com.netflix.conductor.core.execution.tasks.SystemTaskRegistry;
+import com.netflix.conductor.core.execution.tasks.WorkflowSystemTask;
+import com.netflix.conductor.core.utils.ExternalPayloadStorageUtils;
+import com.netflix.conductor.core.utils.ParametersUtils;
+import com.netflix.conductor.dao.MetadataDAO;
+import com.netflix.conductor.model.TaskModel;
+import com.netflix.conductor.model.WorkflowModel;
+import com.netflix.spectator.api.Counter;
+import com.netflix.spectator.api.DefaultRegistry;
+import com.netflix.spectator.api.Registry;
+import com.netflix.spectator.api.Spectator;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static com.netflix.conductor.common.metadata.tasks.TaskType.*;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@ContextConfiguration(
+        classes = {TestObjectMapperConfiguration.class, TestDeciderService.TestConfiguration.class})
+@RunWith(SpringRunner.class)
 public class TestDeciderService {
+
+    @Configuration
+    @ComponentScan(basePackageClasses = TaskMapper.class) // loads all TaskMapper beans
+    public static class TestConfiguration {
+
+        @Bean(TASK_TYPE_SUB_WORKFLOW)
+        public SubWorkflow subWorkflow(ObjectMapper objectMapper) {
+            return new SubWorkflow(objectMapper);
+        }
+
+        @Bean("asyncCompleteSystemTask")
+        public WorkflowSystemTaskStub asyncCompleteSystemTask() {
+            return new WorkflowSystemTaskStub("asyncCompleteSystemTask") {
+                @Override
+                public boolean isAsyncComplete(TaskModel task) {
+                    return true;
+                }
+            };
+        }
+
+        @Bean
+        public SystemTaskRegistry systemTaskRegistry(Set<WorkflowSystemTask> tasks) {
+            return new SystemTaskRegistry(tasks);
+        }
+
+        @Bean
+        public MetadataDAO mockMetadataDAO() {
+            return mock(MetadataDAO.class);
+        }
+
+        @Bean
+        public Map<TaskType, TaskMapper> taskMapperMap(Collection<TaskMapper> taskMappers) {
+            return taskMappers.stream()
+                    .collect(Collectors.toMap(TaskMapper::getTaskType, Function.identity()));
+        }
+
+        @Bean
+        public ParametersUtils parametersUtils(ObjectMapper mapper) {
+            return new ParametersUtils(mapper);
+        }
+    }
 
     private DeciderService deciderService;
 
-    private ParametersUtils parametersUtils;
-    private MetadataDAO metadataDAO;
     private ExternalPayloadStorageUtils externalPayloadStorageUtils;
-
     private static Registry registry;
 
-    private static ObjectMapper objectMapper = new JsonMapperProvider().get();
+    @Autowired private ObjectMapper objectMapper;
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    @Autowired private SystemTaskRegistry systemTaskRegistry;
+
+    @Autowired
+    @Qualifier("taskMapperMap")
+    private Map<TaskType, TaskMapper> taskMappers;
+
+    @Autowired private ParametersUtils parametersUtils;
+
+    @Autowired private MetadataDAO metadataDAO;
+
+    @Rule public ExpectedException exception = ExpectedException.none();
 
     @BeforeClass
     public static void init() {
@@ -95,53 +142,42 @@ public class TestDeciderService {
 
     @Before
     public void setup() {
-        metadataDAO = mock(MetadataDAO.class);
         externalPayloadStorageUtils = mock(ExternalPayloadStorageUtils.class);
-        MetadataDAO metadataDAO = mock(MetadataDAO.class);
-        Configuration config = mock(Configuration.class);
-
-        TaskDef taskDef = new TaskDef();
 
         WorkflowDef workflowDef = new WorkflowDef();
         workflowDef.setName("TestDeciderService");
         workflowDef.setVersion(1);
-
+        TaskDef taskDef = new TaskDef();
         when(metadataDAO.getTaskDef(any())).thenReturn(taskDef);
         when(metadataDAO.getLatestWorkflowDef(any())).thenReturn(Optional.of(workflowDef));
-        parametersUtils = new ParametersUtils();
-        Map<String, TaskMapper> taskMappers = new HashMap<>();
-        taskMappers.put("DECISION", new DecisionTaskMapper());
-        taskMappers.put("DYNAMIC", new DynamicTaskMapper(parametersUtils, metadataDAO));
-        taskMappers.put("FORK_JOIN", new ForkJoinTaskMapper());
-        taskMappers.put("JOIN", new JoinTaskMapper());
-        taskMappers.put("FORK_JOIN_DYNAMIC", new ForkJoinDynamicTaskMapper(parametersUtils, objectMapper, metadataDAO));
-        taskMappers.put("USER_DEFINED", new UserDefinedTaskMapper(parametersUtils, metadataDAO));
-        taskMappers.put("SIMPLE", new SimpleTaskMapper(parametersUtils));
-        taskMappers.put("SUB_WORKFLOW", new SubWorkflowTaskMapper(parametersUtils, metadataDAO));
-        taskMappers.put("EVENT", new EventTaskMapper(parametersUtils));
-        taskMappers.put("WAIT", new WaitTaskMapper(parametersUtils));
-        taskMappers.put("HTTP", new HTTPTaskMapper(parametersUtils, metadataDAO));
-        taskMappers.put("LAMBDA", new LambdaTaskMapper(parametersUtils, metadataDAO));
 
-        deciderService = new DeciderService(parametersUtils, metadataDAO, externalPayloadStorageUtils, taskMappers, config);
+        deciderService =
+                new DeciderService(
+                        parametersUtils,
+                        metadataDAO,
+                        externalPayloadStorageUtils,
+                        systemTaskRegistry,
+                        taskMappers,
+                        Duration.ofMinutes(60));
     }
 
     @Test
     public void testGetTaskInputV2() {
-        Workflow workflow = createDefaultWorkflow();
+        WorkflowModel workflow = createDefaultWorkflow();
 
         workflow.getWorkflowDefinition().setSchemaVersion(2);
 
-        Map<String, Object> ip = new HashMap<>();
-        ip.put("workflowInputParam", "${workflow.input.requestId}");
-        ip.put("taskOutputParam", "${task2.output.location}");
-        ip.put("taskOutputParam2", "${task2.output.locationBad}");
-        ip.put("taskOutputParam3", "${task3.output.location}");
-        ip.put("constParam", "Some String value");
-        ip.put("nullValue", null);
-        ip.put("task2Status", "${task2.status}");
-        ip.put("channelMap", "${workflow.input.channelMapping}");
-        Map<String, Object> taskInput = parametersUtils.getTaskInput(ip, workflow, null, null);
+        Map<String, Object> inputParams = new HashMap<>();
+        inputParams.put("workflowInputParam", "${workflow.input.requestId}");
+        inputParams.put("taskOutputParam", "${task2.output.location}");
+        inputParams.put("taskOutputParam2", "${task2.output.locationBad}");
+        inputParams.put("taskOutputParam3", "${task3.output.location}");
+        inputParams.put("constParam", "Some String value");
+        inputParams.put("nullValue", null);
+        inputParams.put("task2Status", "${task2.status}");
+        inputParams.put("channelMap", "${workflow.input.channelMapping}");
+        Map<String, Object> taskInput =
+                parametersUtils.getTaskInput(inputParams, workflow, null, null);
 
         assertNotNull(taskInput);
         assertTrue(taskInput.containsKey("workflowInputParam"));
@@ -157,44 +193,30 @@ public class TestDeciderService {
         assertEquals("http://location", taskInput.get("taskOutputParam"));
         assertNull(taskInput.get("taskOutputParam3"));
         assertNull(taskInput.get("nullValue"));
-        assertEquals(workflow.getTasks().get(0).getStatus().name(), taskInput.get("task2Status"));    //task2 and task3 are the tasks respectively
+        assertEquals(
+                workflow.getTasks().get(0).getStatus().name(),
+                taskInput.get("task2Status")); // task2 and task3 are the tasks respectively
     }
 
     @Test
     public void testGetTaskInputV2Partial() {
-        Workflow workflow = createDefaultWorkflow();
-
+        WorkflowModel workflow = createDefaultWorkflow();
         System.setProperty("EC2_INSTANCE", "i-123abcdef990");
-        Map<String, Object> wfi = new HashMap<>();
-        Map<String, Object> wfmap = new HashMap<>();
-        wfmap.put("input", workflow.getInput());
-        wfmap.put("output", workflow.getOutput());
-        wfi.put("workflow", wfmap);
-
-        workflow.getTasks().stream()
-                .map(Task::getReferenceTaskName)
-                .forEach(ref -> {
-                    Map<String, Object> taskInput = workflow.getTaskByRefName(ref).getInputData();
-                    Map<String, Object> taskOutput = workflow.getTaskByRefName(ref).getOutputData();
-                    Map<String, Object> io = new HashMap<>();
-                    io.put("input", taskInput);
-                    io.put("output", taskOutput);
-                    wfi.put(ref, io);
-                });
-
         workflow.getWorkflowDefinition().setSchemaVersion(2);
 
-        Map<String, Object> ip = new HashMap<>();
-        ip.put("workflowInputParam", "${workflow.input.requestId}");
-        ip.put("workfowOutputParam", "${workflow.output.name}");
-        ip.put("taskOutputParam", "${task2.output.location}");
-        ip.put("taskOutputParam2", "${task2.output.locationBad}");
-        ip.put("taskOutputParam3", "${task3.output.location}");
-        ip.put("constParam", "Some String value   &");
-        ip.put("partial", "${task2.output.location}/something?host=${EC2_INSTANCE}");
-        ip.put("jsonPathExtracted", "${workflow.output.names[*].year}");
-        ip.put("secondName", "${workflow.output.names[1].name}");
-        ip.put("concatenatedName", "The Band is: ${workflow.output.names[1].name}-\t${EC2_INSTANCE}");
+        Map<String, Object> inputParams = new HashMap<>();
+        inputParams.put("workflowInputParam", "${workflow.input.requestId}");
+        inputParams.put("workfowOutputParam", "${workflow.output.name}");
+        inputParams.put("taskOutputParam", "${task2.output.location}");
+        inputParams.put("taskOutputParam2", "${task2.output.locationBad}");
+        inputParams.put("taskOutputParam3", "${task3.output.location}");
+        inputParams.put("constParam", "Some String value   &");
+        inputParams.put("partial", "${task2.output.location}/something?host=${EC2_INSTANCE}");
+        inputParams.put("jsonPathExtracted", "${workflow.output.names[*].year}");
+        inputParams.put("secondName", "${workflow.output.names[1].name}");
+        inputParams.put(
+                "concatenatedName",
+                "The Band is: ${workflow.output.names[1].name}-\t${EC2_INSTANCE}");
 
         TaskDef taskDef = new TaskDef();
         taskDef.getInputTemplate().put("opname", "${workflow.output.name}");
@@ -208,8 +230,8 @@ public class TestDeciderService {
         listParams.add(map);
         taskDef.getInputTemplate().put("listValues", listParams);
 
-
-        Map<String, Object> taskInput = parametersUtils.getTaskInput(ip, workflow, taskDef, null);
+        Map<String, Object> taskInput =
+                parametersUtils.getTaskInput(inputParams, workflow, taskDef, null);
 
         assertNotNull(taskInput);
         assertTrue(taskInput.containsKey("workflowInputParam"));
@@ -257,10 +279,10 @@ public class TestDeciderService {
         def.setName("testGetTaskInput");
         def.setSchemaVersion(2);
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(def);
         workflow.getInput().put("requestId", "request id 001");
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         task.setReferenceTaskName("task2");
         task.getOutputData().put("location", "http://location");
         task.getOutputData().put("isPersonActive", true);
@@ -275,7 +297,8 @@ public class TestDeciderService {
         assertNotNull(taskInput.get("complexJson"));
         assertTrue(taskInput.get("complexJson") instanceof List);
 
-        List<Map<String, Object>> resolvedInput = (List<Map<String, Object>>) taskInput.get("complexJson");
+        List<Map<String, Object>> resolvedInput =
+                (List<Map<String, Object>>) taskInput.get("complexJson");
         assertEquals(2, resolvedInput.size());
     }
 
@@ -288,11 +311,11 @@ public class TestDeciderService {
         WorkflowDef def = new WorkflowDef();
         def.setSchemaVersion(1);
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(def);
 
         workflow.getInput().put("requestId", "request id 001");
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         task.setReferenceTaskName("task2");
         task.getOutputData().put("location", "http://location");
         task.getOutputData().put("isPersonActive", true);
@@ -325,18 +348,24 @@ public class TestDeciderService {
         workflowDef.setName("testGetTaskInputV2WithInputTemplate");
         workflowDef.setVersion(1);
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(workflowDef);
         workflow.setInput(workflowInput);
 
         WorkflowTask workflowTask = new WorkflowTask();
         workflowTask.getInputParameters().put("url", "${workflow.input.some_new_url}");
-        workflowTask.getInputParameters().put("workflow_input_url", "${workflow.input.workflow_input_url}");
+        workflowTask
+                .getInputParameters()
+                .put("workflow_input_url", "${workflow.input.workflow_input_url}");
         workflowTask.getInputParameters().put("someKey", "${workflow.input.someKey}");
         workflowTask.getInputParameters().put("someOtherKey", "${workflow.input.some_other_key}");
-        workflowTask.getInputParameters().put("someNowhereToBeFoundKey", "${workflow.input.some_ne_key}");
+        workflowTask
+                .getInputParameters()
+                .put("someNowhereToBeFoundKey", "${workflow.input.some_ne_key}");
 
-        Map<String, Object> taskInput = parametersUtils.getTaskInputV2(workflowTask.getInputParameters(), workflow, null, def);
+        Map<String, Object> taskInput =
+                parametersUtils.getTaskInputV2(
+                        workflowTask.getInputParameters(), workflow, null, def);
         assertTrue(taskInput.containsKey("url"));
         assertTrue(taskInput.containsKey("default_url"));
         assertEquals(taskInput.get("url"), "https://some_new_url:7004");
@@ -376,7 +405,7 @@ public class TestDeciderService {
 
         WorkflowTask taskAfterT3 = def.getNextTask("t3");
         assertNotNull(taskAfterT3);
-        assertEquals(TaskType.DECISION.name(), taskAfterT3.getType());
+        assertEquals(DECISION.name(), taskAfterT3.getType());
         assertEquals("d1", taskAfterT3.getTaskReferenceName());
 
         WorkflowTask taskAfterT4 = def.getNextTask("t4");
@@ -409,54 +438,53 @@ public class TestDeciderService {
 
         WorkflowDef def = createConditionalWF();
 
-        Workflow wf = new Workflow();
-        wf.setWorkflowDefinition(def);
-        wf.setCreateTime(0L);
-        wf.setWorkflowId("a");
-        wf.setCorrelationId("b");
-        wf.setStatus(WorkflowStatus.RUNNING);
+        WorkflowModel workflow = new WorkflowModel();
+        workflow.setWorkflowDefinition(def);
+        workflow.setCreateTime(0L);
+        workflow.setWorkflowId("a");
+        workflow.setCorrelationId("b");
+        workflow.setStatus(WorkflowModel.Status.RUNNING);
 
-        DeciderOutcome outcome = deciderService.decide(wf);
-        List<Task> scheduledTasks = outcome.tasksToBeScheduled;
+        DeciderOutcome outcome = deciderService.decide(workflow);
+        List<TaskModel> scheduledTasks = outcome.tasksToBeScheduled;
         assertNotNull(scheduledTasks);
         assertEquals(2, scheduledTasks.size());
-        assertEquals(Status.IN_PROGRESS, scheduledTasks.get(0).getStatus());
-        assertEquals(Status.SCHEDULED, scheduledTasks.get(1).getStatus());
-
+        assertEquals(TaskModel.Status.IN_PROGRESS, scheduledTasks.get(0).getStatus());
+        assertEquals(TaskModel.Status.SCHEDULED, scheduledTasks.get(1).getStatus());
     }
 
     @Test
     public void testGetTaskByRef() {
-        Workflow workflow = new Workflow();
-        Task t1 = new Task();
+        WorkflowModel workflow = new WorkflowModel();
+        TaskModel t1 = new TaskModel();
         t1.setReferenceTaskName("ref");
         t1.setSeq(0);
-        t1.setStatus(Status.TIMED_OUT);
+        t1.setStatus(TaskModel.Status.TIMED_OUT);
 
-        Task t2 = new Task();
+        TaskModel t2 = new TaskModel();
         t2.setReferenceTaskName("ref");
         t2.setSeq(1);
-        t2.setStatus(Status.FAILED);
+        t2.setStatus(TaskModel.Status.FAILED);
 
-        Task t3 = new Task();
+        TaskModel t3 = new TaskModel();
         t3.setReferenceTaskName("ref");
         t3.setSeq(2);
-        t3.setStatus(Status.COMPLETED);
+        t3.setStatus(TaskModel.Status.COMPLETED);
 
         workflow.getTasks().add(t1);
         workflow.getTasks().add(t2);
         workflow.getTasks().add(t3);
 
-        Task task = workflow.getTaskByRefName("ref");
+        TaskModel task = workflow.getTaskByRefName("ref");
         assertNotNull(task);
-        assertEquals(Status.COMPLETED, task.getStatus());
+        assertEquals(TaskModel.Status.COMPLETED, task.getStatus());
         assertEquals(t3.getSeq(), task.getSeq());
-
     }
 
     @Test
     public void testTaskTimeout() {
-        Counter counter = registry.counter("task_timeout", "class", "WorkflowMonitor", "taskType", "test");
+        Counter counter =
+                registry.counter("task_timeout", "class", "WorkflowMonitor", "taskType", "test");
         long counterCount = counter.count();
 
         TaskDef taskType = new TaskDef();
@@ -464,30 +492,30 @@ public class TestDeciderService {
         taskType.setTimeoutPolicy(TimeoutPolicy.RETRY);
         taskType.setTimeoutSeconds(1);
 
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         task.setTaskType(taskType.getName());
-        task.setStartTime(System.currentTimeMillis() - 2_000);        //2 seconds ago!
-        task.setStatus(Status.IN_PROGRESS);
+        task.setStartTime(System.currentTimeMillis() - 2_000); // 2 seconds ago!
+        task.setStatus(TaskModel.Status.IN_PROGRESS);
         deciderService.checkTaskTimeout(taskType, task);
 
-        //Task should be marked as timed out
-        assertEquals(Status.TIMED_OUT, task.getStatus());
+        // Task should be marked as timed out
+        assertEquals(TaskModel.Status.TIMED_OUT, task.getStatus());
         assertNotNull(task.getReasonForIncompletion());
         assertEquals(++counterCount, counter.count());
 
         taskType.setTimeoutPolicy(TimeoutPolicy.ALERT_ONLY);
-        task.setStatus(Status.IN_PROGRESS);
+        task.setStatus(TaskModel.Status.IN_PROGRESS);
         task.setReasonForIncompletion(null);
         deciderService.checkTaskTimeout(taskType, task);
 
-        //Nothing will happen
-        assertEquals(Status.IN_PROGRESS, task.getStatus());
+        // Nothing will happen
+        assertEquals(TaskModel.Status.IN_PROGRESS, task.getStatus());
         assertNull(task.getReasonForIncompletion());
         assertEquals(++counterCount, counter.count());
 
         boolean exception = false;
         taskType.setTimeoutPolicy(TimeoutPolicy.TIME_OUT_WF);
-        task.setStatus(Status.IN_PROGRESS);
+        task.setStatus(TaskModel.Status.IN_PROGRESS);
         task.setReasonForIncompletion(null);
 
         try {
@@ -496,23 +524,24 @@ public class TestDeciderService {
             exception = true;
         }
         assertTrue(exception);
-        assertEquals(Status.TIMED_OUT, task.getStatus());
+        assertEquals(TaskModel.Status.TIMED_OUT, task.getStatus());
         assertNotNull(task.getReasonForIncompletion());
         assertEquals(++counterCount, counter.count());
 
         taskType.setTimeoutPolicy(TimeoutPolicy.TIME_OUT_WF);
-        task.setStatus(Status.IN_PROGRESS);
+        task.setStatus(TaskModel.Status.IN_PROGRESS);
         task.setReasonForIncompletion(null);
-        deciderService.checkTaskTimeout(null, task);    //this will be a no-op
+        deciderService.checkTaskTimeout(null, task); // this will be a no-op
 
-        assertEquals(Status.IN_PROGRESS, task.getStatus());
+        assertEquals(TaskModel.Status.IN_PROGRESS, task.getStatus());
         assertNull(task.getReasonForIncompletion());
         assertEquals(counterCount, counter.count());
     }
 
     @Test
     public void testCheckTaskPollTimeout() {
-        Counter counter = registry.counter("task_timeout", "class", "WorkflowMonitor", "taskType", "test");
+        Counter counter =
+                registry.counter("task_timeout", "class", "WorkflowMonitor", "taskType", "test");
         long counterCount = counter.count();
 
         TaskDef taskType = new TaskDef();
@@ -520,23 +549,23 @@ public class TestDeciderService {
         taskType.setTimeoutPolicy(TimeoutPolicy.RETRY);
         taskType.setPollTimeoutSeconds(1);
 
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         task.setTaskType(taskType.getName());
         task.setScheduledTime(System.currentTimeMillis() - 2_000);
-        task.setStatus(Status.SCHEDULED);
+        task.setStatus(TaskModel.Status.SCHEDULED);
         deciderService.checkTaskPollTimeout(taskType, task);
 
         assertEquals(++counterCount, counter.count());
-        assertEquals(Status.TIMED_OUT, task.getStatus());
+        assertEquals(TaskModel.Status.TIMED_OUT, task.getStatus());
         assertNotNull(task.getReasonForIncompletion());
 
         task.setScheduledTime(System.currentTimeMillis());
         task.setReasonForIncompletion(null);
-        task.setStatus(Status.SCHEDULED);
+        task.setStatus(TaskModel.Status.SCHEDULED);
         deciderService.checkTaskPollTimeout(taskType, task);
 
         assertEquals(counterCount, counter.count());
-        assertEquals(Status.SCHEDULED, task.getStatus());
+        assertEquals(TaskModel.Status.SCHEDULED, task.getStatus());
         assertNull(task.getReasonForIncompletion());
     }
 
@@ -558,69 +587,69 @@ public class TestDeciderService {
 
         def.getInputTemplate().putAll(body);
 
-        ExecutorService es = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
         final int[] result = new int[10];
         CountDownLatch latch = new CountDownLatch(10);
 
         for (int i = 0; i < 10; i++) {
             final int x = i;
-            es.submit(() -> {
+            executorService.submit(
+                    () -> {
+                        try {
+                            Map<String, Object> workflowInput = new HashMap<>();
+                            workflowInput.put("outputLocation", "baggins://outputlocation/" + x);
+                            workflowInput.put("inputLocation", "baggins://inputlocation/" + x);
+                            workflowInput.put("sourceType", "MuxedSource");
+                            workflowInput.put("channelMapping", x);
 
-                try {
+                            WorkflowDef workflowDef = new WorkflowDef();
+                            workflowDef.setName("testConcurrentTaskInputCalc");
+                            workflowDef.setVersion(1);
 
-                    Map<String, Object> workflowInput = new HashMap<>();
-                    workflowInput.put("outputLocation", "baggins://outputlocation/" + x);
-                    workflowInput.put("inputLocation", "baggins://inputlocation/" + x);
-                    workflowInput.put("sourceType", "MuxedSource");
-                    workflowInput.put("channelMapping", x);
+                            WorkflowModel workflow = new WorkflowModel();
+                            workflow.setWorkflowDefinition(workflowDef);
+                            workflow.setInput(workflowInput);
 
-                    WorkflowDef workflowDef = new WorkflowDef();
-                    workflowDef.setName("testConcurrentTaskInputCalc");
-                    workflowDef.setVersion(1);
+                            Map<String, Object> taskInput =
+                                    parametersUtils.getTaskInputV2(
+                                            new HashMap<>(), workflow, null, def);
 
-                    Workflow workflow = new Workflow();
-                    workflow.setWorkflowDefinition(workflowDef);
-                    workflow.setInput(workflowInput);
+                            Object reqInputObj = taskInput.get("input");
+                            assertNotNull(reqInputObj);
+                            assertTrue(reqInputObj instanceof List);
+                            List<Map<String, Object>> reqInput =
+                                    (List<Map<String, Object>>) reqInputObj;
 
-                    Map<String, Object> taskInput = parametersUtils.getTaskInputV2(new HashMap<>(), workflow, null, def);
+                            Object cmObj = reqInput.get(0).get("channelMapping");
+                            assertNotNull(cmObj);
+                            if (!(cmObj instanceof Number)) {
+                                result[x] = -1;
+                            } else {
+                                Number channelMapping = (Number) cmObj;
+                                result[x] = channelMapping.intValue();
+                            }
 
-                    Object reqInputObj = taskInput.get("input");
-                    assertNotNull(reqInputObj);
-                    assertTrue(reqInputObj instanceof List);
-                    List<Map<String, Object>> reqInput = (List<Map<String, Object>>) reqInputObj;
-
-                    Object cmObj = reqInput.get(0).get("channelMapping");
-                    assertNotNull(cmObj);
-                    if (!(cmObj instanceof Number)) {
-                        result[x] = -1;
-                    } else {
-                        Number channelMapping = (Number) cmObj;
-                        result[x] = channelMapping.intValue();
-                    }
-
-                    latch.countDown();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            });
+                            latch.countDown();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
         }
         latch.await(1, TimeUnit.MINUTES);
         if (latch.getCount() > 0) {
-            fail("Executions did not complete in a minute.  Something wrong with the build server?");
+            fail(
+                    "Executions did not complete in a minute.  Something wrong with the build server?");
         }
-        es.shutdownNow();
+        executorService.shutdownNow();
         for (int i = 0; i < result.length; i++) {
             assertEquals(i, result[i]);
         }
     }
 
-
     @SuppressWarnings("unchecked")
     @Test
     public void testTaskRetry() {
-        Workflow workflow = createDefaultWorkflow();
+        WorkflowModel workflow = createDefaultWorkflow();
 
         workflow.getWorkflowDefinition().setSchemaVersion(2);
 
@@ -637,10 +666,11 @@ public class TestDeciderService {
         env.put("env_task_id", "${CPEWF_TASK_ID}");
         inputParams.put("env", env);
 
-        Map<String, Object> taskInput = parametersUtils.getTaskInput(inputParams, workflow, null, "t1");
-        Task task = new Task();
+        Map<String, Object> taskInput =
+                parametersUtils.getTaskInput(inputParams, workflow, null, "t1");
+        TaskModel task = new TaskModel();
         task.getInputData().putAll(taskInput);
-        task.setStatus(Status.FAILED);
+        task.setStatus(TaskModel.Status.FAILED);
         task.setTaskId("t1");
 
         TaskDef taskDef = new TaskDef();
@@ -648,26 +678,31 @@ public class TestDeciderService {
         workflowTask.getInputParameters().put("task_id", "${CPEWF_TASK_ID}");
         workflowTask.getInputParameters().put("env", env);
 
-        Optional<Task> task2 = deciderService.retry(taskDef, workflowTask, task, workflow);
+        Optional<TaskModel> task2 = deciderService.retry(taskDef, workflowTask, task, workflow);
         assertEquals("t1", task.getInputData().get("task_id"));
-        assertEquals("t1", ((Map<String, Object>) task.getInputData().get("env")).get("env_task_id"));
+        assertEquals(
+                "t1", ((Map<String, Object>) task.getInputData().get("env")).get("env_task_id"));
 
         assertNotSame(task.getTaskId(), task2.get().getTaskId());
         assertEquals(task2.get().getTaskId(), task2.get().getInputData().get("task_id"));
-        assertEquals(task2.get().getTaskId(), ((Map<String, Object>) task2.get().getInputData().get("env")).get("env_task_id"));
+        assertEquals(
+                task2.get().getTaskId(),
+                ((Map<String, Object>) task2.get().getInputData().get("env")).get("env_task_id"));
 
-        Task task3 = new Task();
+        TaskModel task3 = new TaskModel();
         task3.getInputData().putAll(taskInput);
-        task3.setStatus(Status.FAILED_WITH_TERMINAL_ERROR);
+        task3.setStatus(TaskModel.Status.FAILED_WITH_TERMINAL_ERROR);
         task3.setTaskId("t1");
-        when(metadataDAO.getWorkflowDef(anyString(), anyInt())).thenReturn(Optional.of(new WorkflowDef()));
+        when(metadataDAO.getWorkflowDef(anyString(), anyInt()))
+                .thenReturn(Optional.of(new WorkflowDef()));
         exception.expect(TerminateWorkflowException.class);
         deciderService.retry(taskDef, workflowTask, task3, workflow);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testWorkflowTaskRetry() {
-        Workflow workflow = createDefaultWorkflow();
+        WorkflowModel workflow = createDefaultWorkflow();
 
         workflow.getWorkflowDefinition().setSchemaVersion(2);
 
@@ -684,12 +719,13 @@ public class TestDeciderService {
         env.put("env_task_id", "${CPEWF_TASK_ID}");
         inputParams.put("env", env);
 
-        Map<String, Object> taskInput = parametersUtils.getTaskInput(inputParams, workflow, null, "t1");
+        Map<String, Object> taskInput =
+                parametersUtils.getTaskInput(inputParams, workflow, null, "t1");
 
         // Create a first failed task
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         task.getInputData().putAll(taskInput);
-        task.setStatus(Status.FAILED);
+        task.setStatus(TaskModel.Status.FAILED);
         task.setTaskId("t1");
 
         TaskDef taskDef = new TaskDef();
@@ -701,29 +737,66 @@ public class TestDeciderService {
         workflowTask.setRetryCount(1);
 
         // Retry the failed task and assert that a new one has been created
-        Optional<Task> task2 = deciderService.retry(taskDef, workflowTask, task, workflow);
+        Optional<TaskModel> task2 = deciderService.retry(taskDef, workflowTask, task, workflow);
         assertEquals("t1", task.getInputData().get("task_id"));
-        assertEquals("t1", ((Map<String, Object>) task.getInputData().get("env")).get("env_task_id"));
+        assertEquals(
+                "t1", ((Map<String, Object>) task.getInputData().get("env")).get("env_task_id"));
 
         assertNotSame(task.getTaskId(), task2.get().getTaskId());
         assertEquals(task2.get().getTaskId(), task2.get().getInputData().get("task_id"));
-        assertEquals(task2.get().getTaskId(), ((Map<String, Object>) task2.get().getInputData().get("env")).get("env_task_id"));
+        assertEquals(
+                task2.get().getTaskId(),
+                ((Map<String, Object>) task2.get().getInputData().get("env")).get("env_task_id"));
 
         // Set the retried task to FAILED, retry it again and assert that the workflow failed
-        task2.get().setStatus(Status.FAILED);
+        task2.get().setStatus(TaskModel.Status.FAILED);
         exception.expect(TerminateWorkflowException.class);
-        final Optional<Task> task3 = deciderService.retry(taskDef, workflowTask, task2.get(), workflow);
+        final Optional<TaskModel> task3 =
+                deciderService.retry(taskDef, workflowTask, task2.get(), workflow);
 
         assertFalse(task3.isPresent());
-        assertEquals(WorkflowStatus.FAILED, workflow.getStatus());
+        assertEquals(WorkflowModel.Status.FAILED, workflow.getStatus());
+    }
+
+    @Test
+    public void testLinearBackoff() {
+        WorkflowModel workflow = createDefaultWorkflow();
+
+        TaskModel task = new TaskModel();
+        task.setStatus(TaskModel.Status.FAILED);
+        task.setTaskId("t1");
+
+        TaskDef taskDef = new TaskDef();
+        taskDef.setRetryDelaySeconds(60);
+        taskDef.setRetryLogic(TaskDef.RetryLogic.LINEAR_BACKOFF);
+        taskDef.setBackoffScaleFactor(2);
+        WorkflowTask workflowTask = new WorkflowTask();
+
+        Optional<TaskModel> task2 = deciderService.retry(taskDef, workflowTask, task, workflow);
+        assertEquals(120, task2.get().getCallbackAfterSeconds()); // 60*2*1
+
+        Optional<TaskModel> task3 =
+                deciderService.retry(taskDef, workflowTask, task2.get(), workflow);
+        assertEquals(240, task3.get().getCallbackAfterSeconds()); // 60*2*2
+
+        Optional<TaskModel> task4 =
+                deciderService.retry(taskDef, workflowTask, task3.get(), workflow);
+        // // 60*2*3
+        assertEquals(360, task4.get().getCallbackAfterSeconds()); // 60*2*3
+
+        taskDef.setRetryCount(Integer.MAX_VALUE);
+        task4.get().setRetryCount(Integer.MAX_VALUE - 100);
+        Optional<TaskModel> task5 =
+                deciderService.retry(taskDef, workflowTask, task4.get(), workflow);
+        assertEquals(Integer.MAX_VALUE, task5.get().getCallbackAfterSeconds());
     }
 
     @Test
     public void testExponentialBackoff() {
-        Workflow workflow = createDefaultWorkflow();
+        WorkflowModel workflow = createDefaultWorkflow();
 
-        Task task = new Task();
-        task.setStatus(Status.FAILED);
+        TaskModel task = new TaskModel();
+        task.setStatus(TaskModel.Status.FAILED);
         task.setTaskId("t1");
 
         TaskDef taskDef = new TaskDef();
@@ -731,25 +804,28 @@ public class TestDeciderService {
         taskDef.setRetryLogic(TaskDef.RetryLogic.EXPONENTIAL_BACKOFF);
         WorkflowTask workflowTask = new WorkflowTask();
 
-        Optional<Task> task2 = deciderService.retry(taskDef, workflowTask, task, workflow);
+        Optional<TaskModel> task2 = deciderService.retry(taskDef, workflowTask, task, workflow);
         assertEquals(60, task2.get().getCallbackAfterSeconds());
 
-        Optional<Task> task3 = deciderService.retry(taskDef, workflowTask, task2.get(), workflow);
+        Optional<TaskModel> task3 =
+                deciderService.retry(taskDef, workflowTask, task2.get(), workflow);
         assertEquals(120, task3.get().getCallbackAfterSeconds());
 
-        Optional<Task> task4 = deciderService.retry(taskDef, workflowTask, task3.get(), workflow);
+        Optional<TaskModel> task4 =
+                deciderService.retry(taskDef, workflowTask, task3.get(), workflow);
         assertEquals(240, task4.get().getCallbackAfterSeconds());
 
         taskDef.setRetryCount(Integer.MAX_VALUE);
         task4.get().setRetryCount(Integer.MAX_VALUE - 100);
-        Optional<Task> task5 = deciderService.retry(taskDef, workflowTask, task4.get(), workflow);
+        Optional<TaskModel> task5 =
+                deciderService.retry(taskDef, workflowTask, task4.get(), workflow);
         assertEquals(Integer.MAX_VALUE, task5.get().getCallbackAfterSeconds());
     }
 
     @Test
     public void testFork() throws IOException {
         InputStream stream = TestDeciderService.class.getResourceAsStream("/test.json");
-        Workflow workflow = objectMapper.readValue(stream, Workflow.class);
+        WorkflowModel workflow = objectMapper.readValue(stream, WorkflowModel.class);
 
         DeciderOutcome outcome = deciderService.decide(workflow);
         assertFalse(outcome.isComplete);
@@ -761,17 +837,17 @@ public class TestDeciderService {
     public void testDecideSuccessfulWorkflow() {
         WorkflowDef workflowDef = createLinearWorkflow();
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(workflowDef);
-        workflow.setStatus(WorkflowStatus.RUNNING);
+        workflow.setStatus(WorkflowModel.Status.RUNNING);
 
-        Task task1 = new Task();
+        TaskModel task1 = new TaskModel();
         task1.setTaskType("junit_task_l1");
         task1.setReferenceTaskName("s1");
         task1.setSeq(1);
         task1.setRetried(false);
         task1.setExecuted(false);
-        task1.setStatus(Status.COMPLETED);
+        task1.setStatus(TaskModel.Status.COMPLETED);
 
         workflow.getTasks().add(task1);
 
@@ -785,13 +861,13 @@ public class TestDeciderService {
         assertEquals("s2", deciderOutcome.tasksToBeScheduled.get(0).getReferenceTaskName());
         assertFalse(deciderOutcome.isComplete);
 
-        Task task2 = new Task();
+        TaskModel task2 = new TaskModel();
         task2.setTaskType("junit_task_l2");
         task2.setReferenceTaskName("s2");
         task2.setSeq(2);
         task2.setRetried(false);
         task2.setExecuted(false);
-        task2.setStatus(Status.COMPLETED);
+        task2.setStatus(TaskModel.Status.COMPLETED);
         workflow.getTasks().add(task2);
 
         deciderOutcome = deciderService.decide(workflow);
@@ -808,18 +884,18 @@ public class TestDeciderService {
     public void testDecideWithLoopTask() {
         WorkflowDef workflowDef = createLinearWorkflow();
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(workflowDef);
-        workflow.setStatus(WorkflowStatus.RUNNING);
+        workflow.setStatus(WorkflowModel.Status.RUNNING);
 
-        Task task1 = new Task();
+        TaskModel task1 = new TaskModel();
         task1.setTaskType("junit_task_l1");
         task1.setReferenceTaskName("s1");
         task1.setSeq(1);
         task1.setIteration(1);
         task1.setRetried(false);
         task1.setExecuted(false);
-        task1.setStatus(Status.COMPLETED);
+        task1.setStatus(TaskModel.Status.COMPLETED);
 
         workflow.getTasks().add(task1);
 
@@ -838,17 +914,17 @@ public class TestDeciderService {
     public void testDecideFailedTask() {
         WorkflowDef workflowDef = createLinearWorkflow();
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(workflowDef);
-        workflow.setStatus(WorkflowStatus.RUNNING);
+        workflow.setStatus(WorkflowModel.Status.RUNNING);
 
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         task.setTaskType("junit_task_l1");
         task.setReferenceTaskName("s1");
         task.setSeq(1);
         task.setRetried(false);
         task.setExecuted(false);
-        task.setStatus(Status.FAILED);
+        task.setStatus(TaskModel.Status.FAILED);
 
         WorkflowTask workflowTask = new WorkflowTask();
         workflowTask.setTaskReferenceName("s1");
@@ -873,17 +949,18 @@ public class TestDeciderService {
     public void testGetTasksToBeScheduled() {
         WorkflowDef workflowDef = createLinearWorkflow();
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(workflowDef);
-        workflow.setStatus(WorkflowStatus.RUNNING);
+        workflow.setStatus(WorkflowModel.Status.RUNNING);
 
         WorkflowTask workflowTask1 = new WorkflowTask();
         workflowTask1.setName("s1");
         workflowTask1.setTaskReferenceName("s1");
-        workflowTask1.setType(TaskType.SIMPLE.name());
+        workflowTask1.setType(SIMPLE.name());
         workflowTask1.setTaskDefinition(new TaskDef("s1"));
 
-        List<Task> tasksToBeScheduled = deciderService.getTasksToBeScheduled(workflow, workflowTask1, 0, null);
+        List<TaskModel> tasksToBeScheduled =
+                deciderService.getTasksToBeScheduled(workflow, workflowTask1, 0, null);
         assertNotNull(tasksToBeScheduled);
         assertEquals(1, tasksToBeScheduled.size());
         assertEquals("s1", tasksToBeScheduled.get(0).getReferenceTaskName());
@@ -891,7 +968,7 @@ public class TestDeciderService {
         WorkflowTask workflowTask2 = new WorkflowTask();
         workflowTask2.setName("s2");
         workflowTask2.setTaskReferenceName("s2");
-        workflowTask2.setType(TaskType.SIMPLE.name());
+        workflowTask2.setType(SIMPLE.name());
         workflowTask2.setTaskDefinition(new TaskDef("s2"));
         tasksToBeScheduled = deciderService.getTasksToBeScheduled(workflow, workflowTask2, 0, null);
         assertNotNull(tasksToBeScheduled);
@@ -905,9 +982,9 @@ public class TestDeciderService {
         taskDef.setName("test_rt");
         taskDef.setResponseTimeoutSeconds(10);
 
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         task.setTaskDefName("test_rt");
-        task.setStatus(Status.IN_PROGRESS);
+        task.setStatus(TaskModel.Status.IN_PROGRESS);
         task.setTaskId("aa");
         task.setTaskType(TaskType.TASK_TYPE_SIMPLE);
         task.setUpdateTime(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(11));
@@ -917,132 +994,161 @@ public class TestDeciderService {
         // verify that sub workflow tasks are not response timed out
         task.setTaskType(TaskType.TASK_TYPE_SUB_WORKFLOW);
         assertFalse(deciderService.isResponseTimedOut(taskDef, task));
+
+        task.setTaskType("asyncCompleteSystemTask");
+        assertFalse(deciderService.isResponseTimedOut(taskDef, task));
     }
 
     @Test
     public void testFilterNextLoopOverTasks() {
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
 
-        Task task1 = new Task();
+        TaskModel task1 = new TaskModel();
         task1.setReferenceTaskName("task1");
-        task1.setStatus(Status.COMPLETED);
+        task1.setStatus(TaskModel.Status.COMPLETED);
         task1.setTaskId("task1");
         task1.setIteration(1);
 
-        Task task2 = new Task();
+        TaskModel task2 = new TaskModel();
         task2.setReferenceTaskName("task2");
-        task2.setStatus(Status.SCHEDULED);
+        task2.setStatus(TaskModel.Status.SCHEDULED);
         task2.setTaskId("task2");
 
-        Task task3 = new Task();
+        TaskModel task3 = new TaskModel();
         task3.setReferenceTaskName("task3__1");
-        task3.setStatus(Status.IN_PROGRESS);
+        task3.setStatus(TaskModel.Status.IN_PROGRESS);
         task3.setTaskId("task3__1");
 
-        Task task4 = new Task();
+        TaskModel task4 = new TaskModel();
         task4.setReferenceTaskName("task4");
-        task4.setStatus(Status.SCHEDULED);
+        task4.setStatus(TaskModel.Status.SCHEDULED);
         task4.setTaskId("task4");
 
-        Task task5 = new Task();
+        TaskModel task5 = new TaskModel();
         task5.setReferenceTaskName("task5");
-        task5.setStatus(Status.COMPLETED);
+        task5.setStatus(TaskModel.Status.COMPLETED);
         task5.setTaskId("task5");
 
         workflow.getTasks().addAll(Arrays.asList(task1, task2, task3, task4, task5));
-        List<Task> tasks = deciderService.filterNextLoopOverTasks(Arrays.asList(task2, task3, task4), task1, workflow);
+        List<TaskModel> tasks =
+                deciderService.filterNextLoopOverTasks(
+                        Arrays.asList(task2, task3, task4), task1, workflow);
         assertEquals(2, tasks.size());
-        tasks.forEach(task -> {
-            assertTrue(task.getReferenceTaskName().endsWith(TaskUtils.getLoopOverTaskRefNameSuffix(1)));
-            assertEquals(1, task.getIteration());
-        });
-
-    }
-
-    @Test
-    public void testPopulateWorkflowAndTaskData() {
-        String workflowInputPath = "workflow/input/test.json";
-        String taskInputPath = "task/input/test.json";
-        String taskOutputPath = "task/output/test.json";
-        Map<String, Object> workflowParams = new HashMap<>();
-        workflowParams.put("key1", "value1");
-        workflowParams.put("key2", 100);
-        when(externalPayloadStorageUtils.downloadPayload(workflowInputPath)).thenReturn(workflowParams);
-        Map<String, Object> taskInputParams = new HashMap<>();
-        taskInputParams.put("key", "taskInput");
-        when(externalPayloadStorageUtils.downloadPayload(taskInputPath)).thenReturn(taskInputParams);
-        Map<String, Object> taskOutputParams = new HashMap<>();
-        taskOutputParams.put("key", "taskOutput");
-        when(externalPayloadStorageUtils.downloadPayload(taskOutputPath)).thenReturn(taskOutputParams);
-        Task task = new Task();
-        task.setExternalInputPayloadStoragePath(taskInputPath);
-        task.setExternalOutputPayloadStoragePath(taskOutputPath);
-        Workflow workflow = new Workflow();
-        workflow.setExternalInputPayloadStoragePath(workflowInputPath);
-        workflow.getTasks().add(task);
-        Workflow workflowInstance = deciderService.populateWorkflowAndTaskData(workflow);
-        assertNotNull(workflowInstance);
-        assertTrue(workflow.getInput().isEmpty());
-        assertNotNull(workflowInstance.getInput());
-        assertEquals(workflowParams, workflowInstance.getInput());
-        assertTrue(workflow.getTasks().get(0).getInputData().isEmpty());
-        assertNotNull(workflowInstance.getTasks().get(0).getInputData());
-        assertEquals(taskInputParams, workflowInstance.getTasks().get(0).getInputData());
-        assertTrue(workflow.getTasks().get(0).getOutputData().isEmpty());
-        assertNotNull(workflowInstance.getTasks().get(0).getOutputData());
-        assertEquals(taskOutputParams, workflowInstance.getTasks().get(0).getOutputData());
-        assertNull(workflowInstance.getExternalInputPayloadStoragePath());
-        assertNull(workflowInstance.getTasks().get(0).getExternalInputPayloadStoragePath());
-        assertNull(workflowInstance.getTasks().get(0).getExternalOutputPayloadStoragePath());
+        tasks.forEach(
+                task -> {
+                    assertTrue(
+                            task.getReferenceTaskName()
+                                    .endsWith(TaskUtils.getLoopOverTaskRefNameSuffix(1)));
+                    assertEquals(1, task.getIteration());
+                });
     }
 
     @Test
     public void testUpdateWorkflowOutput() {
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(new WorkflowDef());
         deciderService.updateWorkflowOutput(workflow, null);
         assertNotNull(workflow.getOutput());
         assertTrue(workflow.getOutput().isEmpty());
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         Map<String, Object> taskOutput = new HashMap<>();
         taskOutput.put("taskKey", "taskValue");
         task.setOutputData(taskOutput);
         workflow.getTasks().add(task);
         WorkflowDef workflowDef = new WorkflowDef();
-        when(metadataDAO.getWorkflowDef(anyString(), anyInt())).thenReturn(Optional.of(workflowDef));
+        when(metadataDAO.getWorkflowDef(anyString(), anyInt()))
+                .thenReturn(Optional.of(workflowDef));
         deciderService.updateWorkflowOutput(workflow, null);
         assertNotNull(workflow.getOutput());
         assertEquals("taskValue", workflow.getOutput().get("taskKey"));
     }
-    
+
     // when workflow definition has outputParameters defined
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
     public void testUpdateWorkflowOutput_WhenDefinitionHasOutputParameters() {
-    	Workflow workflow = new Workflow();
-    	WorkflowDef workflowDef = new WorkflowDef();
-    	workflowDef.setOutputParameters(new HashMap() {{ put("workflowKey", "workflowValue"); }});
-    	workflow.setWorkflowDefinition(workflowDef);
-    	Task task = new Task();
-    	task.setReferenceTaskName("test_task");
-    	task.setOutputData(new HashMap() {{ put("taskKey", "taskValue"); }});
-    	workflow.getTasks().add(task);
-    	deciderService.updateWorkflowOutput(workflow, null);
-    	assertNotNull(workflow.getOutput());
-    	assertEquals("workflowValue", workflow.getOutput().get("workflowKey"));
+        WorkflowModel workflow = new WorkflowModel();
+        WorkflowDef workflowDef = new WorkflowDef();
+        workflowDef.setOutputParameters(
+                new HashMap() {
+                    {
+                        put("workflowKey", "workflowValue");
+                    }
+                });
+        workflow.setWorkflowDefinition(workflowDef);
+        TaskModel task = new TaskModel();
+        task.setReferenceTaskName("test_task");
+        task.setOutputData(
+                new HashMap() {
+                    {
+                        put("taskKey", "taskValue");
+                    }
+                });
+        workflow.getTasks().add(task);
+        deciderService.updateWorkflowOutput(workflow, null);
+        assertNotNull(workflow.getOutput());
+        assertEquals("workflowValue", workflow.getOutput().get("workflowKey"));
+    }
+
+    @Test
+    public void testUpdateWorkflowOutput_WhenWorkflowHasTerminateTask() {
+        WorkflowModel workflow = new WorkflowModel();
+        TaskModel task = new TaskModel();
+        task.setTaskType(TASK_TYPE_TERMINATE);
+        task.setStatus(TaskModel.Status.COMPLETED);
+        task.setOutputData(
+                new HashMap<String, Object>() {
+                    {
+                        put("taskKey", "taskValue");
+                    }
+                });
+        workflow.getTasks().add(task);
+        deciderService.updateWorkflowOutput(workflow, null);
+        assertNotNull(workflow.getOutput());
+        assertEquals("taskValue", workflow.getOutput().get("taskKey"));
+        verify(externalPayloadStorageUtils, never()).downloadPayload(anyString());
+
+        // when terminate task has output in external payload storage
+        String externalOutputPayloadStoragePath = "/task/output/terminate.json";
+        workflow.getTasks().get(0).setOutputData(null);
+        workflow.getTasks()
+                .get(0)
+                .setExternalOutputPayloadStoragePath(externalOutputPayloadStoragePath);
+        when(externalPayloadStorageUtils.downloadPayload(externalOutputPayloadStoragePath))
+                .thenReturn(
+                        new HashMap() {
+                            {
+                                put("taskKey", "taskValue");
+                            }
+                        });
+        deciderService.updateWorkflowOutput(workflow, null);
+        assertNotNull(workflow.getOutput());
+        assertEquals("taskValue", workflow.getOutput().get("taskKey"));
+        verify(externalPayloadStorageUtils, times(1)).downloadPayload(anyString());
     }
 
     @Test
     public void testCheckWorkflowTimeout() {
-        Counter counter = registry.counter("workflow_failure", "class", "WorkflowMonitor", "workflowName", "test",
-            "status", "TIMED_OUT", "ownerApp", "junit");
+        Counter counter =
+                registry.counter(
+                        "workflow_failure",
+                        "class",
+                        "WorkflowMonitor",
+                        "workflowName",
+                        "test",
+                        "status",
+                        "TIMED_OUT",
+                        "ownerApp",
+                        "junit");
+        long counterCount = counter.count();
         assertEquals(0, counter.count());
 
         WorkflowDef workflowDef = new WorkflowDef();
         workflowDef.setName("test");
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setOwnerApp("junit");
-        workflow.setStartTime(System.currentTimeMillis() - 10_000);
+        workflow.setCreateTime(System.currentTimeMillis() - 10_000);
         workflow.setWorkflowId("workflow_id");
 
         // no-op
@@ -1058,7 +1164,7 @@ public class TestDeciderService {
         workflowDef.setTimeoutSeconds(2);
         workflow.setWorkflowDefinition(workflowDef);
         deciderService.checkWorkflowTimeout(workflow);
-        assertEquals(1, counter.count());
+        assertEquals(++counterCount, counter.count());
 
         // time out
         workflowDef.setTimeoutPolicy(WorkflowDef.TimeoutPolicy.TIME_OUT_WF);
@@ -1066,7 +1172,7 @@ public class TestDeciderService {
         try {
             deciderService.checkWorkflowTimeout(workflow);
         } catch (TerminateWorkflowException twe) {
-            assertTrue(twe.getMessage().contains("Workflow 'workflow_id' timed out"));
+            assertTrue(twe.getMessage().contains("Workflow timed out"));
         }
 
         // for a retried workflow
@@ -1074,69 +1180,58 @@ public class TestDeciderService {
         try {
             deciderService.checkWorkflowTimeout(workflow);
         } catch (TerminateWorkflowException twe) {
-            assertTrue(twe.getMessage().contains("Workflow 'workflow_id' timed out"));
+            assertTrue(twe.getMessage().contains("Workflow timed out"));
         }
     }
 
     @Test
-    public void testDeciderGetNextTask() {
-        WorkflowDef workflowDef = createDoWhileInForkWorkflow();
-        Workflow workflow = new Workflow();
-        workflow.setWorkflowDefinition(workflowDef);
+    public void testCheckForWorkflowCompletion() {
+        WorkflowDef conditionalWorkflowDef = createConditionalWF();
+        WorkflowTask terminateWT = new WorkflowTask();
+        terminateWT.setType(TaskType.TERMINATE.name());
+        terminateWT.setTaskReferenceName("terminate");
+        terminateWT.setName("terminate");
+        terminateWT.getInputParameters().put("terminationStatus", "COMPLETED");
+        conditionalWorkflowDef.getTasks().add(terminateWT);
 
-        Task task1 = new Task();
-        task1.setReferenceTaskName("fork");
-        task1.setStatus(Status.COMPLETED);
-        task1.setTaskId("task1");
+        // when workflow has no tasks
+        WorkflowModel workflow = new WorkflowModel();
+        workflow.setWorkflowDefinition(conditionalWorkflowDef);
 
-        Task task2 = new Task();
-        task2.setReferenceTaskName("loopTask");
-        task2.setStatus(Status.SCHEDULED);
-        task2.setTaskId("task2");
-        task2.setIteration(1);
+        // then workflow completion check returns false
+        assertFalse(deciderService.checkForWorkflowCompletion(workflow));
 
-        Task task3 = new Task();
-        task3.setReferenceTaskName("junit_task_0__1");
-        task3.setStatus(Status.COMPLETED);
-        task3.setTaskId("task3");
-        task3.setIteration(1);
+        // when only part of the tasks are completed
+        TaskModel decTask = new TaskModel();
+        decTask.setTaskType(DECISION.name());
+        decTask.setReferenceTaskName("conditional2");
+        decTask.setStatus(TaskModel.Status.COMPLETED);
 
-        Task task4 = new Task();
-        task4.setReferenceTaskName("junit_task_3");
-        task4.setStatus(Status.COMPLETED);
-        task4.setTaskId("task4");
+        TaskModel task1 = new TaskModel();
+        decTask.setTaskType(SIMPLE.name());
+        task1.setReferenceTaskName("t1");
+        task1.setStatus(TaskModel.Status.COMPLETED);
 
-        Task task5 = new Task();
-        task5.setReferenceTaskName("join");
-        task5.setStatus(Status.IN_PROGRESS);
-        task5.setTaskId("task5");
+        workflow.getTasks().addAll(Arrays.asList(decTask, task1));
 
-        workflow.setTasks(Arrays.asList(task1, task2, task3, task4, task5));
+        // then workflow completion check returns false
+        assertFalse(deciderService.checkForWorkflowCompletion(workflow));
 
-        // verify the next task of first task in DoWhile
-        List<Task> nextTask1 = deciderService.getNextTask(workflow, task3);
-        assertEquals(1, nextTask1.size());
-        assertEquals("junit_task_1", nextTask1.get(0).getReferenceTaskName());
+        // when the terminate task is COMPLETED
+        TaskModel task2 = new TaskModel();
+        decTask.setTaskType(SIMPLE.name());
+        task2.setReferenceTaskName("t2");
+        task2.setStatus(TaskModel.Status.SCHEDULED);
 
-        Task task6 = new Task();
-        task6.setReferenceTaskName("junit_task_1__1");
-        task6.setStatus(Status.COMPLETED);
-        task6.setTaskId("task6");
-        task6.setIteration(1);
+        TaskModel terminateTask = new TaskModel();
+        decTask.setTaskType(TaskType.TERMINATE.name());
+        terminateTask.setReferenceTaskName("terminate");
+        terminateTask.setStatus(TaskModel.Status.COMPLETED);
 
-        workflow.setTasks(Arrays.asList(task1, task2, task3, task4, task5, task6));
+        workflow.getTasks().addAll(Arrays.asList(task2, terminateTask));
 
-        // verify the next task of last task in DoWhile
-        List<Task> nextTask2 = deciderService.getNextTask(workflow, task6);
-        assertEquals(0, nextTask2.size());
-
-        task2.setStatus(Status.COMPLETED);
-        task2.setIteration(10);
-
-        // verify the next task of DoWhile
-        List<Task> nextTask3 = deciderService.getNextTask(workflow, task2);
-        assertEquals(1, nextTask3.size());
-        assertEquals("junit_task_2", nextTask3.get(0).getReferenceTaskName());
+        // then the workflow completion check returns true
+        assertTrue(deciderService.checkForWorkflowCompletion(workflow));
     }
 
     private WorkflowDef createConditionalWF() {
@@ -1172,7 +1267,7 @@ public class TestDeciderService {
         workflowDef.setInputParameters(Arrays.asList("param1", "param2"));
 
         WorkflowTask decisionTask2 = new WorkflowTask();
-        decisionTask2.setType(TaskType.DECISION.name());
+        decisionTask2.setType(DECISION.name());
         decisionTask2.setCaseValueParam("case");
         decisionTask2.setName("conditional2");
         decisionTask2.setTaskReferenceName("conditional2");
@@ -1182,9 +1277,8 @@ public class TestDeciderService {
         decisionTask2.setDecisionCases(dc);
         decisionTask2.getInputParameters().put("case", "workflow.input.param2");
 
-
         WorkflowTask decisionTask = new WorkflowTask();
-        decisionTask.setType(TaskType.DECISION.name());
+        decisionTask.setType(DECISION.name());
         decisionTask.setCaseValueParam("case");
         decisionTask.setName("conditional");
         decisionTask.setTaskReferenceName("conditional");
@@ -1204,7 +1298,7 @@ public class TestDeciderService {
         WorkflowTask finalDecisionTask = new WorkflowTask();
         finalDecisionTask.setName("finalcondition");
         finalDecisionTask.setTaskReferenceName("tf");
-        finalDecisionTask.setType(TaskType.DECISION.name());
+        finalDecisionTask.setType(DECISION.name());
         finalDecisionTask.setCaseValueParam("finalCase");
         Map<String, Object> fi = new HashMap<>();
         fi.put("finalCase", "workflow.input.finalCase");
@@ -1242,13 +1336,13 @@ public class TestDeciderService {
         return workflowDef;
     }
 
-    private Workflow createDefaultWorkflow() {
+    private WorkflowModel createDefaultWorkflow() {
 
         WorkflowDef workflowDef = new WorkflowDef();
         workflowDef.setName("TestDeciderService");
         workflowDef.setVersion(1);
 
-        Workflow workflow = new Workflow();
+        WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowDefinition(workflowDef);
 
         workflow.getInput().put("requestId", "request id 001");
@@ -1269,15 +1363,15 @@ public class TestDeciderService {
         workflow.getOutput().put("names", names);
         workflow.getOutput().put("awards", 200);
 
-        Task task = new Task();
+        TaskModel task = new TaskModel();
         task.setReferenceTaskName("task2");
         task.getOutputData().put("location", "http://location");
-        task.setStatus(Status.COMPLETED);
+        task.setStatus(TaskModel.Status.COMPLETED);
 
-        Task task2 = new Task();
+        TaskModel task2 = new TaskModel();
         task2.setReferenceTaskName("task3");
         task2.getOutputData().put("refId", "abcddef_1234_7890_aaffcc");
-        task2.setStatus(Status.SCHEDULED);
+        task2.setStatus(TaskModel.Status.SCHEDULED);
 
         workflow.getTasks().add(task);
         workflow.getTasks().add(task2);
@@ -1309,7 +1403,7 @@ public class TestDeciderService {
         }
 
         WorkflowTask decisionTask = new WorkflowTask();
-        decisionTask.setType(TaskType.DECISION.name());
+        decisionTask.setType(DECISION.name());
         decisionTask.setName("Decision");
         decisionTask.setTaskReferenceName("d1");
         decisionTask.setDefaultCase(Collections.singletonList(tasks.get(8)));
@@ -1321,7 +1415,7 @@ public class TestDeciderService {
 
         WorkflowDef subWorkflowDef = createLinearWorkflow();
         WorkflowTask subWorkflow = new WorkflowTask();
-        subWorkflow.setType(TaskType.SUB_WORKFLOW.name());
+        subWorkflow.setType(SUB_WORKFLOW.name());
         subWorkflow.setName("sw1");
         SubWorkflowParams subWorkflowParams = new SubWorkflowParams();
         subWorkflowParams.setName(subWorkflowDef.getName());
@@ -1329,7 +1423,7 @@ public class TestDeciderService {
         subWorkflow.setTaskReferenceName("sw1");
 
         WorkflowTask forkTask2 = new WorkflowTask();
-        forkTask2.setType(TaskType.FORK_JOIN.name());
+        forkTask2.setType(FORK_JOIN.name());
         forkTask2.setName("second fork");
         forkTask2.setTaskReferenceName("fork2");
         forkTask2.getForkTasks().add(Arrays.asList(tasks.get(2), tasks.get(4)));
@@ -1337,71 +1431,27 @@ public class TestDeciderService {
 
         WorkflowTask joinTask2 = new WorkflowTask();
         joinTask2.setName("join2");
-        joinTask2.setType(TaskType.JOIN.name());
+        joinTask2.setType(JOIN.name());
         joinTask2.setTaskReferenceName("join2");
         joinTask2.setJoinOn(Arrays.asList("t4", "d1"));
 
         WorkflowTask forkTask1 = new WorkflowTask();
-        forkTask1.setType(TaskType.FORK_JOIN.name());
+        forkTask1.setType(FORK_JOIN.name());
         forkTask1.setName("fork1");
         forkTask1.setTaskReferenceName("fork1");
         forkTask1.getForkTasks().add(Collections.singletonList(tasks.get(1)));
         forkTask1.getForkTasks().add(Arrays.asList(forkTask2, joinTask2));
         forkTask1.getForkTasks().add(Collections.singletonList(subWorkflow));
 
-
         WorkflowTask joinTask1 = new WorkflowTask();
         joinTask1.setName("join1");
-        joinTask1.setType(TaskType.JOIN.name());
+        joinTask1.setType(JOIN.name());
         joinTask1.setTaskReferenceName("join1");
         joinTask1.setJoinOn(Arrays.asList("t1", "fork2"));
 
         workflowDef.getTasks().add(forkTask1);
         workflowDef.getTasks().add(joinTask1);
         workflowDef.getTasks().add(tasks.get(5));
-
-        return workflowDef;
-    }
-
-    private WorkflowDef createDoWhileInForkWorkflow() {
-        String FORK_DOWHILE_TASK_WF = "FORK_DOWHILE_TASK_WF";
-        List<WorkflowTask> workflowTasks = new ArrayList<>(10);
-        for(int i = 0; i < 10; i++){
-            WorkflowTask workflowTask = new WorkflowTask();
-            workflowTask.setTaskReferenceName("junit_task_" + i);
-            workflowTask.setName("junit_task_" + i);
-            workflowTask.setType(TaskType.LAMBDA.name());
-            workflowTasks.add(workflowTask);
-        }
-
-        WorkflowDef workflowDef = new WorkflowDef();
-        workflowDef.setName(FORK_DOWHILE_TASK_WF);
-        workflowDef.setDescription(FORK_DOWHILE_TASK_WF);
-
-        WorkflowTask doWhileTask = new WorkflowTask();
-        doWhileTask.setType(TaskType.DO_WHILE.name());
-        doWhileTask.setName("loopTask");
-        doWhileTask.setTaskReferenceName("loopTask");
-        doWhileTask.setLoopCondition("$.loopTask.iteration < 10");
-        doWhileTask.setLoopOver(workflowTasks.subList(0, 2));
-
-        WorkflowTask forkTask = new WorkflowTask();
-        forkTask.setType(TaskType.FORK_JOIN.name());
-        forkTask.setName("fork");
-        forkTask.setTaskReferenceName("fork");
-        List<List<WorkflowTask>> wtList = new ArrayList<>();
-        wtList.add(Arrays.asList(doWhileTask, workflowTasks.get(2)));
-        wtList.add(Collections.singletonList(workflowTasks.get(3)));
-        forkTask.setForkTasks(wtList);
-
-        WorkflowTask joinTask = new WorkflowTask();
-        joinTask.setType(TaskType.JOIN.name());
-        joinTask.setName("join");
-        joinTask.setTaskReferenceName("join");
-        joinTask.setJoinOn(Arrays.asList(workflowTasks.get(2).getTaskReferenceName(), workflowTasks.get(3).getTaskReferenceName()));
-
-        workflowDef.getTasks().add(forkTask);
-        workflowDef.getTasks().add(joinTask);
 
         return workflowDef;
     }
