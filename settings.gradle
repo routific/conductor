@@ -62,4 +62,12 @@ include 'java-sdk'
 
 include 'test-harness'
 
+include 'contribs:event-queue:kafka'
+include 'contribs:persistence:postgres-persistence'
+include 'contribs:persistence:common-persistence'
+include 'contribs:index:es7-persistence'
+include 'contribs:task:kafka'
+include 'contribs:metrics'
+include 'contribs:test-util'
+
 rootProject.children.each {it.name="conductor-${it.name}"}
