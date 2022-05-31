@@ -158,6 +158,12 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
     }
 
     private void listen(ObservableQueue queue) {
-        queue.observe().subscribe((Message msg) -> defaultEventProcessor.handle(queue, msg));
+        LOGGER.info("Listening to observable queue: {}", queue.getType());
+        if (queue.getType().equals("kafka")) {
+            LOGGER.info("Using new queue handler for Kafka");
+            queue.observe((Message msg) -> defaultEventProcessor.handle(queue, msg));
+        } else {
+            queue.observe().subscribe((Message msg) -> defaultEventProcessor.handle(queue, msg));
+        }
     }
 }
