@@ -25,6 +25,7 @@ ext {
     revDynoQueues = '2.0.20'
     revElasticSearch6 = '6.8.12'
     revElasticSearch7 = '7.6.2'
+    revKafka = '3.1.0'
     revEmbeddedRedis = '0.6'
     revEurekaClient = '1.10.10'
     revGroovy = '2.5.13'
