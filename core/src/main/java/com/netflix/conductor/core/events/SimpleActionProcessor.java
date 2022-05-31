@@ -166,9 +166,9 @@ public class SimpleActionProcessor implements ActionProcessor {
 
         try {
             workflowExecutor.updateTask(new TaskResult(taskModel.toTask()));
-            LOGGER.debug(
+            LOGGER.info(
                     "Updated task: {} in workflow:{} with status: {} for event: {} for message:{}",
-                    taskId,
+                    taskModel.getTaskId(),
                     workflowId,
                     status,
                     event,
@@ -196,6 +196,10 @@ public class SimpleActionProcessor implements ActionProcessor {
         Map<String, Object> output = new HashMap<>();
         try {
             Map<String, Object> inputParams = params.getInput();
+            inputParams.put("workflowName", params.getName());
+            inputParams.put("version", "${version}");
+            inputParams.put("params", "${params}");
+
             Map<String, Object> workflowInput = parametersUtils.replace(inputParams, payload);
 
             Map<String, Object> paramsMap = new HashMap<>();
@@ -203,12 +207,18 @@ public class SimpleActionProcessor implements ActionProcessor {
                     .ifPresent(value -> paramsMap.put("correlationId", value));
             Map<String, Object> replaced = parametersUtils.replace(paramsMap, payload);
 
+            String workflowName = (String) workflowInput.get("workflowName");
+            Integer version = (Integer) workflowInput.get("version");
+
             workflowInput.put("conductor.event.messageId", messageId);
             workflowInput.put("conductor.event.name", event);
 
+            params.setName(workflowName);
+            params.setVersion(version);
+
             String workflowId =
                     workflowExecutor.startWorkflow(
-                            params.getName(),
+                            workflowName,
                             params.getVersion(),
                             Optional.ofNullable(replaced.get("correlationId"))
                                     .map(Object::toString)
@@ -218,9 +228,9 @@ public class SimpleActionProcessor implements ActionProcessor {
                             event,
                             params.getTaskToDomain());
             output.put("workflowId", workflowId);
-            LOGGER.debug(
+            LOGGER.info(
                     "Started workflow: {}/{}/{} for event: {} for message:{}",
-                    params.getName(),
+                    workflowName,
                     params.getVersion(),
                     workflowId,
                     event,
