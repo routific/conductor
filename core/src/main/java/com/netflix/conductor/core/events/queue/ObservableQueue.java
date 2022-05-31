@@ -26,6 +26,12 @@ public interface ObservableQueue extends Lifecycle {
     Observable<Message> observe();
 
     /**
+     * @return An observable for the given queue
+     */
+    default void observe(ObservableQueueHandler handler) {}
+    ;
+
+    /**
      * @return Type of the queue
      */
     String getType();
