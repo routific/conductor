@@ -12,6 +12,7 @@
  */
 package com.netflix.conductor.core.execution.tasks;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,7 +119,11 @@ public class SystemTaskWorker extends LifecycleAwareComponent {
             }
             LOGGER.debug("Polling queue: {} with {} slots acquired", queueName, acquiredSlots);
 
-            List<String> polledTaskIds = queueDAO.pop(queueName, acquiredSlots, 200);
+            long taskStartMillis = Instant.now().toEpochMilli();
+
+            List<String> polledTaskIds = queueDAO.pop(queueName, acquiredSlots, 0);
+
+            long timeTakenToCompleteTask = Instant.now().toEpochMilli() - taskStartMillis;
 
             Monitors.recordTaskPoll(queueName);
             LOGGER.debug("Polling queue:{}, got {} tasks", queueName, polledTaskIds.size());
@@ -130,13 +135,19 @@ public class SystemTaskWorker extends LifecycleAwareComponent {
                     semaphoreUtil.completeProcessing(acquiredSlots - polledTaskIds.size());
                 }
 
+                LOGGER.info(
+                        "Polling queue:{}, got {} tasks, time taken: {}",
+                        queueName,
+                        polledTaskIds.size(),
+                        timeTakenToCompleteTask);
+                Monitors.recordTaskPollCount(queueName, polledTaskIds.size());
+
                 for (String taskId : polledTaskIds) {
                     if (StringUtils.isNotBlank(taskId)) {
                         LOGGER.debug(
                                 "Task: {} from queue: {} being sent to the workflow executor",
                                 taskId,
                                 queueName);
-                        Monitors.recordTaskPollCount(queueName, 1);
 
                         executionService.ackTaskReceived(taskId);
 
