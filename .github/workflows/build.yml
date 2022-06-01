@@ -24,7 +24,7 @@ jobs:
         uses: 'google-github-actions/setup-gcloud@v0'
 
       - name: Configure docker
-        run: gcloud auth ${{ secrets.GCP_REGISTRY_URL }}
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGISTRY_URL }}
 
       - uses: actions/checkout@v3
         with:
