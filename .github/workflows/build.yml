@@ -17,9 +17,10 @@ jobs:
       - name: Auth gcloud
         uses: 'google-github-actions/auth@v0'
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_email: ${{ secrets.GCP_SERVICE_EMAIL }}
-          service_account_key: ${{ secrets.GCP_SERVICE_CREDENTIALS }}
+          credentials_json: ${{ secrets.GCP_SERVICE_CREDENTIALS }}
+
+      - name: Setup gcloud
+        uses: 'google-github-actions/setup-gcloud@v0'
 
       - name: Configure docker
         run: gcloud auth ${{ secrets.GCP_REGISTRY_URL }}
