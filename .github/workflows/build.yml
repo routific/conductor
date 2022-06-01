@@ -12,9 +12,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: sandbox
-    env:
-      IMAGE_NAME: ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}
     steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          submodule: true
+
       - name: Auth gcloud
         uses: 'google-github-actions/auth@v0'
         with:
@@ -25,12 +29,6 @@ jobs:
 
       - name: Configure docker
         run: gcloud auth configure-docker ${{ secrets.GCP_REGISTRY_URL }}
-
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
-          submodule: true
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -50,5 +48,5 @@ jobs:
       - name: Build and push
         run: docker buildx build -f docker/server/Dockerfile . \
           --platform linux/amd64,linux/arm64 \
-          --tag $IMAGE_NAME:${github.event.pull_request.head.sha} \
+          --tag ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}:${{ github.event.pull_request.head.sha }} \
           --push
