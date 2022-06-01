@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: sandbox
     env:
       IMAGE_NAME: ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}
     steps:
