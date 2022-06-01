@@ -1623,9 +1623,9 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-awssqs-event-queue",
                 "com.netflix.conductor:conductor-grpc-client",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
                 "com.netflix.netflix-commons:netflix-infix",
                 "com.netflix.servo:servo-core",
@@ -1752,12 +1752,12 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-persistence",
                 "com.netflix.conductor:conductor-rest",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence"
             ]
         },
@@ -1771,6 +1771,7 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -1778,7 +1779,6 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence"
             ]
         },
@@ -1806,6 +1806,12 @@
         },
         "com.netflix.conductor:conductor-json-jq-task": {
             "project": true,
+            "transitive": [
+                "com.netflix.conductor:conductor-server"
+            ]
+        },
+        "com.netflix.conductor:conductor-metrics": {
+            "locked": "3.8.0",
             "transitive": [
                 "com.netflix.conductor:conductor-server"
             ]
@@ -1844,12 +1850,6 @@
             ]
         },
         "com.netflix.conductor:kafka": {
-            "project": true,
-            "transitive": [
-                "com.netflix.conductor:conductor-server"
-            ]
-        },
-        "com.netflix.conductor:metrics": {
             "project": true,
             "transitive": [
                 "com.netflix.conductor:conductor-server"
@@ -1966,13 +1966,13 @@
         "com.netflix.spectator:spectator-reg-metrics3": {
             "locked": "0.122.0",
             "transitive": [
-                "com.netflix.conductor:metrics"
+                "com.netflix.conductor:conductor-metrics"
             ]
         },
         "com.netflix.spectator:spectator-reg-micrometer": {
             "locked": "0.122.0",
             "transitive": [
-                "com.netflix.conductor:metrics"
+                "com.netflix.conductor:conductor-metrics"
             ]
         },
         "com.spotify:completable-futures": {
@@ -2196,7 +2196,7 @@
         "io.micrometer:micrometer-registry-prometheus": {
             "locked": "1.8.5",
             "transitive": [
-                "com.netflix.conductor:metrics"
+                "com.netflix.conductor:conductor-metrics"
             ]
         },
         "io.netty:netty-buffer": {
@@ -2329,7 +2329,7 @@
         "io.prometheus:simpleclient": {
             "locked": "0.12.0",
             "transitive": [
-                "com.netflix.conductor:metrics",
+                "com.netflix.conductor:conductor-metrics",
                 "io.prometheus:simpleclient_common"
             ]
         },
@@ -2369,8 +2369,8 @@
             "transitive": [
                 "com.netflix.conductor:conductor-awssqs-event-queue",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics"
+                "com.netflix.conductor:conductor-metrics",
+                "com.netflix.conductor:kafka"
             ]
         },
         "io.swagger.core.v3:swagger-annotations": {
@@ -2451,7 +2451,7 @@
             "locked": "1.1.1",
             "transitive": [
                 "com.netflix.conductor:conductor-http-task",
-                "com.netflix.conductor:metrics",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.eureka:eureka-client",
                 "com.sun.jersey:jersey-core"
             ]
@@ -2591,10 +2591,10 @@
                 "com.netflix.conductor:conductor-core",
                 "com.netflix.conductor:conductor-grpc-client",
                 "com.netflix.conductor:conductor-grpc-server",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:es7-persistence",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
                 "com.netflix.dyno:dyno-contrib",
                 "com.netflix.dyno:dyno-core",
@@ -2670,6 +2670,7 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2677,7 +2678,6 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
                 "org.apache.logging.log4j:log4j-core",
                 "org.apache.logging.log4j:log4j-jul",
@@ -2702,6 +2702,7 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2709,7 +2710,6 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
                 "org.apache.logging.log4j:log4j-slf4j-impl",
                 "org.apache.logging.log4j:log4j-web",
@@ -2732,6 +2732,7 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2739,7 +2740,6 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
                 "org.springframework.boot:spring-boot-starter-log4j2"
             ]
@@ -2760,6 +2760,7 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2767,7 +2768,6 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
                 "org.springframework.boot:spring-boot-starter-log4j2"
             ]
@@ -2788,6 +2788,7 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
+                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2795,7 +2796,6 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence"
             ]
         },
