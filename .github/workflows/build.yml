@@ -1,0 +1,63 @@
+name: build
+
+on:
+  push:
+    branches:
+      - master
+      - staging
+      - develop
+      - sandbox
+
+jobs:
+  get-environment-name:
+    name: "Extract environment name"
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.extract.outputs.environment }}
+    steps:
+      - id: extract
+        run: echo "::set-output name=environment::$(echo $GITHUB_REF | sed -e '/^refs\/heads\/\(.*\)$/!d;s//\1/')"
+      - env:
+          EXTRACTED: ${{ steps.extract.outputs.environment }}
+        run: 'echo "Extracted environment name: $EXTRACTED"'
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - get-environment-name
+    environment: ${{ needs.get-environment-name.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          submodules: true
+
+      - name: Auth gcloud
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_CREDENTIALS }}
+
+      - name: Setup gcloud
+        uses: 'google-github-actions/setup-gcloud@v0'
+
+      - name: Configure docker
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGISTRY_URL }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Inspect builder
+        run: |
+          echo "Name:      ${{ steps.buildx.outputs.name }}"
+          echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
+          echo "Status:    ${{ steps.buildx.outputs.status }}"
+          echo "Flags:     ${{ steps.buildx.outputs.flags }}"
+          echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
+
+      - name: Build and push
+        run: docker buildx build -f docker/server/Dockerfile . --platform linux/amd64,linux/arm64 --tag ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}:${{ github.sha }} --push
