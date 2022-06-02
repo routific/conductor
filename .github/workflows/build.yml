@@ -9,9 +9,23 @@ on:
       - sandbox
 
 jobs:
+  get-environment-name:
+    name: "Extract environment name"
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.extract.outputs.environment }}
+    steps:
+      - id: extract
+        run: echo "::set-output name=environment::$(echo $GITHUB_REF | sed -e '/^refs\/heads\/\(.*\)$/!d;s//\1/')"
+      - env:
+          EXTRACTED: ${{ steps.extract.outputs.environment }}
+        run: 'echo "Extracted environment name: $EXTRACTED"'
+
   build:
     runs-on: ubuntu-latest
-    environment: sandbox
+    needs:
+      - get-environment-name
+    environment: ${{ needs.get-environment-name.outputs.environment }}
     steps:
       - uses: actions/checkout@v3
         with:
