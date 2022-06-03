@@ -31,7 +31,7 @@ dependencies {
     implementation project(':conductor-awssqs-event-queue')
 
     implementation project(':contribs:event-queue:kafka')
-    implementation project(':contribs:task:kafka')
+    implementation project(':contribs:task:kafka-publish')
     implementation project(':contribs:persistence:postgres-persistence')
     implementation project(':contribs:index:es7-persistence')
 

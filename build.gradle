@@ -183,7 +183,7 @@ configure(
     - project(':contribs:index:es7-persistence')
     - project(':contribs:persistence:common-persistence')
     - project(':contribs:persistence:postgres-persistence')
-    - project(':contribs:task:kafka')
+    - project(':contribs:task:kafka-publish')
     - project(':contribs:event-queue:kafka')
     - project(':contribs:test-util')
 ) {
