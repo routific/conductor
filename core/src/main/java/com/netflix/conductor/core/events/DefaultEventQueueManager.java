@@ -128,13 +128,14 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
 
     @Scheduled(fixedDelay = 60_000)
     public void refreshEventQueues() {
+        LOGGER.info("Setting up observable queues...");
         try {
             Set<String> events =
                     eventHandlerDAO.getAllEventHandlers().stream()
                             .map(EventHandler::getEvent)
                             .collect(Collectors.toSet());
 
-            List<ObservableQueue> createdQueues = new LinkedList<>();
+            List<ObservableQueue> createdQueues = new ArrayList<ObservableQueue>();
             events.forEach(
                     event ->
                             eventToQueueMap.computeIfAbsent(
@@ -149,6 +150,7 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
             createdQueues.stream()
                     .filter(Objects::nonNull)
                     .peek(Lifecycle::start)
+                    .collect(Collectors.toSet())
                     .forEach(this::listen);
 
         } catch (Exception e) {
