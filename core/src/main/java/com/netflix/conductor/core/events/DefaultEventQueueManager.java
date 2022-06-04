@@ -148,7 +148,7 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
             // start listening on all of the created queues
             createdQueues.stream()
                     .filter(Objects::nonNull)
-                    .forEach(Lifecycle::start)
+                    .peek(Lifecycle::start)
                     .forEach(this::listen);
 
         } catch (Exception e) {
