@@ -126,16 +126,15 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
                 });
     }
 
-    @Scheduled(fixedDelay = 60_000)
+    @Scheduled(initialDelay = 10_000, fixedDelay = 60_000)
     public void refreshEventQueues() {
-        LOGGER.info("Setting up observable queues...");
         try {
             Set<String> events =
                     eventHandlerDAO.getAllEventHandlers().stream()
                             .map(EventHandler::getEvent)
                             .collect(Collectors.toSet());
 
-            List<ObservableQueue> createdQueues = new ArrayList<ObservableQueue>();
+            List<ObservableQueue> createdQueues = new LinkedList<>();
             events.forEach(
                     event ->
                             eventToQueueMap.computeIfAbsent(
@@ -150,8 +149,10 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
             createdQueues.stream()
                     .filter(Objects::nonNull)
                     .peek(Lifecycle::start)
-                    .collect(Collectors.toSet())
-                    .forEach(this::listen);
+                    .forEach(
+                            (queue) -> {
+                                this.listen(queue);
+                            });
 
         } catch (Exception e) {
             Monitors.error(getClass().getSimpleName(), "refresh");
