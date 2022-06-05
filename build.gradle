@@ -185,6 +185,7 @@ configure(
     - project(':contribs:persistence:postgres-persistence')
     - project(':contribs:task:kafka-publish')
     - project(':contribs:event-queue:kafka')
+    - project(':contribs:metrics')
     - project(':contribs:test-util')
 ) {
     apply plugin: 'com.diffplug.spotless'
