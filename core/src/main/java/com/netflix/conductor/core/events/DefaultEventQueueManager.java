@@ -128,7 +128,7 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
 
     @Scheduled(initialDelay = 10_000, fixedDelay = 60_000)
     public void refreshEventQueues() {
-        LOGGER.info("Refreshing event queues.");
+        LOGGER.info("Refreshing event queues..");
         try {
             Set<String> events =
                     eventHandlerDAO.getAllEventHandlers().stream()
