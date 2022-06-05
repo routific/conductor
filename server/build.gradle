@@ -34,8 +34,7 @@ dependencies {
     implementation project(':contribs:task:kafka-publish')
     implementation project(':contribs:persistence:postgres-persistence')
     implementation project(':contribs:index:es7-persistence')
-
-    implementation 'com.netflix.conductor:conductor-metrics:3.8.0'
+    implementation project(':contribs:metrics')
 
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
