@@ -66,5 +66,6 @@ include 'contribs:persistence:common-persistence'
 include 'contribs:index:es7-persistence'
 include 'contribs:task:kafka-publish'
 include 'contribs:test-util'
+include 'contribs:metrics'
 
 rootProject.children.each {it.name="conductor-${it.name}"}
