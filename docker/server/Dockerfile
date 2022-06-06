@@ -31,12 +31,6 @@ COPY --from=builder /conductor/docker/server/bin /app
 # COPY --from=builder /conductor/docker/server/config /app/config
 COPY --from=builder /conductor/server/build/libs/conductor-server-*-boot.jar /app/libs
 
-# # Elastic cloud cert
-# COPY --from=builder /conductor/cacerts /app/certs/
-
-# Aiven kafka cert
-COPY --from=builder /conductor/truststore /app/truststore/
-
 # Copy the files for the server into the app folders
 RUN chmod +x /app/startup.sh
 
