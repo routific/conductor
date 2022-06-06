@@ -29,7 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           submodules: true
 
@@ -60,4 +59,10 @@ jobs:
           echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
       - name: Build and push
-        run: docker buildx build -f docker/server/Dockerfile . --platform linux/amd64,linux/arm64 --tag ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}:${{ github.sha }} --push
+        run: |
+          docker buildx build \
+          -f docker/server/Dockerfile . \
+          --platform linux/amd64,linux/arm64 \
+          --tag ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}:${{ github.sha }} \
+          --tag ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}:latest \
+          --push

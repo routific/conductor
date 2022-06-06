@@ -67,6 +67,12 @@ allprojects {
         exclude group: 'ch.qos.logback', module: 'logback-core'
         exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+
+        // Force contribs to use local project module
+        resolutionStrategy.dependencySubstitution {
+            substitute module("com.netflix.conductor:conductor-common") using project(":conductor-common") because "we work with modified code"
+            substitute module("com.netflix.conductor:conductor-core") using project(":conductor-core") because "we work with modified code"
+        }
     }
 
     repositories {
@@ -183,8 +189,9 @@ configure(
     - project(':contribs:index:es7-persistence')
     - project(':contribs:persistence:common-persistence')
     - project(':contribs:persistence:postgres-persistence')
-    - project(':contribs:task:kafka')
+    - project(':contribs:task:kafka-publish')
     - project(':contribs:event-queue:kafka')
+    - project(':contribs:metrics')
     - project(':contribs:test-util')
 ) {
     apply plugin: 'com.diffplug.spotless'

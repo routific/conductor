@@ -16,7 +16,25 @@
 
 echo "Starting Conductor server"
 
+
+KAFKA_CERT_PATH=/app/certs/ca.pem
+
+echo "Looking for $KAFKA_CERT_PATH"
 # Start the server
+if test -f "$KAFKA_CERT_PATH";
+  then
+    echo "Found mounted ca.pem"
+    mkdir /app/truststore && cd /app/truststore
+    keytool -import -file $KAFKA_CERT_PATH -alias CA \
+    -keystore client.truststore.jks \
+    -storepass default \
+    -keypass default \
+    -noprompt
+  else
+    echo "No ca.pem file mounted, skipping"
+fi
+
+
 cd /app/libs
 echo "Property file: $CONFIG_PROP"
 echo $CONFIG_PROP
@@ -30,6 +48,9 @@ if [ -z "$CONFIG_PROP" ];
     echo "Using '$CONFIG_PROP'";
     export config_file=/app/config/$CONFIG_PROP
 fi
+
+
+
 
 echo "Using java options config: $JAVA_OPTS"
 
