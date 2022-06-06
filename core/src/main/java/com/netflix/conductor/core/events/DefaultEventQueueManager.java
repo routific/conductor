@@ -126,7 +126,7 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
                 });
     }
 
-    @Scheduled(fixedDelay = 60_000)
+    @Scheduled(initialDelay = 10_000, fixedDelay = 60_000)
     public void refreshEventQueues() {
         try {
             Set<String> events =
