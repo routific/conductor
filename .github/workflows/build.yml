@@ -61,7 +61,7 @@ jobs:
       - name: Build and push
         run: |
           docker buildx build \
-          -f docker/server/Dockerfile .
+          -f docker/server/Dockerfile . \
           --platform linux/amd64,linux/arm64
           --tag ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}:${{ github.sha }} \
           --tag ${{ secrets.GCP_REGISTRY_URL }}/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REGISTRY_REPO }}/${{ secrets.GCP_APP_NAME }}:latest \
