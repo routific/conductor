@@ -128,7 +128,6 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
 
     @Scheduled(initialDelay = 10_000, fixedDelay = 60_000)
     public void refreshEventQueues() {
-        LOGGER.info("Refreshing event queues..");
         try {
             Set<String> events =
                     eventHandlerDAO.getAllEventHandlers().stream()
@@ -150,10 +149,7 @@ public class DefaultEventQueueManager extends LifecycleAwareComponent implements
             createdQueues.stream()
                     .filter(Objects::nonNull)
                     .peek(Lifecycle::start)
-                    .forEach(
-                            (queue) -> {
-                                this.listen(queue);
-                            });
+                    .forEach(this::listen);
 
         } catch (Exception e) {
             Monitors.error(getClass().getSimpleName(), "refresh");
