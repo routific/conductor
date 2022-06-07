@@ -100,6 +100,8 @@ public class AsyncSystemTaskExecutor {
 
         boolean hasTaskExecutionCompleted = false;
         String workflowId = task.getWorkflowInstanceId();
+        boolean isTaskAsyncComplete = systemTask.isAsyncComplete(task);
+
         // if we are here the Task object is updated and needs to be persisted regardless of an
         // exception
         try {
@@ -127,7 +129,6 @@ public class AsyncSystemTaskExecutor {
                     task.getTaskId(),
                     task.getStatus());
 
-            boolean isTaskAsyncComplete = systemTask.isAsyncComplete(task);
             if (task.getStatus() == TaskModel.Status.SCHEDULED || !isTaskAsyncComplete) {
                 task.incrementPollCount();
             }
@@ -136,7 +137,7 @@ public class AsyncSystemTaskExecutor {
                 task.setStartTime(System.currentTimeMillis());
                 Monitors.recordQueueWaitTime(task.getTaskDefName(), task.getQueueWaitTime());
 
-                if (task.getTaskType().equals("KAFKA_PUBLISH")) {
+                if (task.getTaskType().equals("KAFKA_PUBLISH") && isTaskAsyncComplete) {
                     task.setStatus((TaskModel.Status.IN_PROGRESS));
                     executionDAOFacade.updateTask(task);
                 }
@@ -175,7 +176,7 @@ public class AsyncSystemTaskExecutor {
             Monitors.error(AsyncSystemTaskExecutor.class.getSimpleName(), "executeSystemTask");
             LOGGER.error("Error executing system task - {}, with id: {}", systemTask, taskId, e);
         } finally {
-            if (!task.getTaskType().equals("KAFKA_PUBLISH")
+            if (!(task.getTaskType().equals("KAFKA_PUBLISH") && isTaskAsyncComplete)
                     || task.getStatus() == TaskModel.Status.FAILED) {
                 executionDAOFacade.updateTask(task);
             }
