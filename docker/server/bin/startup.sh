@@ -24,8 +24,8 @@ echo "Looking for $KAFKA_CERT_PATH"
 if test -f "$KAFKA_CERT_PATH";
   then
     echo "Found mounted ca.pem"
-    mkdir -p /app/truststore \
-    cd /app/truststore \
+    mkdir -p /app/truststore
+    cd /app/truststore
     keytool -import -file $KAFKA_CERT_PATH -alias CA \
     -keystore client.truststore.jks \
     -storepass default \
