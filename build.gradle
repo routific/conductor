@@ -137,7 +137,7 @@ allprojects {
         testImplementation('org.springframework.boot:spring-boot-starter-test')
         testImplementation('org.springframework.boot:spring-boot-starter-log4j2')
         testImplementation 'junit:junit'
-Z        testImplementation "org.junit.vintage:junit-vintage-engine"
+        testImplementation "org.junit.vintage:junit-vintage-engine"
     }
 
     // processes additional configuration metadata json file as described here
@@ -184,7 +184,17 @@ sonarqube {
     }
 }
 
-configure(allprojects - project(':conductor-grpc')) {
+configure(
+    allprojects
+    - project(':conductor-grpc')
+    - project(':contribs:index:es7-persistence')
+    - project(':contribs:persistence:common-persistence')
+    - project(':contribs:persistence:postgres-persistence')
+    - project(':contribs:task:kafka-publish')
+    - project(':contribs:event-queue:kafka')
+    - project(':contribs:metrics')
+    - project(':contribs:test-util')
+) {
     apply plugin: 'com.diffplug.spotless'
 
     spotless {
