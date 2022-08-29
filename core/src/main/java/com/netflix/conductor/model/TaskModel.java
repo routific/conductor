@@ -126,8 +126,6 @@ public class TaskModel {
 
     private Any outputMessage;
 
-    // id 31 is reserved
-
     private int rateLimitPerFrequency;
 
     private int rateLimitFrequencyInSeconds;
@@ -145,6 +143,9 @@ public class TaskModel {
     private int iteration;
 
     private String subWorkflowId;
+
+    // Timeout after which the wait task should be marked as completed
+    private long waitTimeout;
 
     /**
      * Used to note that a sub workflow associated with SUB_WORKFLOW task has an action performed on
@@ -557,6 +558,14 @@ public class TaskModel {
         return iteration > 0;
     }
 
+    public long getWaitTimeout() {
+        return waitTimeout;
+    }
+
+    public void setWaitTimeout(long waitTimeout) {
+        this.waitTimeout = waitTimeout;
+    }
+
     /**
      * @return the queueWaitTime
      */
@@ -675,6 +684,9 @@ public class TaskModel {
                 + ", domain='"
                 + domain
                 + '\''
+                + ", waitTimeout='"
+                + waitTimeout
+                + '\''
                 + ", inputMessage="
                 + inputMessage
                 + ", outputMessage="
@@ -742,6 +754,7 @@ public class TaskModel {
                 && Objects.equals(getTaskId(), taskModel.getTaskId())
                 && Objects.equals(getReasonForIncompletion(), taskModel.getReasonForIncompletion())
                 && Objects.equals(getWorkerId(), taskModel.getWorkerId())
+                && Objects.equals(getWaitTimeout(), taskModel.getWaitTimeout())
                 && Objects.equals(getOutputData(), taskModel.getOutputData())
                 && Objects.equals(getWorkflowTask(), taskModel.getWorkflowTask())
                 && Objects.equals(getDomain(), taskModel.getDomain())
@@ -786,6 +799,7 @@ public class TaskModel {
                 getReasonForIncompletion(),
                 getCallbackAfterSeconds(),
                 getWorkerId(),
+                getWaitTimeout(),
                 getOutputData(),
                 getWorkflowTask(),
                 getDomain(),
@@ -827,7 +841,9 @@ public class TaskModel {
     }
 
     public void addInput(Map<String, Object> inputData) {
-        this.inputData.putAll(inputData);
+        if (inputData != null) {
+            this.inputData.putAll(inputData);
+        }
     }
 
     public void addOutput(String key, Object value) {
@@ -835,6 +851,8 @@ public class TaskModel {
     }
 
     public void addOutput(Map<String, Object> outputData) {
-        this.outputData.putAll(outputData);
+        if (outputData != null) {
+            this.outputData.putAll(outputData);
+        }
     }
 }

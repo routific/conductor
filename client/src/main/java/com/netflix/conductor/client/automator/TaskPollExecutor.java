@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +38,6 @@ import com.netflix.discovery.EurekaClient;
 import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.Spectator;
 import com.netflix.spectator.api.patterns.ThreadPoolMonitor;
-
-import com.google.common.base.Stopwatch;
 
 /**
  * Manages the threadpool used by the workers for execution and server communication (polling and
@@ -60,6 +59,11 @@ class TaskPollExecutor {
     private static final String DOMAIN = "domain";
     private static final String OVERRIDE_DISCOVERY = "pollOutOfDiscovery";
     private static final String ALL_WORKERS = "all";
+
+    private static final int LEASE_EXTEND_RETRY_COUNT = 3;
+    private static final double LEASE_EXTEND_DURATION_FACTOR = 0.8;
+    private ScheduledExecutorService leaseExtendExecutorService;
+    Map<String /* ID of the task*/, ScheduledFuture<?>> leaseExtendMap = new HashMap<>();
 
     TaskPollExecutor(
             EurekaClient eurekaClient,
@@ -98,6 +102,15 @@ class TaskPollExecutor {
                                 .uncaughtExceptionHandler(uncaughtExceptionHandler)
                                 .build());
         ThreadPoolMonitor.attach(REGISTRY, (ThreadPoolExecutor) executorService, workerNamePrefix);
+
+        LOGGER.info("Initialized the task lease extend executor");
+        leaseExtendExecutorService =
+                Executors.newSingleThreadScheduledExecutor(
+                        new BasicThreadFactory.Builder()
+                                .namingPattern("workflow-lease-extend-%d")
+                                .daemon(true)
+                                .uncaughtExceptionHandler(uncaughtExceptionHandler)
+                                .build());
     }
 
     void pollAndExecute(Worker worker) {
@@ -162,6 +175,20 @@ class TaskPollExecutor {
                         CompletableFuture.supplyAsync(
                                 () -> processTask(task, worker, pollingSemaphore), executorService);
 
+                if (task.getResponseTimeoutSeconds() > 0 && worker.leaseExtendEnabled()) {
+                    ScheduledFuture<?> leaseExtendFuture =
+                            leaseExtendExecutorService.scheduleWithFixedDelay(
+                                    extendLease(task, taskCompletableFuture),
+                                    Math.round(
+                                            task.getResponseTimeoutSeconds()
+                                                    * LEASE_EXTEND_DURATION_FACTOR),
+                                    Math.round(
+                                            task.getResponseTimeoutSeconds()
+                                                    * LEASE_EXTEND_DURATION_FACTOR),
+                                    TimeUnit.SECONDS);
+                    leaseExtendMap.put(task.getTaskId(), leaseExtendFuture);
+                }
+
                 taskCompletableFuture.whenComplete(this::finalizeTask);
             } else {
                 // no task was returned in the poll, release the permit
@@ -176,7 +203,13 @@ class TaskPollExecutor {
         }
     }
 
-    void shutdownExecutorService(ExecutorService executorService, int timeout) {
+    void shutdown(int timeout) {
+        shutdownAndAwaitTermination(executorService, timeout);
+        shutdownAndAwaitTermination(leaseExtendExecutorService, timeout);
+        leaseExtendMap.clear();
+    }
+
+    void shutdownAndAwaitTermination(ExecutorService executorService, int timeout) {
         try {
             executorService.shutdown();
             if (executorService.awaitTermination(timeout, TimeUnit.SECONDS)) {
@@ -220,7 +253,8 @@ class TaskPollExecutor {
     }
 
     private void executeTask(Worker worker, Task task) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
+        StopWatch stopwatch = new StopWatch();
+        stopwatch.start();
         TaskResult result = null;
         try {
             LOGGER.debug(
@@ -246,7 +280,7 @@ class TaskPollExecutor {
         } finally {
             stopwatch.stop();
             MetricsContainer.getExecutionTimer(worker.getTaskDefName())
-                    .record(stopwatch.elapsed(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
+                    .record(stopwatch.getTime(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
         }
 
         LOGGER.debug(
@@ -272,6 +306,12 @@ class TaskPollExecutor {
                     task.getTaskId(),
                     task.getTaskDefName(),
                     task.getStatus());
+            String taskId = task.getTaskId();
+            ScheduledFuture<?> leaseExtendFuture = leaseExtendMap.get(taskId);
+            if (leaseExtendFuture != null) {
+                leaseExtendFuture.cancel(true);
+                leaseExtendMap.remove(taskId);
+            }
         }
     }
 
@@ -356,5 +396,33 @@ class TaskPollExecutor {
         } else {
             return pollingSemaphoreMap.get(ALL_WORKERS);
         }
+    }
+
+    private Runnable extendLease(Task task, CompletableFuture<Task> taskCompletableFuture) {
+        return () -> {
+            if (taskCompletableFuture.isDone()) {
+                LOGGER.warn(
+                        "Task processing for {} completed, but its lease extend was not cancelled",
+                        task.getTaskId());
+                return;
+            }
+            LOGGER.info("Attempting to extend lease for {}", task.getTaskId());
+            try {
+                TaskResult result = new TaskResult(task);
+                result.setExtendLease(true);
+                retryOperation(
+                        (TaskResult taskResult) -> {
+                            taskClient.updateTask(taskResult);
+                            return null;
+                        },
+                        LEASE_EXTEND_RETRY_COUNT,
+                        result,
+                        "extend lease");
+                MetricsContainer.incrementTaskLeaseExtendCount(task.getTaskDefName(), 1);
+            } catch (Exception e) {
+                MetricsContainer.incrementTaskLeaseExtendErrorCount(task.getTaskDefName(), e);
+                LOGGER.error("Failed to extend lease for {}", task.getTaskId(), e);
+            }
+        };
     }
 }

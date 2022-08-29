@@ -62,14 +62,13 @@ public class AsyncSystemTaskExecutor {
      */
     public void execute(WorkflowSystemTask systemTask, String taskId) {
         TaskModel task = loadTaskQuietly(taskId);
-        String queueName = QueueUtils.getQueueName(task);
         if (task == null) {
             LOGGER.error("TaskId: {} could not be found while executing {}", taskId, systemTask);
-            queueDAO.remove(queueName, taskId);
             return;
         }
 
         LOGGER.debug("Task: {} fetched from execution DAO for taskId: {}", task, taskId);
+        String queueName = QueueUtils.getQueueName(task);
         if (task.getStatus().isTerminal()) {
             // Tune the SystemTaskWorkerCoordinator's queues - if the queue size is very big this
             // can happen!
@@ -105,7 +104,9 @@ public class AsyncSystemTaskExecutor {
         // if we are here the Task object is updated and needs to be persisted regardless of an
         // exception
         try {
-            WorkflowModel workflow = executionDAOFacade.getWorkflowModel(workflowId, true);
+            WorkflowModel workflow =
+                    executionDAOFacade.getWorkflowModel(
+                            workflowId, systemTask.isTaskRetrievalRequired());
 
             if (workflow.getStatus().isTerminal()) {
                 LOGGER.info(

@@ -68,7 +68,7 @@ A selection of `docker-compose-*.yaml` and `config-*.properties` files are provi
 | docker-compose.yaml            | <ol><li>In Memory Conductor Server</li><li>Elasticsearch</li><li>UI</li></ol>           |
 | docker-compose-dynomite.yaml   | <ol><li>Conductor Server</li><li>Elasticsearch</li><li>UI</li><li>Dynomite Redis for persistence</li></ol> |
 | docker-compose-postgres.yaml   | <ol><li>Conductor Server</li><li>Elasticsearch</li><li>UI</li><li>Postgres persistence</li></ol> |
-| docker-compose-prometheus.yaml | Brings up Prometheus server                                                             |    
+| docker-compose-prometheus.yaml | Brings up Prometheus server                                                             |
 
 For example this will start the server instance backed by a PostgreSQL DB.
 ```
@@ -89,7 +89,7 @@ docker exec -it conductor_server /bin/sh
 ```
 
 ## Standalone UI Image
-From the `docker` directory, 
+From the `docker` directory,
 ```
 docker build -t conductor:ui -f ui/Dockerfile ../
 docker run -p 5000:5000 -d --name conductor_ui conductor:ui
@@ -131,12 +131,12 @@ This image at `/docker/serverAndUI` is provided to illustrate starting both the 
 
     1. As of writing this article, Conductor relies on 6.8.x version of Elasticsearch. This version doesn't have an
        arm64 based Docker image. You will need to use Elasticsearch 7.x which requires a bit of customization to get up
-       and running 
+       and running
 
 ####  Elasticsearch remains in Yellow health
 
     1. When you run Elasticsearch, sometimes the health remains in Yellow state. Conductor server by default requires
-       Green state to run when indexing is enabled. To work around this, you can use the following property: 
+       Green state to run when indexing is enabled. To work around this, you can use the following property:
        `conductor.elasticsearch.clusteHealthColor=yellow` Reference: [Issue 2262](https://github.com/Netflix/conductor/issues/2262)
 
 
@@ -160,12 +160,11 @@ It may takes some time for conductor server to start. Please check server log fo
 Elasticsearch is optional, please be aware that disable it will make most of the conductor UI not functional.
 
 ##### How to enable Elasticsearch
-* Set `workflow.indexing.enabled=true` in your_config.properties
+* Set `conductor.indexing.enabled=true` in your_config.properties
 * Add config related to elasticsearch
   E.g.: `conductor.elasticsearch.url=http://es:9200`
 
 ##### How to disable Elasticsearch
-* Set `workflow.indexing.enabled=false` in your_config.properties
+* Set `conductor.indexing.enabled=false` in your_config.properties
 * Comment out all the config related to elasticsearch
 E.g.: `conductor.elasticsearch.url=http://es:9200`
-

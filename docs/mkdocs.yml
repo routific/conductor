@@ -1,5 +1,5 @@
 site_name: Conductor Documentation
-
+site_description: Conductor is a platform created by Netflix to orchestrate workflows that span across microservices.
 repo_url: https://github.com/Netflix/conductor
 edit_uri: ''
 strict: true
@@ -45,8 +45,8 @@ nav:
       - A First Workflow: labs/running-first-workflow.md
       - Events and Event Handlers: labs/eventhandlers.md
       - Kitchen Sink: labs/kitchensink.md
-  - Documentation: 
-    - Architecture: 
+  - Documentation:
+    - Architecture:
       - Overview: architecture/overview.md
       - Task Lifecycle: architecture/tasklifecycle.md
     - API Specification: apispec.md
@@ -74,6 +74,7 @@ nav:
     - System Tasks:
       - Event Task: reference-docs/event-task.md
       - HTTP Task: reference-docs/http-task.md
+      - Human Task: reference-docs/human-task.md
       - Inline Task: reference-docs/inline-task.md
       - JSON JQ Transform Task: reference-docs/json-jq-transform-task.md
       - Kafka Publish Task: reference-docs/kafka-publish-task.md
@@ -87,8 +88,12 @@ nav:
       - Azure Blog Storage: reference-docs/azureblob-storage.md
       - External Payload Storage: externalpayloadstorage.md
       - Redis: reference-docs/redis.md
-    - Polyglot SDKs:
+    - SDKs:
+      - CSharp SDK: how-tos/csharp-sdk.md
+      - Clojure SDK: how-tos/clojure-sdk.md
+      - Go SDK: how-tos/go-sdk.md
       - Python SDK: how-tos/python-sdk.md
+
     - Best Practices: bestpractices.md
     - FAQ: faq.md
     - Directed Acyclic Graph: reference-docs/directed-acyclic-graph.md
@@ -98,7 +103,7 @@ nav:
     - Code of Conduct: resources/code-of-conduct.md
     - Related Projects: resources/related.md
     - License: resources/license.md
-theme: 
+theme:
   name: mkdocs
   custom_dir: theme/
 extra_css:

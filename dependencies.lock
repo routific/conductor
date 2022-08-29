@@ -1,7 +1,7 @@
 {
     "annotationProcessor": {
         "org.springframework.boot:spring-boot-configuration-processor": {
-            "locked": "2.6.7"
+            "locked": "2.7.2"
         }
     },
     "compileClasspath": {
@@ -128,7 +128,7 @@
     },
     "testCompileClasspath": {
         "com.jayway.jsonpath:json-path": {
-            "locked": "2.6.0",
+            "locked": "2.7.0",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
@@ -158,16 +158,19 @@
             ]
         },
         "junit:junit": {
-            "locked": "4.13.2"
+            "locked": "4.13.2",
+            "transitive": [
+                "org.junit.vintage:junit-vintage-engine"
+            ]
         },
         "net.bytebuddy:byte-buddy": {
-            "locked": "1.11.22",
+            "locked": "1.12.12",
             "transitive": [
                 "org.mockito:mockito-core"
             ]
         },
         "net.bytebuddy:byte-buddy-agent": {
-            "locked": "1.11.22",
+            "locked": "1.12.12",
             "transitive": [
                 "org.mockito:mockito-core"
             ]
@@ -220,11 +223,13 @@
             "transitive": [
                 "org.junit.jupiter:junit-jupiter-api",
                 "org.junit.jupiter:junit-jupiter-params",
-                "org.junit.platform:junit-platform-commons"
+                "org.junit.platform:junit-platform-commons",
+                "org.junit.platform:junit-platform-engine",
+                "org.junit.vintage:junit-vintage-engine"
             ]
         },
         "org.assertj:assertj-core": {
-            "locked": "3.21.0",
+            "locked": "3.22.0",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
@@ -264,8 +269,18 @@
         "org.junit.platform:junit-platform-commons": {
             "locked": "1.8.2",
             "transitive": [
-                "org.junit.jupiter:junit-jupiter-api"
+                "org.junit.jupiter:junit-jupiter-api",
+                "org.junit.platform:junit-platform-engine"
             ]
+        },
+        "org.junit.platform:junit-platform-engine": {
+            "locked": "1.8.2",
+            "transitive": [
+                "org.junit.vintage:junit-vintage-engine"
+            ]
+        },
+        "org.junit.vintage:junit-vintage-engine": {
+            "locked": "5.8.2"
         },
         "org.junit:junit-bom": {
             "locked": "5.8.2",
@@ -273,18 +288,20 @@
                 "org.junit.jupiter:junit-jupiter",
                 "org.junit.jupiter:junit-jupiter-api",
                 "org.junit.jupiter:junit-jupiter-params",
-                "org.junit.platform:junit-platform-commons"
+                "org.junit.platform:junit-platform-commons",
+                "org.junit.platform:junit-platform-engine",
+                "org.junit.vintage:junit-vintage-engine"
             ]
         },
         "org.mockito:mockito-core": {
-            "locked": "4.0.0",
+            "locked": "4.5.1",
             "transitive": [
                 "org.mockito:mockito-junit-jupiter",
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.mockito:mockito-junit-jupiter": {
-            "locked": "4.0.0",
+            "locked": "4.5.1",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
@@ -292,7 +309,8 @@
         "org.opentest4j:opentest4j": {
             "locked": "1.2.0",
             "transitive": [
-                "org.junit.jupiter:junit-jupiter-api"
+                "org.junit.jupiter:junit-jupiter-api",
+                "org.junit.platform:junit-platform-engine"
             ]
         },
         "org.ow2.asm:asm": {
@@ -302,7 +320,7 @@
             ]
         },
         "org.skyscreamer:jsonassert": {
-            "locked": "1.5.0",
+            "locked": "1.5.1",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
@@ -323,7 +341,7 @@
             ]
         },
         "org.springframework.boot:spring-boot": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-autoconfigure",
                 "org.springframework.boot:spring-boot-starter",
@@ -332,64 +350,64 @@
             ]
         },
         "org.springframework.boot:spring-boot-autoconfigure": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter",
                 "org.springframework.boot:spring-boot-test-autoconfigure"
             ]
         },
         "org.springframework.boot:spring-boot-starter": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
-            "locked": "2.6.7"
+            "locked": "2.7.2"
         },
         "org.springframework.boot:spring-boot-starter-logging": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter"
             ]
         },
         "org.springframework.boot:spring-boot-starter-test": {
-            "locked": "2.6.7"
+            "locked": "2.7.2"
         },
         "org.springframework.boot:spring-boot-test": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test",
                 "org.springframework.boot:spring-boot-test-autoconfigure"
             ]
         },
         "org.springframework.boot:spring-boot-test-autoconfigure": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.springframework:spring-aop": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework:spring-context"
             ]
         },
         "org.springframework:spring-beans": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework:spring-aop",
                 "org.springframework:spring-context"
             ]
         },
         "org.springframework:spring-context": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework.boot:spring-boot"
             ]
         },
         "org.springframework:spring-core": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework.boot:spring-boot",
                 "org.springframework.boot:spring-boot-starter",
@@ -402,31 +420,31 @@
             ]
         },
         "org.springframework:spring-expression": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework:spring-context"
             ]
         },
         "org.springframework:spring-jcl": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework:spring-core"
             ]
         },
         "org.springframework:spring-test": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.xmlunit:xmlunit-core": {
-            "locked": "2.8.4",
+            "locked": "2.9.0",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.yaml:snakeyaml": {
-            "locked": "1.29",
+            "locked": "1.30",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter"
             ]
@@ -434,7 +452,7 @@
     },
     "testRuntimeClasspath": {
         "com.jayway.jsonpath:json-path": {
-            "locked": "2.6.0",
+            "locked": "2.7.0",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
@@ -464,16 +482,19 @@
             ]
         },
         "junit:junit": {
-            "locked": "4.13.2"
+            "locked": "4.13.2",
+            "transitive": [
+                "org.junit.vintage:junit-vintage-engine"
+            ]
         },
         "net.bytebuddy:byte-buddy": {
-            "locked": "1.11.22",
+            "locked": "1.12.12",
             "transitive": [
                 "org.mockito:mockito-core"
             ]
         },
         "net.bytebuddy:byte-buddy-agent": {
-            "locked": "1.11.22",
+            "locked": "1.12.12",
             "transitive": [
                 "org.mockito:mockito-core"
             ]
@@ -523,7 +544,7 @@
             "locked": "2.17.1"
         },
         "org.assertj:assertj-core": {
-            "locked": "3.21.0",
+            "locked": "3.22.0",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
@@ -578,8 +599,12 @@
         "org.junit.platform:junit-platform-engine": {
             "locked": "1.8.2",
             "transitive": [
-                "org.junit.jupiter:junit-jupiter-engine"
+                "org.junit.jupiter:junit-jupiter-engine",
+                "org.junit.vintage:junit-vintage-engine"
             ]
+        },
+        "org.junit.vintage:junit-vintage-engine": {
+            "locked": "5.8.2"
         },
         "org.junit:junit-bom": {
             "locked": "5.8.2",
@@ -589,18 +614,19 @@
                 "org.junit.jupiter:junit-jupiter-engine",
                 "org.junit.jupiter:junit-jupiter-params",
                 "org.junit.platform:junit-platform-commons",
-                "org.junit.platform:junit-platform-engine"
+                "org.junit.platform:junit-platform-engine",
+                "org.junit.vintage:junit-vintage-engine"
             ]
         },
         "org.mockito:mockito-core": {
-            "locked": "4.0.0",
+            "locked": "4.5.1",
             "transitive": [
                 "org.mockito:mockito-junit-jupiter",
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.mockito:mockito-junit-jupiter": {
-            "locked": "4.0.0",
+            "locked": "4.5.1",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
@@ -625,7 +651,7 @@
             ]
         },
         "org.skyscreamer:jsonassert": {
-            "locked": "1.5.0",
+            "locked": "1.5.1",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
@@ -646,7 +672,7 @@
             ]
         },
         "org.springframework.boot:spring-boot": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-autoconfigure",
                 "org.springframework.boot:spring-boot-starter",
@@ -655,64 +681,64 @@
             ]
         },
         "org.springframework.boot:spring-boot-autoconfigure": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter",
                 "org.springframework.boot:spring-boot-test-autoconfigure"
             ]
         },
         "org.springframework.boot:spring-boot-starter": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.springframework.boot:spring-boot-starter-log4j2": {
-            "locked": "2.6.7"
+            "locked": "2.7.2"
         },
         "org.springframework.boot:spring-boot-starter-logging": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter"
             ]
         },
         "org.springframework.boot:spring-boot-starter-test": {
-            "locked": "2.6.7"
+            "locked": "2.7.2"
         },
         "org.springframework.boot:spring-boot-test": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test",
                 "org.springframework.boot:spring-boot-test-autoconfigure"
             ]
         },
         "org.springframework.boot:spring-boot-test-autoconfigure": {
-            "locked": "2.6.7",
+            "locked": "2.7.2",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.springframework:spring-aop": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework:spring-context"
             ]
         },
         "org.springframework:spring-beans": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework:spring-aop",
                 "org.springframework:spring-context"
             ]
         },
         "org.springframework:spring-context": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework.boot:spring-boot"
             ]
         },
         "org.springframework:spring-core": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework.boot:spring-boot",
                 "org.springframework.boot:spring-boot-starter",
@@ -725,31 +751,31 @@
             ]
         },
         "org.springframework:spring-expression": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework:spring-context"
             ]
         },
         "org.springframework:spring-jcl": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework:spring-core"
             ]
         },
         "org.springframework:spring-test": {
-            "locked": "5.3.19",
+            "locked": "5.3.22",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.xmlunit:xmlunit-core": {
-            "locked": "2.8.4",
+            "locked": "2.9.0",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
         "org.yaml:snakeyaml": {
-            "locked": "1.29",
+            "locked": "1.30",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter"
             ]

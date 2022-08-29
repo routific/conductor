@@ -23,7 +23,7 @@ import com.netflix.conductor.common.metadata.tasks.TaskDef
 import com.netflix.conductor.common.metadata.tasks.TaskResult
 import com.netflix.conductor.common.metadata.workflow.WorkflowDef
 import com.netflix.conductor.core.WorkflowContext
-import com.netflix.conductor.core.exception.ApplicationException
+import com.netflix.conductor.core.exception.NotFoundException
 import com.netflix.conductor.core.execution.WorkflowExecutor
 import com.netflix.conductor.dao.QueueDAO
 import com.netflix.conductor.model.WorkflowModel
@@ -158,8 +158,8 @@ class WorkflowTestUtil {
 
         TaskDef eventTaskX = new TaskDef()
         eventTaskX.name = 'eventX'
-        eventTaskX.timeoutSeconds = 1
-        eventTaskX.responseTimeoutSeconds = 1
+        eventTaskX.timeoutSeconds = 10
+        eventTaskX.responseTimeoutSeconds = 10
         eventTaskX.ownerEmail = DEFAULT_EMAIL_ADDRESS
 
         metadataService.registerTaskDef(
@@ -204,12 +204,8 @@ class WorkflowTestUtil {
     Optional<TaskDef> getPersistedTaskDefinition(String taskDefName) {
         try {
             return Optional.of(metadataService.getTaskDef(taskDefName))
-        } catch (ApplicationException applicationException) {
-            if (applicationException.code == ApplicationException.Code.NOT_FOUND) {
-                return Optional.empty()
-            } else {
-                throw applicationException
-            }
+        } catch(NotFoundException nfe) {
+            return Optional.empty()
         }
     }
 

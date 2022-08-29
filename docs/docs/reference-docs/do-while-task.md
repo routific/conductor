@@ -7,7 +7,7 @@ sidebar_position: 1
 "type" : "DO_WHILE"
 ```
 ## Introduction
-Sequentially execute a list of task as long as a condition is true. 
+Sequentially execute a list of task as long as a condition is true.
 The list of tasks is executed first, before the condition is checked (even for the first iteration).
 
 When scheduled, each task of this loop will see its `taskReferenceName` concatenated with __i, with i being the iteration number, starting at 1. Warning: taskReferenceName containing arithmetic operators must not be used.
@@ -16,10 +16,11 @@ Each task output is stored as part of the DO_WHILE task, indexed by the iteratio
 
 The DO_WHILE task is set to `FAILED` as soon as one of the loopOver fails. In such case retry, iteration starts from 1.
 
-### Limitations 
-- Domain or isolation group execution is unsupported; - Nested DO_WHILE is unsupported; 
+### Limitations
+- Domain or isolation group execution is unsupported;
+- Nested DO_WHILE is unsupported, however, DO_WHILE task supports SUB_WORKFLOW as loopOver task, so we can achieve similar functionality.
 - Since loopover tasks will be executed in loop inside scope of parent do while task, crossing branching outside of DO_WHILE task is not respected.
-- Nested DO_WHILE tasks are not supported. However, DO_WHILE task supports SUB_WORKFLOW as loopOver task, so we can achieve similar functionality.
+
 
 Branching inside loopOver task is supported.
 

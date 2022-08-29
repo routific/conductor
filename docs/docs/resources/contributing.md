@@ -17,7 +17,7 @@ I want to contribute!
 ------
 
 We welcome Pull Requests and already had many outstanding community contributions!
-Creating and reviewing Pull Requests take considerable time. This section helps you set up for a smooth Pull Request experience.
+Creating and reviewing Pull Requests take considerable time. This section helps you to set up a smooth Pull Request experience.
 
 The stable branch is [main](https://github.com/Netflix/conductor/tree/main).
 
@@ -30,7 +30,7 @@ Also, consider that not every feature is a good fit for Conductor. A few things 
 * Is it increasing complexity for the user, or might it be confusing?
 * Does it, in any way, break backward compatibility (this is seldom acceptable)
 * Does it require new dependencies (this is rarely acceptable for core modules)
-* Should the feature be opt-in or enabled by default. For integration with a new Queuing recipe or persistence module, a separate module which can be optionally enabled is the right choice.  
+* Should the feature be opt-in or enabled by default. For integration with a new Queuing recipe or persistence module, a separate module which can be optionally enabled is the right choice.
 * Should the feature be implemented in the main Conductor repository, or would it be better to set up a separate repository? Especially for integration with other systems, a separate repository is often the right choice because the life-cycle of it will be different.
 
 Of course, for more minor bug fixes and improvements, the process can be more light-weight.

@@ -33,6 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.netflix.conductor.common.config.TestObjectMapperConfiguration;
 import com.netflix.conductor.common.metadata.tasks.PollData;
 import com.netflix.conductor.common.metadata.tasks.TaskDef;
+import com.netflix.conductor.common.metadata.tasks.TaskResult;
 import com.netflix.conductor.common.metadata.tasks.TaskType;
 import com.netflix.conductor.common.metadata.workflow.RerunWorkflowRequest;
 import com.netflix.conductor.common.metadata.workflow.WorkflowDef;
@@ -40,7 +41,8 @@ import com.netflix.conductor.common.metadata.workflow.WorkflowTask;
 import com.netflix.conductor.common.utils.ExternalPayloadStorage;
 import com.netflix.conductor.core.config.ConductorProperties;
 import com.netflix.conductor.core.dal.ExecutionDAOFacade;
-import com.netflix.conductor.core.exception.ApplicationException;
+import com.netflix.conductor.core.exception.ConflictException;
+import com.netflix.conductor.core.exception.NotFoundException;
 import com.netflix.conductor.core.exception.TerminateWorkflowException;
 import com.netflix.conductor.core.execution.evaluators.Evaluator;
 import com.netflix.conductor.core.execution.mapper.*;
@@ -59,7 +61,6 @@ import com.netflix.conductor.service.ExecutionLockService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.netflix.conductor.common.metadata.tasks.TaskType.*;
-import static com.netflix.conductor.core.exception.ApplicationException.Code.CONFLICT;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.groupingBy;
@@ -663,7 +664,7 @@ public class TestWorkflowExecutor {
         assertEquals(workflowDef, argumentCaptor.getAllValues().get(1).getWorkflowDefinition());
     }
 
-    @Test(expected = ApplicationException.class)
+    @Test(expected = NotFoundException.class)
     public void testRetryNonTerminalWorkflow() {
         WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowId("testRetryNonTerminalWorkflow");
@@ -673,7 +674,7 @@ public class TestWorkflowExecutor {
         workflowExecutor.retry(workflow.getWorkflowId(), false);
     }
 
-    @Test(expected = ApplicationException.class)
+    @Test(expected = ConflictException.class)
     public void testRetryWorkflowNoTasks() {
         WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowId("ApplicationException");
@@ -684,7 +685,7 @@ public class TestWorkflowExecutor {
         workflowExecutor.retry(workflow.getWorkflowId(), false);
     }
 
-    @Test(expected = ApplicationException.class)
+    @Test(expected = ConflictException.class)
     public void testRetryWorkflowNoFailedTasks() {
         // setup
         WorkflowModel workflow = new WorkflowModel();
@@ -1242,7 +1243,7 @@ public class TestWorkflowExecutor {
         assertEquals(1, updateTasksCalledCounter.get());
     }
 
-    @Test(expected = ApplicationException.class)
+    @Test(expected = ConflictException.class)
     public void testRerunNonTerminalWorkflow() {
         WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowId("testRetryNonTerminalWorkflow");
@@ -1274,6 +1275,12 @@ public class TestWorkflowExecutor {
                 new HashSet<>() {
                     {
                         add("task1_ref1");
+                    }
+                });
+        workflow.setFailedTaskNames(
+                new HashSet<>() {
+                    {
+                        add("task1");
                     }
                 });
 
@@ -1316,6 +1323,7 @@ public class TestWorkflowExecutor {
         assertEquals(WorkflowModel.Status.RUNNING, workflow.getStatus());
         assertNull(workflow.getReasonForIncompletion());
         assertEquals(new HashSet<>(), workflow.getFailedReferenceTaskNames());
+        assertEquals(new HashSet<>(), workflow.getFailedTaskNames());
     }
 
     @Test
@@ -1425,7 +1433,12 @@ public class TestWorkflowExecutor {
                         add("task1_ref1");
                     }
                 });
-
+        workflow.setFailedTaskNames(
+                new HashSet<>() {
+                    {
+                        add("task1");
+                    }
+                });
         TaskModel task_1_1 = new TaskModel();
         task_1_1.setTaskId(UUID.randomUUID().toString());
         task_1_1.setSeq(20);
@@ -1466,6 +1479,7 @@ public class TestWorkflowExecutor {
         assertEquals(WorkflowModel.Status.RUNNING, workflow.getStatus());
         assertNull(workflow.getReasonForIncompletion());
         assertEquals(new HashSet<>(), workflow.getFailedReferenceTaskNames());
+        assertEquals(new HashSet<>(), workflow.getFailedTaskNames());
     }
 
     @Test
@@ -1508,6 +1522,12 @@ public class TestWorkflowExecutor {
                         add("task2_ref");
                     }
                 });
+        workflow.setFailedTaskNames(
+                new HashSet<>() {
+                    {
+                        add("task2");
+                    }
+                });
         workflow.getTasks().addAll(Arrays.asList(task1, task2));
         // end of setup
 
@@ -1525,6 +1545,7 @@ public class TestWorkflowExecutor {
         assertEquals(WorkflowModel.Status.RUNNING, workflow.getStatus());
         assertNull(workflow.getReasonForIncompletion());
         assertEquals(new HashSet<>(), workflow.getFailedReferenceTaskNames());
+        assertEquals(new HashSet<>(), workflow.getFailedTaskNames());
     }
 
     @Test
@@ -1804,7 +1825,7 @@ public class TestWorkflowExecutor {
         assertEquals(3, workflow.getTasks().size());
     }
 
-    @Test(expected = ApplicationException.class)
+    @Test(expected = ConflictException.class)
     public void testTerminateCompletedWorkflow() {
         WorkflowModel workflow = new WorkflowModel();
         workflow.setWorkflowId("testTerminateTerminalWorkflow");
@@ -1922,8 +1943,6 @@ public class TestWorkflowExecutor {
                 taskToDomain);
 
         verify(executionDAOFacade, times(1)).createWorkflow(any(WorkflowModel.class));
-        verify(executionLockService, times(2)).acquireLock(anyString());
-        verify(executionDAOFacade, times(1)).getWorkflowModel(anyString(), anyBoolean());
     }
 
     @Test
@@ -2007,9 +2026,8 @@ public class TestWorkflowExecutor {
         when(executionDAOFacade.getWorkflowModel(workflowId, false)).thenReturn(workflow);
         try {
             workflowExecutor.pauseWorkflow(workflowId);
-            fail("Expected " + ApplicationException.class);
-        } catch (ApplicationException e) {
-            assertEquals(e.getCode(), CONFLICT);
+            fail("Expected " + ConflictException.class);
+        } catch (ConflictException e) {
             verify(executionDAOFacade, never()).updateWorkflow(any(WorkflowModel.class));
             verify(queueDAO, never()).remove(anyString(), anyString());
         }
@@ -2363,6 +2381,176 @@ public class TestWorkflowExecutor {
         assertEquals(WorkflowModel.Status.RUNNING, subWorkflow.getStatus());
         assertEquals(TaskModel.Status.COMPLETED_WITH_ERRORS, task.getStatus());
         assertEquals(WorkflowModel.Status.COMPLETED, workflow.getStatus());
+    }
+
+    @Test
+    public void testUpdateTaskWithCallbackAfterSeconds() {
+        String workflowId = "test-workflow-id";
+        WorkflowModel workflow = new WorkflowModel();
+        workflow.setWorkflowId(workflowId);
+        workflow.setStatus(WorkflowModel.Status.RUNNING);
+        workflow.setWorkflowDefinition(new WorkflowDef());
+
+        TaskModel simpleTask = new TaskModel();
+        simpleTask.setTaskType(TaskType.SIMPLE.name());
+        simpleTask.setReferenceTaskName("simpleTask");
+        simpleTask.setWorkflowInstanceId(workflowId);
+        simpleTask.setScheduledTime(System.currentTimeMillis());
+        simpleTask.setCallbackAfterSeconds(0);
+        simpleTask.setTaskId("simple-task-id");
+        simpleTask.setStatus(TaskModel.Status.IN_PROGRESS);
+
+        workflow.getTasks().add(simpleTask);
+        when(executionDAOFacade.getWorkflowModel(workflowId, false)).thenReturn(workflow);
+        when(executionDAOFacade.getTaskModel(simpleTask.getTaskId())).thenReturn(simpleTask);
+
+        TaskResult taskResult = new TaskResult();
+        taskResult.setWorkflowInstanceId(workflowId);
+        taskResult.setTaskId(simpleTask.getTaskId());
+        taskResult.setWorkerId("test-worker-id");
+        taskResult.log("not ready yet");
+        taskResult.setCallbackAfterSeconds(300);
+        taskResult.setStatus(TaskResult.Status.IN_PROGRESS);
+
+        workflowExecutor.updateTask(taskResult);
+        verify(queueDAO, times(1)).postpone(anyString(), anyString(), anyInt(), anyLong());
+        ArgumentCaptor<TaskModel> argumentCaptor = ArgumentCaptor.forClass(TaskModel.class);
+        verify(executionDAOFacade, times(1)).updateTask(argumentCaptor.capture());
+        assertEquals(TaskModel.Status.SCHEDULED, argumentCaptor.getAllValues().get(0).getStatus());
+        assertEquals(
+                taskResult.getCallbackAfterSeconds(),
+                argumentCaptor.getAllValues().get(0).getCallbackAfterSeconds());
+        assertEquals(taskResult.getWorkerId(), argumentCaptor.getAllValues().get(0).getWorkerId());
+    }
+
+    @Test
+    public void testUpdateTaskWithOutCallbackAfterSeconds() {
+        String workflowId = "test-workflow-id";
+        WorkflowModel workflow = new WorkflowModel();
+        workflow.setWorkflowId(workflowId);
+        workflow.setStatus(WorkflowModel.Status.RUNNING);
+        workflow.setWorkflowDefinition(new WorkflowDef());
+
+        TaskModel simpleTask = new TaskModel();
+        simpleTask.setTaskType(TaskType.SIMPLE.name());
+        simpleTask.setReferenceTaskName("simpleTask");
+        simpleTask.setWorkflowInstanceId(workflowId);
+        simpleTask.setScheduledTime(System.currentTimeMillis());
+        simpleTask.setCallbackAfterSeconds(0);
+        simpleTask.setTaskId("simple-task-id");
+        simpleTask.setStatus(TaskModel.Status.IN_PROGRESS);
+
+        workflow.getTasks().add(simpleTask);
+        when(executionDAOFacade.getWorkflowModel(workflowId, false)).thenReturn(workflow);
+        when(executionDAOFacade.getTaskModel(simpleTask.getTaskId())).thenReturn(simpleTask);
+
+        TaskResult taskResult = new TaskResult();
+        taskResult.setWorkflowInstanceId(workflowId);
+        taskResult.setTaskId(simpleTask.getTaskId());
+        taskResult.setWorkerId("test-worker-id");
+        taskResult.log("not ready yet");
+        taskResult.setStatus(TaskResult.Status.IN_PROGRESS);
+
+        workflowExecutor.updateTask(taskResult);
+        verify(queueDAO, times(1)).postpone(anyString(), anyString(), anyInt(), anyLong());
+        ArgumentCaptor<TaskModel> argumentCaptor = ArgumentCaptor.forClass(TaskModel.class);
+        verify(executionDAOFacade, times(1)).updateTask(argumentCaptor.capture());
+        assertEquals(TaskModel.Status.SCHEDULED, argumentCaptor.getAllValues().get(0).getStatus());
+        assertEquals(0, argumentCaptor.getAllValues().get(0).getCallbackAfterSeconds());
+        assertEquals(taskResult.getWorkerId(), argumentCaptor.getAllValues().get(0).getWorkerId());
+    }
+
+    @Test
+    public void testIsLazyEvaluateWorkflow() {
+        // setup
+        WorkflowDef workflowDef = new WorkflowDef();
+        workflowDef.setName("lazyEvaluate");
+        workflowDef.setVersion(1);
+
+        WorkflowTask simpleTask = new WorkflowTask();
+        simpleTask.setType(SIMPLE.name());
+        simpleTask.setName("simple");
+        simpleTask.setTaskReferenceName("simple");
+
+        WorkflowTask forkTask = new WorkflowTask();
+        forkTask.setType(FORK_JOIN.name());
+        forkTask.setName("fork");
+        forkTask.setTaskReferenceName("fork");
+
+        WorkflowTask branchTask1 = new WorkflowTask();
+        branchTask1.setType(SIMPLE.name());
+        branchTask1.setName("branchTask1");
+        branchTask1.setTaskReferenceName("branchTask1");
+
+        WorkflowTask branchTask2 = new WorkflowTask();
+        branchTask2.setType(SIMPLE.name());
+        branchTask2.setName("branchTask2");
+        branchTask2.setTaskReferenceName("branchTask2");
+
+        forkTask.getForkTasks().add(Arrays.asList(branchTask1, branchTask2));
+
+        WorkflowTask joinTask = new WorkflowTask();
+        joinTask.setType(JOIN.name());
+        joinTask.setName("join");
+        joinTask.setTaskReferenceName("join");
+        joinTask.setJoinOn(List.of("branchTask2"));
+
+        WorkflowTask doWhile = new WorkflowTask();
+        doWhile.setType(DO_WHILE.name());
+        doWhile.setName("doWhile");
+        doWhile.setTaskReferenceName("doWhile");
+
+        WorkflowTask loopTask = new WorkflowTask();
+        loopTask.setType(SIMPLE.name());
+        loopTask.setName("loopTask");
+        loopTask.setTaskReferenceName("loopTask");
+
+        doWhile.setLoopOver(List.of(loopTask));
+
+        workflowDef.getTasks().addAll(List.of(simpleTask, forkTask, joinTask, doWhile));
+
+        TaskModel task = new TaskModel();
+
+        // when:
+        task.setReferenceTaskName("dynamic");
+        assertTrue(workflowExecutor.isLazyEvaluateWorkflow(workflowDef, task));
+
+        task.setReferenceTaskName("branchTask1");
+        assertFalse(workflowExecutor.isLazyEvaluateWorkflow(workflowDef, task));
+
+        task.setReferenceTaskName("branchTask2");
+        assertTrue(workflowExecutor.isLazyEvaluateWorkflow(workflowDef, task));
+
+        task.setReferenceTaskName("simple");
+        assertFalse(workflowExecutor.isLazyEvaluateWorkflow(workflowDef, task));
+
+        task.setReferenceTaskName("loopTask__1");
+        task.setIteration(1);
+        assertFalse(workflowExecutor.isLazyEvaluateWorkflow(workflowDef, task));
+    }
+
+    @Test
+    public void testTaskExtendLease() {
+        TaskModel simpleTask = new TaskModel();
+        simpleTask.setTaskType(TaskType.SIMPLE.name());
+        simpleTask.setReferenceTaskName("simpleTask");
+        simpleTask.setWorkflowInstanceId("test-workflow-id");
+        simpleTask.setScheduledTime(System.currentTimeMillis());
+        simpleTask.setCallbackAfterSeconds(0);
+        simpleTask.setTaskId("simple-task-id");
+        simpleTask.setStatus(TaskModel.Status.IN_PROGRESS);
+        when(executionDAOFacade.getTaskModel(simpleTask.getTaskId())).thenReturn(simpleTask);
+
+        TaskResult taskResult = new TaskResult();
+        taskResult.setWorkflowInstanceId(simpleTask.getWorkflowInstanceId());
+        taskResult.setTaskId(simpleTask.getTaskId());
+        taskResult.log("extend lease");
+        taskResult.setExtendLease(true);
+
+        workflowExecutor.updateTask(taskResult);
+        verify(executionDAOFacade, times(1)).extendLease(simpleTask);
+        verify(queueDAO, times(0)).postpone(anyString(), anyString(), anyInt(), anyLong());
+        verify(executionDAOFacade, times(0)).updateTask(any());
     }
 
     private WorkflowModel generateSampleWorkflow() {

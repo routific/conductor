@@ -32,14 +32,14 @@ protobuf {
         }
     }
 ...
-} 
+}
 ```
 
-You may also need to install rosetta:  
+You may also need to install rosetta:
 
 ```shell
 softwareupdate --install-rosetta
-``` 
+```
 
 ```shell
 $ cd conductor
@@ -59,7 +59,7 @@ As an alternative to building from source, you can download and run the pre-comp
 export CONDUCTOR_VER=3.3.4
 export REPO_URL=https://repo1.maven.org/maven2/com/netflix/conductor/conductor-server
 curl $REPO_URL/$CONDUCTOR_VER/conductor-server-$CONDUCTOR_VER-boot.jar \
---output conductor-server-$CONDUCTOR_VER-boot.jar; java -jar conductor-server-$CONDUCTOR_VER-boot.jar 
+--output conductor-server-$CONDUCTOR_VER-boot.jar; java -jar conductor-server-$CONDUCTOR_VER-boot.jar
 ```
 Navigate to the swagger URL: [http://localhost:8080/swagger-ui/index.html?configUrl=/api-docs/swagger-config](http://localhost:8080/swagger-ui/index.html?configUrl=/api-docs/swagger-config)
 
@@ -79,7 +79,7 @@ ui $ yarn install
 
 There is no need to "build" the project unless you require compiled assets to host on a production web server. If the latter is true, the project can be built with the command `yarn build`.
 
-To run the UI on the bundled development server, run `yarn run start`. Navigate your browser to `http://localhost:5000`. The server must already be running on port 8080. 
+To run the UI on the bundled development server, run `yarn run start`. Navigate your browser to `http://localhost:5000`. The server must already be running on port 8080.
 
 ```shell
 ui $ yarn run start
@@ -90,6 +90,6 @@ Launch UI [http://localhost:5000](http://localhost:5000)
 <img src="/img/tutorial/conductorUI.png" style="width: 100%" />
 
 ## Summary
-1. By default in-memory persistance is used, so any workflows created or excuted will be wiped out once the server is terminated.
+1. By default in-memory persistence is used, so any workflows created or excuted will be wiped out once the server is terminated.
 2. Without indexing configured, the search functionality in UI will not work and will result an empty set.
 3. See how to install Conductor using [Docker](docker.md) with persistence and indexing.

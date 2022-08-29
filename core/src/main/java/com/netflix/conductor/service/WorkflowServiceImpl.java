@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,8 +31,7 @@ import com.netflix.conductor.common.run.ExternalStorageLocation;
 import com.netflix.conductor.common.run.SearchResult;
 import com.netflix.conductor.common.run.Workflow;
 import com.netflix.conductor.common.run.WorkflowSummary;
-import com.netflix.conductor.common.utils.ExternalPayloadStorage;
-import com.netflix.conductor.core.exception.ApplicationException;
+import com.netflix.conductor.core.exception.NotFoundException;
 import com.netflix.conductor.core.execution.WorkflowExecutor;
 import com.netflix.conductor.core.utils.Utils;
 
@@ -187,10 +185,8 @@ public class WorkflowServiceImpl implements WorkflowService {
             Map<String, Object> input) {
         WorkflowDef workflowDef = metadataService.getWorkflowDef(name, version);
         if (workflowDef == null) {
-            throw new ApplicationException(
-                    ApplicationException.Code.NOT_FOUND,
-                    String.format(
-                            "No such workflow found by name: %s, version: %d", name, version));
+            throw new NotFoundException(
+                    "No such workflow found by name: %s, version: %d", name, version);
         }
         return workflowExecutor.startWorkflow(
                 workflowDef.getName(),
@@ -247,9 +243,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     public Workflow getExecutionStatus(String workflowId, boolean includeTasks) {
         Workflow workflow = executionService.getExecutionStatus(workflowId, includeTasks);
         if (workflow == null) {
-            throw new ApplicationException(
-                    ApplicationException.Code.NOT_FOUND,
-                    String.format("Workflow with Id: %s not found.", workflowId));
+            throw new NotFoundException("Workflow with id: %s not found.", workflowId);
         }
         return workflow;
     }
@@ -524,22 +518,6 @@ public class WorkflowServiceImpl implements WorkflowService {
      */
     public ExternalStorageLocation getExternalStorageLocation(
             String path, String operation, String type) {
-        try {
-            ExternalPayloadStorage.Operation payloadOperation =
-                    ExternalPayloadStorage.Operation.valueOf(StringUtils.upperCase(operation));
-            ExternalPayloadStorage.PayloadType payloadType =
-                    ExternalPayloadStorage.PayloadType.valueOf(StringUtils.upperCase(type));
-            return executionService.getExternalStorageLocation(payloadOperation, payloadType, path);
-        } catch (Exception e) {
-            // FIXME: for backwards compatibility
-            LOGGER.error(
-                    "Invalid input - Operation: {}, PayloadType: {}, defaulting to WRITE/WORKFLOW_INPUT",
-                    operation,
-                    type);
-            return executionService.getExternalStorageLocation(
-                    ExternalPayloadStorage.Operation.WRITE,
-                    ExternalPayloadStorage.PayloadType.WORKFLOW_INPUT,
-                    path);
-        }
+        return executionService.getExternalStorageLocation(path, operation, type);
     }
 }

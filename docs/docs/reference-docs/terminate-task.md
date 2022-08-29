@@ -7,12 +7,12 @@ sidebar_position: 1
 "type" : "TERMINATE"
 ```
 ### Introduction
-Task that can terminate a workflow with a given status and modify the workflow's output with a given parameter, 
-it can act as a `return` statement for conditions where you simply want to terminate your workflow. 
+Task that can terminate a workflow with a given status and modify the workflow's output with a given parameter,
+it can act as a `return` statement for conditions where you simply want to terminate your workflow.
 
 ### Use Cases
-Use it when you want to terminate the workflow without continuing the execution.  
-For example, if you have a decision where the first condition is met, you want to execute some tasks, 
+Use it when you want to terminate the workflow without continuing the execution.
+For example, if you have a decision where the first condition is met, you want to execute some tasks,
 otherwise you want to finish your workflow.
 
 ### Configuration
@@ -42,6 +42,7 @@ Terminate task is defined directly inside the workflow with type
 |-------------------|--------|-----------------------------------------|-------------------------|
 | terminationStatus | String | can only accept "COMPLETED" or "FAILED" | task cannot be optional |
 | workflowOutput    | Any    | Expected workflow output                ||
+|terminationReason|String| For failed tasks, this reason is passed to a failureWorkflow|
 
 ### Output
 
@@ -58,10 +59,10 @@ Let's consider the same example we had in [Switch Task](/reference-docs/switch-t
 Suppose in a workflow, we have to take decision to ship the courier with the shipping
 service providers on the basis of input provided while running the workflow.
 If the input provided while running workflow does not match with the available
-shipping providers then the workflow will fail and return. If input provided 
+shipping providers then the workflow will fail and return. If input provided
 matches then it goes ahead.
 
-Here is a snippet that shows the defalt switch case terminating the workflow:
+Here is a snippet that shows the default switch case terminating the workflow:
 
 ```json
 {
@@ -74,8 +75,9 @@ Here is a snippet that shows the defalt switch case terminating the workflow:
       "taskReferenceName": "terminate",
       "type": "TERMINATE",
       "inputParameters": {
-          "terminationStatus": "FAILED"
-      }      
+          "terminationStatus": "FAILED",
+          "terminationReason":"Shipping provider not found."
+      }
     }
    ]
 }

@@ -10,7 +10,7 @@ Conductor is a platform created by Netflix to orchestrate workflows that span ac
 
 
 ## Documentation
-[Main Documentation Site](http://conductor.netflix.com/)  
+[Main Documentation Site](http://conductor.netflix.com/)
 
 ## Releases
 The latest version is [![Github release](https://img.shields.io/github/v/release/Netflix/conductor.svg)](https://GitHub.com/Netflix/conductor/releases)
@@ -26,7 +26,7 @@ The modules contributed by the community are housed at [conductor-community](htt
 
 ## Getting Started - Building & Running Conductor
 ### Docker
-The easiest way to get started is with Docker containers. Please follow the instructions [here](https://conductor.netflix.com/gettingstarted/docker.html). 
+The easiest way to get started is with Docker containers. Please follow the instructions [here](https://conductor.netflix.com/gettingstarted/docker.html).
 
 ###  From Source
 Conductor Server is a [Spring Boot](https://spring.io/projects/spring-boot) project and follows all applicable conventions. See instructions [here](http://conductor.netflix.com/gettingstarted/source.html).
@@ -53,8 +53,8 @@ Binaries are available from [Netflix OSS Maven](https://artifacts.netflix.net/ne
 | conductor-http-task             | Workflow system task implementation to send make requests                                       |
 | conductor-json-jq-task          | Workflow system task implementation to evaluate JSON using [jq](https://stedolan.github.io/jq/) |
 | conductor-grpc                  | Protobuf models used by the server and client                                                   |
-| conductor-grpc-client           | gRPC server Application                                                                         |
-| conductor-grpc-server           | gRPC client to interact with the gRPC server                                                    |
+| conductor-grpc-client           | gRPC client to interact with the gRPC server                                                    |
+| conductor-grpc-server           | gRPC server Application                                                                         |
 | conductor-test-harness          | Integration and regression tests                                                                |
 
 ## Database Requirements
@@ -68,7 +68,7 @@ Binaries are available from [Netflix OSS Maven](https://artifacts.netflix.net/ne
 * UI requires Node 14 to build. Earlier Node versions may work but is untested.
 
 ## Get Support
-Conductor is maintained by Media Workflow Infrastructure team at Netflix.  Use Github issue tracking for filing issues and [Discussion Forum](https://github.com/Netflix/conductor/discussions) for any other questions, ideas or support requests. 
+Conductor is maintained by Media Workflow Infrastructure team at Netflix.  Use Github issue tracking for filing issues and [Discussion Forum](https://github.com/Netflix/conductor/discussions) for any other questions, ideas or support requests.
 
 ## Contributions
 Whether it is a small documentation correction, bug fix or new features, contributions are highly appreciated. We just ask to follow standard oss guidelines. [Discussion Forum](https://github.com/Netflix/conductor/discussions) is a good place to ask questions, discuss new features and explore ideas. Please check with us before spending too much time, only to find later that someone else is already working on a similar feature.

@@ -16,6 +16,7 @@
 
 echo "Starting Conductor server"
 
+<<<<<<< HEAD
 
 KAFKA_CERT_PATH=/app/certs/ca.pem
 
@@ -36,6 +37,9 @@ if test -f "$KAFKA_CERT_PATH";
 fi
 
 
+=======
+# Start the server
+>>>>>>> db841aceec30a2448b9ee0b532518df688d23064
 cd /app/libs
 echo "Property file: $CONFIG_PROP"
 echo $CONFIG_PROP
@@ -50,9 +54,12 @@ if [ -z "$CONFIG_PROP" ];
     export config_file=/app/config/$CONFIG_PROP
 fi
 
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> db841aceec30a2448b9ee0b532518df688d23064
 echo "Using java options config: $JAVA_OPTS"
 
 java ${JAVA_OPTS} -jar -DCONDUCTOR_CONFIG_FILE=$config_file conductor-server-*-boot.jar 2>&1 | tee -a /app/logs/server.log
