@@ -88,7 +88,7 @@ public class SimpleActionProcessor implements ActionProcessor {
                         action,
                         jsonObject,
                         action.getFail_task(),
-                        TaskModel.Status.FAILED,
+                        TaskModel.Status.FAILED_WITH_TERMINAL_ERROR,
                         event,
                         messageId);
             default:
@@ -110,12 +110,14 @@ public class SimpleActionProcessor implements ActionProcessor {
         input.put("workflowId", taskDetails.getWorkflowId());
         input.put("taskId", taskDetails.getTaskId());
         input.put("taskRefName", taskDetails.getTaskRefName());
+        input.put("retry", false);
         input.putAll(taskDetails.getOutput());
 
         Map<String, Object> replaced = parametersUtils.replace(input, payload);
         String workflowId = (String) replaced.get("workflowId");
         String taskId = (String) replaced.get("taskId");
         String taskRefName = (String) replaced.get("taskRefName");
+        Boolean retry = Boolean.TRUE.equals(replaced.get("retry"));
 
         TaskModel taskModel = null;
         if (StringUtils.isNotEmpty(taskId)) {
@@ -156,6 +158,10 @@ public class SimpleActionProcessor implements ActionProcessor {
                             + ", workflowId: "
                             + workflowId);
             return replaced;
+        }
+
+        if (retry) {
+            status = TaskModel.Status.FAILED;
         }
 
         taskModel.setStatus(status);
