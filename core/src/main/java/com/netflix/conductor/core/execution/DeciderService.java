@@ -507,12 +507,15 @@ public class DeciderService {
             taskDefinition = metadataDAO.getTaskDef(task.getTaskDefName());
         }
 
-        final int expectedRetryCount =
-                taskDefinition == null
+        int expectedRetryCount =
+                workflowTask == null
                         ? 0
-                        : Optional.ofNullable(workflowTask)
-                                .map(WorkflowTask::getRetryCount)
-                                .orElse(taskDefinition.getRetryCount());
+                        : Optional.ofNullable(workflowTask.getRetryCount()).orElse(0);
+        expectedRetryCount =
+                taskDefinition == null
+                        ? expectedRetryCount
+                        : Optional.ofNullable(taskDefinition.getRetryCount()).orElse(0);
+
         if (!task.getStatus().isRetriable()
                 || TaskType.isBuiltIn(task.getTaskType())
                 || expectedRetryCount <= retryCount) {
@@ -534,32 +537,36 @@ public class DeciderService {
             updateWorkflowOutput(workflow, task);
             throw new TerminateWorkflowException(task.getReasonForIncompletion(), status, task);
         }
-
-        // retry... - but not immediately - put a delay...
-        int startDelay = taskDefinition.getRetryDelaySeconds();
-        switch (taskDefinition.getRetryLogic()) {
-            case FIXED:
-                startDelay = taskDefinition.getRetryDelaySeconds();
-                break;
-            case LINEAR_BACKOFF:
-                int linearRetryDelaySeconds =
-                        taskDefinition.getRetryDelaySeconds()
-                                * taskDefinition.getBackoffScaleFactor()
-                                * (task.getRetryCount() + 1);
-                // Reset integer overflow to max value
-                startDelay =
-                        linearRetryDelaySeconds < 0 ? Integer.MAX_VALUE : linearRetryDelaySeconds;
-                break;
-            case EXPONENTIAL_BACKOFF:
-                int exponentialRetryDelaySeconds =
-                        taskDefinition.getRetryDelaySeconds()
-                                * (int) Math.pow(2, task.getRetryCount());
-                // Reset integer overflow to max value
-                startDelay =
-                        exponentialRetryDelaySeconds < 0
-                                ? Integer.MAX_VALUE
-                                : exponentialRetryDelaySeconds;
-                break;
+        int startDelay = 1;
+        if (!Objects.isNull(taskDefinition)) {
+            // retry... - but not immediately - put a delay...
+            startDelay = taskDefinition.getRetryDelaySeconds();
+            switch (taskDefinition.getRetryLogic()) {
+                case FIXED:
+                    startDelay = taskDefinition.getRetryDelaySeconds();
+                    break;
+                case LINEAR_BACKOFF:
+                    int linearRetryDelaySeconds =
+                            taskDefinition.getRetryDelaySeconds()
+                                    * taskDefinition.getBackoffScaleFactor()
+                                    * (task.getRetryCount() + 1);
+                    // Reset integer overflow to max value
+                    startDelay =
+                            linearRetryDelaySeconds < 0
+                                    ? Integer.MAX_VALUE
+                                    : linearRetryDelaySeconds;
+                    break;
+                case EXPONENTIAL_BACKOFF:
+                    int exponentialRetryDelaySeconds =
+                            taskDefinition.getRetryDelaySeconds()
+                                    * (int) Math.pow(2, task.getRetryCount());
+                    // Reset integer overflow to max value
+                    startDelay =
+                            exponentialRetryDelaySeconds < 0
+                                    ? Integer.MAX_VALUE
+                                    : exponentialRetryDelaySeconds;
+                    break;
+            }
         }
 
         task.setRetried(true);
