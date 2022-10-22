@@ -833,6 +833,9 @@ public abstract class AbstractProtoMapper {
         if (from.getOutputMessage() != null) {
             to.setOutputMessage( toProto( from.getOutputMessage() ) );
         }
+        if (from.getTaskReferenceName() != null) {
+            to.setTaskReferenceName( from.getTaskReferenceName() );
+        }
         return to.build();
     }
 
@@ -852,6 +855,7 @@ public abstract class AbstractProtoMapper {
         if (from.hasOutputMessage()) {
             to.setOutputMessage( fromProto( from.getOutputMessage() ) );
         }
+        to.setTaskReferenceName( from.getTaskReferenceName() );
         return to;
     }
 

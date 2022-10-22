@@ -44,7 +44,6 @@ public class TaskResult {
     @ProtoField(id = 1)
     private String workflowInstanceId;
 
-    @NotEmpty(message = "Task ID cannot be null or empty")
     @ProtoField(id = 2)
     private String taskId;
 
@@ -66,6 +65,9 @@ public class TaskResult {
     @ProtoField(id = 8)
     @Hidden
     private Any outputMessage;
+
+    @ProtoField(id = 9)
+    private String taskReferenceName;
 
     private List<TaskExecLog> logs = new CopyOnWriteArrayList<>();
 
@@ -117,6 +119,14 @@ public class TaskResult {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
+    }
+
+    public String getTaskReferenceName() {
+        return taskReferenceName;
+    }
+
+    public void setTaskReferenceName(String taskReferenceName) {
+        this.taskReferenceName = taskReferenceName;
     }
 
     public String getReasonForIncompletion() {
@@ -262,6 +272,9 @@ public class TaskResult {
                 + '\''
                 + ", taskId='"
                 + taskId
+                + '\''
+                + ", taskReferenceName='"
+                + taskReferenceName
                 + '\''
                 + ", reasonForIncompletion='"
                 + reasonForIncompletion
