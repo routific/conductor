@@ -1093,15 +1093,28 @@ public class WorkflowExecutor {
             workflowInstance =
                     metadataMapperService.populateWorkflowWithDefinitions(workflowInstance);
         }
-
-        TaskModel task =
-                Optional.ofNullable(executionDAOFacade.getTaskModel(taskResult.getTaskId()))
-                        .orElseThrow(
-                                () ->
-                                        new ApplicationException(
-                                                ApplicationException.Code.NOT_FOUND,
-                                                "No such task found by id: "
-                                                        + taskResult.getTaskId()));
+        TaskModel task;
+        if (taskResult.getTaskReferenceName() != null && taskResult.getTaskId() == null) {
+            task =
+                    Optional.ofNullable(
+                                    workflowInstance.getTaskByRefName(
+                                            taskResult.getTaskReferenceName()))
+                            .orElseThrow(
+                                    () ->
+                                            new ApplicationException(
+                                                    ApplicationException.Code.NOT_FOUND,
+                                                    "No such task found by reference name: "
+                                                            + taskResult.getTaskReferenceName()));
+        } else {
+            task =
+                    Optional.ofNullable(executionDAOFacade.getTaskModel(taskResult.getTaskId()))
+                            .orElseThrow(
+                                    () ->
+                                            new ApplicationException(
+                                                    ApplicationException.Code.NOT_FOUND,
+                                                    "No such task found by id: "
+                                                            + taskResult.getTaskId()));
+        }
 
         LOGGER.debug("Task: {} belonging to Workflow {} being updated", task, workflowInstance);
 
@@ -1335,7 +1348,10 @@ public class WorkflowExecutor {
                 decide(workflowId);
             }
         } catch (TerminateWorkflowException twe) {
-            LOGGER.info("Execution terminated of workflow: {}", workflowId, twe);
+            LOGGER.info(
+                    "Execution terminated of workflow: {} with reason: {}",
+                    workflowId,
+                    twe.getMessage());
             terminate(workflow, twe);
             return true;
         } catch (RuntimeException e) {
