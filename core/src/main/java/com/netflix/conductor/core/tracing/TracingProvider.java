@@ -25,6 +25,7 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.TraceFlags;
+import io.opentelemetry.api.trace.TraceState;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -103,26 +104,34 @@ public class TracingProvider {
         }
     }
 
-    public Tracing startTracing(String spanName, Optional<String> traceId) {
+    public Tracing startTracing(String spanName, Optional<String> traceparent) {
         if (this.openTelemtrySdk != null) {
             SpanBuilder builder =
                     this.openTelemtrySdk.getTracer("random scope name").spanBuilder(spanName);
 
-            if (traceId != null && traceId.isPresent()) {
-                log.info("Starting new span: {} with trace: {}", spanName, traceId);
+            if (traceparent != null && traceparent.isPresent()) {
+                // version-traceId-parentSpanId-sampled
+                String[] traceComponents = traceparent.get().split("-");
+                if (traceComponents.length != 4) {
+                    return new Tracing(Optional.empty());
+                }
 
-                String[] traceComponents = traceId.get().split("-");
+                log.info("Starting child span: {} from traceparent: {}", spanName, traceparent);
                 SpanContext spanContext =
                         SpanContext.createFromRemoteParent(
-                                traceComponents[0],
                                 traceComponents[1],
-                                TraceFlags.getSampled(),
-                                null);
+                                traceComponents[2],
+                                TraceFlags.fromHex(traceComponents[3], 0),
+                                TraceState.getDefault());
                 Span span =
                         builder.setParent(Context.current().with(Span.wrap(spanContext)))
                                 .startSpan();
 
+                log.info("Started child span: {}-{}", span.getSpanContext().getTraceId(), span.getSpanContext().getSpanId());
+
+
                 return new Tracing(Optional.of(span));
+
             } else {
                 log.info("Starting new root span: {}", spanName);
 
@@ -130,8 +139,8 @@ public class TracingProvider {
 
                 return new Tracing(Optional.of(span));
             }
-        } else {
-            return new Tracing(Optional.empty());
         }
+
+        return new Tracing(Optional.empty());
     }
 }
