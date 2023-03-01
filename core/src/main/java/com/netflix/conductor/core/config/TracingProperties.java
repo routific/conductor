@@ -35,7 +35,7 @@ public class TracingProperties {
         this.enabled = enabled;
     }
 
-    public Double getTracesSampleRate() {
+    public Double getTracesSamplingRate() {
         return this.tracesSamplingRate;
     }
 
