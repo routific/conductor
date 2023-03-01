@@ -56,6 +56,7 @@ public class TracingProvider {
                 Sentry.init(
                         options -> {
                             options.setDsn(tracingProperties.getSentryDsn());
+                            options.setEnableExternalConfiguration(true);
                             options.setTracesSampleRate(tracingProperties.getTracesSamplingRate());
                             options.setInstrumenter(Instrumenter.OTEL);
                             options.addEventProcessor(new OpenTelemetryLinkErrorEventProcessor());
@@ -80,9 +81,9 @@ public class TracingProvider {
                                 .setTracerProvider(sdkTracerProvider)
                                 .setPropagators(ContextPropagators.create(new SentryPropagator()))
                                 .buildAndRegisterGlobal();
-            } catch (Exception error) {
+            }
+            catch (Exception error) {
                 log.error("Error while setting up tracing: {}", error.getMessage());
-                throw error;
             }
         } else {
             openTelemtrySdk = null;
