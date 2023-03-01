@@ -218,6 +218,8 @@ public class SimpleActionProcessor implements ActionProcessor {
             String workflowName = (String) workflowInput.get("workflowName");
             Integer version = (Integer) workflowInput.get("version");
 
+            LOGGER.info("start workflow correlationId: {}", replaced.get("correlationId"));
+
             workflowInput.put("conductor.event.messageId", messageId);
             workflowInput.put("conductor.event.name", event);
 
