@@ -26,15 +26,17 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.TraceFlags;
 import io.opentelemetry.api.trace.TraceState;
-import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.propagation.ContextPropagators;
-import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
+import io.sentry.Instrumenter;
+import io.sentry.Sentry;
+import io.sentry.opentelemetry.OpenTelemetryLinkErrorEventProcessor;
+import io.sentry.opentelemetry.SentryPropagator;
+import io.sentry.opentelemetry.SentrySpanProcessor;
 
 public class TracingProvider {
     private static final Logger log = LoggerFactory.getLogger(TracingProvider.class);
@@ -46,12 +48,19 @@ public class TracingProvider {
         this.properties = properties;
 
         if (tracingProperties.getEnabled()) {
-            log.info(
-                    "Creating Otel instance with endpint, traces: {}, metrics: {}",
-                    tracingProperties.getTracesEndpoint(),
-                    tracingProperties.getMetricsEndpoint());
-
             try {
+                if (tracingProperties.getSentryDsn() == null) {
+                    throw new Exception("missing sentry dsn");
+                }
+
+                Sentry.init(
+                        options -> {
+                            options.setDsn(tracingProperties.getSentryDsn());
+                            options.setTracesSampleRate(tracingProperties.getTracesSamplingRate());
+                            options.setInstrumenter(Instrumenter.OTEL);
+                            options.addEventProcessor(new OpenTelemetryLinkErrorEventProcessor());
+                        });
+
                 Resource resource =
                         Resource.getDefault()
                                 .merge(
@@ -62,41 +71,17 @@ public class TracingProvider {
 
                 SdkTracerProvider sdkTracerProvider =
                         SdkTracerProvider.builder()
-                                .addSpanProcessor(
-                                        BatchSpanProcessor.builder(
-                                                        OtlpHttpSpanExporter.builder()
-                                                                .setEndpoint(
-                                                                        tracingProperties
-                                                                                .getTracesEndpoint())
-                                                                .build())
-                                                .build())
+                                .addSpanProcessor(new SentrySpanProcessor())
                                 .setResource(resource)
                                 .build();
-
-                // SdkMeterProvider sdkMeterProvider =
-                //         SdkMeterProvider.builder()
-                //                 .registerMetricReader(
-                //                         PeriodicMetricReader.builder(
-                //                                         OtlpHttpMetricExporter.builder()
-                //                                                 .setEndpoint(
-                //                                                         tracingProperties
-                //
-                // .getMetricsEndpoint())
-                //                                                 .build())
-                //                                 .build())
-                //                 .setResource(resource)
-                //                 .build();
 
                 openTelemtrySdk =
                         OpenTelemetrySdk.builder()
                                 .setTracerProvider(sdkTracerProvider)
-                                // .setMeterProvider(sdkMeterProvider)
-                                .setPropagators(
-                                        ContextPropagators.create(
-                                                W3CTraceContextPropagator.getInstance()))
+                                .setPropagators(ContextPropagators.create(new SentryPropagator()))
                                 .buildAndRegisterGlobal();
             } catch (Exception error) {
-                log.error("Error setting up otel: {}", error.getMessage());
+                log.error("Error while setting up tracing: {}", error.getMessage());
                 throw error;
             }
         } else {
@@ -104,40 +89,41 @@ public class TracingProvider {
         }
     }
 
-    public Tracing startTracing(String spanName, Optional<String> traceparent) {
+    public Tracing startTracing(String spanName, Optional<String> header) {
         if (this.openTelemtrySdk != null) {
-            SpanBuilder builder =
-                    this.openTelemtrySdk.getTracer("random scope name").spanBuilder(spanName);
+            SpanBuilder builder = this.openTelemtrySdk.getTracer("conductor").spanBuilder(spanName);
 
-            if (traceparent != null && traceparent.isPresent()) {
-                // version-traceId-parentSpanId-sampled
-                String[] traceComponents = traceparent.get().split("-");
-                if (traceComponents.length != 4) {
+            if (header != null && header.isPresent()) {
+                // sentrytrace = traceId-parentSpanId-sampled
+                String[] traceComponents = header.get().split("-");
+                if (traceComponents.length != 3) {
                     return new Tracing(Optional.empty());
                 }
 
-                log.info("Starting child span: {} from traceparent: {}", spanName, traceparent);
+                log.info("Starting child span: {} from header: {}", spanName, header);
                 SpanContext spanContext =
                         SpanContext.createFromRemoteParent(
+                                traceComponents[0],
                                 traceComponents[1],
-                                traceComponents[2],
-                                TraceFlags.fromHex(traceComponents[3], 0),
+                                TraceFlags.fromHex(traceComponents[2], 0),
                                 TraceState.getDefault());
                 Span span =
                         builder.setParent(Context.current().with(Span.wrap(spanContext)))
                                 .startSpan();
 
-                log.info("Started child span: {}-{}", span.getSpanContext().getTraceId(), span.getSpanContext().getSpanId());
+                log.info(
+                        "Started child span: {}-{}",
+                        span.getSpanContext().getTraceId(),
+                        span.getSpanContext().getSpanId());
 
-
-                return new Tracing(Optional.of(span));
+                return new Tracing(Optional.ofNullable(span));
 
             } else {
                 log.info("Starting new root span: {}", spanName);
 
                 Span span = builder.setNoParent().startSpan();
 
-                return new Tracing(Optional.of(span));
+                return new Tracing(Optional.ofNullable(span));
             }
         }
 

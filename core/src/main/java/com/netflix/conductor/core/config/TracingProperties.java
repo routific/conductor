@@ -23,12 +23,32 @@ public class TracingProperties {
 
     private String metricsEndpoint = null;
 
+    private String sentryDsn = null;
+
+    private Double tracesSamplingRate = 1.0;
+
     public Boolean getEnabled() {
         return this.enabled;
     }
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Double getTracesSampleRate() {
+        return this.tracesSamplingRate;
+    }
+
+    public void setTracesSamplingRate(Double tracesSamplingRate) {
+        this.tracesSamplingRate = tracesSamplingRate;
+    }
+
+    public String getSentryDsn() {
+        return this.sentryDsn;
+    }
+
+    public void setSentryDsn(String sentryDsn) {
+        this.sentryDsn = sentryDsn;
     }
 
     public String getTracesEndpoint() {
