@@ -81,8 +81,7 @@ public class TracingProvider {
                                 .setTracerProvider(sdkTracerProvider)
                                 .setPropagators(ContextPropagators.create(new SentryPropagator()))
                                 .buildAndRegisterGlobal();
-            }
-            catch (Exception error) {
+            } catch (Exception error) {
                 log.error("Error while setting up tracing: {}", error.getMessage());
             }
         } else {
