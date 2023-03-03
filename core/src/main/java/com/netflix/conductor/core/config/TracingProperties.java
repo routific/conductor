@@ -25,6 +25,8 @@ public class TracingProperties {
 
     private String sentryDsn = null;
 
+    private String traceHeader = "sentry-trace";
+
     private Double tracesSamplingRate = 1.0;
 
     public Boolean getEnabled() {
@@ -51,8 +53,12 @@ public class TracingProperties {
         this.sentryDsn = sentryDsn;
     }
 
-    public String getTracesEndpoint() {
-        return this.tracesEndpoint;
+    public String getTraceHeader() {
+        return this.traceHeader;
+    }
+
+    public void setTraceHeader(String traceHeader) {
+        this.traceHeader = traceHeader;
     }
 
     public void setTracesEndpoint(String tracesEndpoint) {
