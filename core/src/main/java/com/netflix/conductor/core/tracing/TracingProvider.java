@@ -43,9 +43,11 @@ public class TracingProvider {
 
     private OpenTelemetrySdk openTelemtrySdk;
     private ConductorProperties properties;
+    private TracingProperties tracingProperties;
 
     public TracingProvider(ConductorProperties properties, TracingProperties tracingProperties) {
         this.properties = properties;
+        this.tracingProperties = tracingProperties;
 
         if (tracingProperties.getEnabled()) {
             try {
@@ -89,6 +91,10 @@ public class TracingProvider {
         }
     }
 
+    public String getTraceHeader() {
+        return this.tracingProperties.getTraceHeader();
+    }
+
     public Tracing startTracing(String spanName, Optional<String> header) {
         if (this.openTelemtrySdk != null) {
             SpanBuilder builder = this.openTelemtrySdk.getTracer("conductor").spanBuilder(spanName);
@@ -100,12 +106,13 @@ public class TracingProvider {
                     return new Tracing(Optional.empty());
                 }
 
-                log.info("Starting child span: {} from header: {}", spanName, header);
+                log.info("Starting child span: {} from header: {}", spanName, header.get());
+
                 SpanContext spanContext =
                         SpanContext.createFromRemoteParent(
                                 traceComponents[0],
                                 traceComponents[1],
-                                TraceFlags.fromHex(traceComponents[2], 0),
+                                (traceComponents[2].equals("1")) ? TraceFlags.getSampled() : TraceFlags.getDefault(),
                                 TraceState.getDefault());
                 Span span =
                         builder.setParent(Context.current().with(Span.wrap(spanContext)))
