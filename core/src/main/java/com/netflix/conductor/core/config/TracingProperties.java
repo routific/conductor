@@ -25,7 +25,7 @@ public class TracingProperties {
 
     private String sentryDsn = null;
 
-    private String traceHeader = "sentry-trace";
+    private String traceHeader = "traceparent";
 
     private Double tracesSamplingRate = 1.0;
 

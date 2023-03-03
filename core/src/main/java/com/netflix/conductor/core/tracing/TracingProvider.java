@@ -115,7 +115,8 @@ public class TracingProvider {
                                 (traceComponents[2].equals("1")) ? TraceFlags.getSampled() : TraceFlags.getDefault(),
                                 TraceState.getDefault());
                 Span span =
-                        builder.setParent(Context.current().with(Span.wrap(spanContext)))
+                        builder.setParent(Context.current().with(Span.wrap(
+                                spanContext)))
                                 .startSpan();
 
                 log.info(
