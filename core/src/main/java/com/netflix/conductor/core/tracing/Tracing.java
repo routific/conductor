@@ -14,23 +14,24 @@ package com.netflix.conductor.core.tracing;
 
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.StatusCode;
 
 public class Tracing {
-    private static final Logger log = LoggerFactory.getLogger(Tracing.class);
-
     private Optional<Span> span = Optional.empty();
 
     public Tracing(Optional<Span> span) {
         this.span = span;
+    }
 
-        if (span.isPresent()) {
-            log.info("Span sampled: {}", span.get().getSpanContext().getTraceFlags().isSampled());
+    public Optional<String> getTraceId() {
+        if (this.span.isPresent()) {
+            SpanContext spanContext = this.span.get().getSpanContext();
+            return Optional.of(spanContext.getTraceId() + "-" + spanContext.getSpanId() + "-" + (spanContext.getTraceFlags().isSampled() ? "1" : "0"));
         }
+
+        return Optional.empty();
     }
 
     public void finish() {
