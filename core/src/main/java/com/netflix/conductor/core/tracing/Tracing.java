@@ -28,7 +28,12 @@ public class Tracing {
     public Optional<String> getTraceId() {
         if (this.span.isPresent()) {
             SpanContext spanContext = this.span.get().getSpanContext();
-            return Optional.of(spanContext.getTraceId() + "-" + spanContext.getSpanId() + "-" + (spanContext.getTraceFlags().isSampled() ? "1" : "0"));
+            return Optional.of(
+                    spanContext.getTraceId()
+                            + "-"
+                            + spanContext.getSpanId()
+                            + "-"
+                            + (spanContext.getTraceFlags().isSampled() ? "1" : "0"));
         }
 
         return Optional.empty();
