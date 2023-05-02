@@ -19,6 +19,7 @@ public class Message {
     private String payload;
     private String id;
     private String receipt;
+    private String userIdentifier;
     private int priority;
 
     public Message() {}
@@ -76,6 +77,14 @@ public class Message {
      */
     public void setReceipt(String receipt) {
         this.receipt = receipt;
+    }
+
+    public String getUserIdentifier() {
+        return this.userIdentifier;
+    }
+
+    public void setUserIdentifier(String userIdentifier) {
+        this.userIdentifier = userIdentifier;
     }
 
     /**

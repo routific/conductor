@@ -63,7 +63,7 @@ public class TracingProvider {
                             options.setTracesSampleRate(tracingProperties.getTracesSamplingRate());
                             options.setInstrumenter(Instrumenter.OTEL);
                             options.addEventProcessor(new OpenTelemetryLinkErrorEventProcessor());
-                            options.setDebug(true);
+                            options.setDebug(false);
                         });
 
                 Resource resource =
