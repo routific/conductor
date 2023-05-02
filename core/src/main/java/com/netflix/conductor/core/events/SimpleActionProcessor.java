@@ -59,12 +59,17 @@ public class SimpleActionProcessor implements ActionProcessor {
     }
 
     @Override
-    public Map<String, Object> execute(Action action, Object payloadObject, String event, String messageId) {
+    public Map<String, Object> execute(
+            Action action, Object payloadObject, String event, String messageId) {
         return execute(action, payloadObject, event, messageId, null);
     }
 
     public Map<String, Object> execute(
-            Action action, Object payloadObject, String event, String messageId, String userIdentifier) {
+            Action action,
+            Object payloadObject,
+            String event,
+            String messageId,
+            String userIdentifier) {
 
         LOGGER.debug(
                 "Executing action: {} for event: {} with messageId:{}",

@@ -22,5 +22,9 @@ public interface ActionProcessor {
             EventHandler.Action action, Object payloadObject, String event, String messageId);
 
     Map<String, Object> execute(
-            EventHandler.Action action, Object payloadObject, String event, String messageId, String userIdentifier);
+            EventHandler.Action action,
+            Object payloadObject,
+            String event,
+            String messageId,
+            String userIdentifier);
 }
