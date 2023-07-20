@@ -421,6 +421,7 @@ public class WorkflowExecutor {
                     workflow.getWorkflowName(),
                     String.valueOf(workflow.getWorkflowVersion()),
                     workflow.getOwnerApp());
+            workflowStatusListener.onWorkflowStartedIfEnabled(workflow);
             return workflowId;
         } catch (Exception e) {
             Monitors.recordWorkflowStartError(

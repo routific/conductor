@@ -6,7 +6,7 @@
     },
     "annotationsProcessorCodegen": {
         "com.github.jknack:handlebars": {
-            "locked": "4.3.0",
+            "locked": "4.3.1",
             "transitive": [
                 "com.netflix.conductor:conductor-annotations-processor"
             ]
@@ -191,25 +191,25 @@
             "project": true
         },
         "io.github.classgraph:classgraph": {
-            "locked": "4.8.147",
+            "locked": "4.8.149",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
         },
         "io.swagger.core.v3:swagger-annotations": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
         },
         "io.swagger.core.v3:swagger-core": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-common"
             ]
         },
         "io.swagger.core.v3:swagger-models": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
@@ -306,16 +306,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.9"
+            "locked": "1.6.15"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -412,7 +412,7 @@
             ]
         },
         "org.webjars:swagger-ui": {
-            "locked": "4.11.1",
+            "locked": "4.17.1",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -427,6 +427,7 @@
             "locked": "1.29",
             "transitive": [
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+                "io.swagger.core.v3:swagger-core",
                 "org.springframework.boot:spring-boot-starter"
             ]
         }
