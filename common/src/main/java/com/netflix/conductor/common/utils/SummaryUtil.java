@@ -34,7 +34,7 @@ public class SummaryUtil {
 
     private static boolean isSummaryInputOutputJsonSerializationEnabled;
 
-    @Value("${conductor.app.summary-input-output-json-serialization.enabled:false}")
+    @Value("${conductor.app.summary-input-output-json-serialization.enabled:true}")
     private boolean isJsonSerializationEnabled;
 
     @PostConstruct
