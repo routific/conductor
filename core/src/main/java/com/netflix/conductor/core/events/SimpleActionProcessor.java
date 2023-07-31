@@ -128,6 +128,7 @@ public class SimpleActionProcessor implements ActionProcessor {
         String taskId = (String) replaced.get("taskId");
         String taskRefName = (String) replaced.get("taskRefName");
         Boolean retry = Boolean.TRUE.equals(replaced.get("retry"));
+        String failReason = (String) replaced.get("failReason");
 
         TaskModel taskModel = null;
         if (StringUtils.isNotEmpty(taskId)) {
@@ -174,6 +175,8 @@ public class SimpleActionProcessor implements ActionProcessor {
 
         if (retry) {
             status = TaskModel.Status.FAILED;
+        } else if (status.equals(TaskModel.Status.FAILED_WITH_TERMINAL_ERROR) && failReason != null) {
+            taskModel.setReasonForIncompletion(failReason);
         }
 
         taskModel.setStatus(status);
