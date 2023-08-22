@@ -175,7 +175,8 @@ public class SimpleActionProcessor implements ActionProcessor {
 
         if (retry) {
             status = TaskModel.Status.FAILED;
-        } else if (status.equals(TaskModel.Status.FAILED_WITH_TERMINAL_ERROR) && failReason != null) {
+        } else if (status.equals(TaskModel.Status.FAILED_WITH_TERMINAL_ERROR)
+                && failReason != null) {
             taskModel.setReasonForIncompletion(failReason);
         }
 
