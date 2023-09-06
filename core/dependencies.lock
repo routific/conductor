@@ -111,6 +111,12 @@
         "io.reactivex:rxjava": {
             "locked": "1.2.2"
         },
+        "io.sentry:sentry": {
+            "locked": "6.14.0"
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0"
+        },
         "jakarta.activation:jakarta.activation-api": {
             "locked": "2.0.0",
             "transitive": [
@@ -423,7 +429,8 @@
         "io.opentelemetry:opentelemetry-sdk": {
             "locked": "1.23.1",
             "transitive": [
-                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi",
+                "io.sentry:sentry-opentelemetry-core"
             ]
         },
         "io.opentelemetry:opentelemetry-sdk-common": {
@@ -473,6 +480,12 @@
         },
         "io.reactivex:rxjava": {
             "locked": "1.2.2"
+        },
+        "io.sentry:sentry": {
+            "locked": "6.14.0"
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0"
         },
         "jakarta.activation:jakarta.activation-api": {
             "locked": "2.0.0",
@@ -708,6 +721,12 @@
         },
         "io.reactivex:rxjava": {
             "locked": "1.2.2"
+        },
+        "io.sentry:sentry": {
+            "locked": "6.14.0"
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0"
         },
         "jakarta.activation:jakarta.activation-api": {
             "locked": "2.0.0",
@@ -1464,7 +1483,8 @@
         "io.opentelemetry:opentelemetry-sdk": {
             "locked": "1.23.1",
             "transitive": [
-                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi",
+                "io.sentry:sentry-opentelemetry-core"
             ]
         },
         "io.opentelemetry:opentelemetry-sdk-common": {
@@ -1514,6 +1534,12 @@
         },
         "io.reactivex:rxjava": {
             "locked": "1.2.2"
+        },
+        "io.sentry:sentry": {
+            "locked": "6.14.0"
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0"
         },
         "jakarta.activation:jakarta.activation-api": {
             "locked": "2.0.0",

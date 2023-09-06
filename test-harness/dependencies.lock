@@ -1567,7 +1567,7 @@
             ]
         },
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -1596,7 +1596,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.github.ben-manes.caffeine:caffeine",
                 "com.google.guava:guava",
@@ -1623,10 +1623,12 @@
                 "com.netflix.archaius:archaius-core",
                 "com.netflix.conductor:conductor-awssqs-event-queue",
                 "com.netflix.conductor:conductor-grpc-client",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
+                "com.netflix.conductor:workflow-event-listener",
                 "com.netflix.netflix-commons:netflix-infix",
                 "com.netflix.servo:servo-core",
                 "io.grpc:grpc-api",
@@ -1672,7 +1674,7 @@
             ]
         },
         "com.google.protobuf:protobuf-java-util": {
-            "locked": "3.19.2",
+            "locked": "3.22.3",
             "transitive": [
                 "io.grpc:grpc-services"
             ]
@@ -1752,13 +1754,15 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-persistence",
                 "com.netflix.conductor:conductor-rest",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:postgres-persistence"
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
+                "com.netflix.conductor:postgres-persistence",
+                "com.netflix.conductor:workflow-event-listener"
             ]
         },
         "com.netflix.conductor:conductor-core": {
@@ -1771,7 +1775,6 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -1779,7 +1782,10 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:postgres-persistence"
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
+                "com.netflix.conductor:postgres-persistence",
+                "com.netflix.conductor:workflow-event-listener"
             ]
         },
         "com.netflix.conductor:conductor-grpc": {
@@ -1806,12 +1812,6 @@
         },
         "com.netflix.conductor:conductor-json-jq-task": {
             "project": true,
-            "transitive": [
-                "com.netflix.conductor:conductor-server"
-            ]
-        },
-        "com.netflix.conductor:conductor-metrics": {
-            "locked": "3.8.0",
             "transitive": [
                 "com.netflix.conductor:conductor-server"
             ]
@@ -1855,7 +1855,25 @@
                 "com.netflix.conductor:conductor-server"
             ]
         },
+        "com.netflix.conductor:kafka-publish": {
+            "project": true,
+            "transitive": [
+                "com.netflix.conductor:conductor-server"
+            ]
+        },
+        "com.netflix.conductor:metrics": {
+            "project": true,
+            "transitive": [
+                "com.netflix.conductor:conductor-server"
+            ]
+        },
         "com.netflix.conductor:postgres-persistence": {
+            "project": true,
+            "transitive": [
+                "com.netflix.conductor:conductor-server"
+            ]
+        },
+        "com.netflix.conductor:workflow-event-listener": {
             "project": true,
             "transitive": [
                 "com.netflix.conductor:conductor-server"
@@ -1966,13 +1984,13 @@
         "com.netflix.spectator:spectator-reg-metrics3": {
             "locked": "0.122.0",
             "transitive": [
-                "com.netflix.conductor:conductor-metrics"
+                "com.netflix.conductor:metrics"
             ]
         },
         "com.netflix.spectator:spectator-reg-micrometer": {
             "locked": "0.122.0",
             "transitive": [
-                "com.netflix.conductor:conductor-metrics"
+                "com.netflix.conductor:metrics"
             ]
         },
         "com.spotify:completable-futures": {
@@ -1980,6 +1998,18 @@
             "transitive": [
                 "com.netflix.conductor:conductor-core",
                 "com.netflix.conductor:kafka"
+            ]
+        },
+        "com.squareup.okhttp3:okhttp": {
+            "locked": "3.14.9",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "com.squareup.okio:okio": {
+            "locked": "1.17.2",
+            "transitive": [
+                "com.squareup.okhttp3:okhttp"
             ]
         },
         "com.sun.activation:jakarta.activation": {
@@ -2117,7 +2147,7 @@
             ]
         },
         "io.github.classgraph:classgraph": {
-            "locked": "4.8.147",
+            "locked": "4.8.149",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -2129,7 +2159,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -2138,27 +2168,27 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc-client",
                 "com.netflix.conductor:conductor-grpc-server"
             ]
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-client",
@@ -2166,19 +2196,19 @@
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-services": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc-server"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "com.netflix.conductor:conductor-grpc-client",
@@ -2196,7 +2226,7 @@
         "io.micrometer:micrometer-registry-prometheus": {
             "locked": "1.8.5",
             "transitive": [
-                "com.netflix.conductor:conductor-metrics"
+                "com.netflix.conductor:metrics"
             ]
         },
         "io.netty:netty-buffer": {
@@ -2211,6 +2241,7 @@
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
                 "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common",
                 "org.redisson:redisson"
             ]
         },
@@ -2266,6 +2297,7 @@
                 "io.netty:netty-resolver",
                 "io.netty:netty-resolver-dns",
                 "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common",
                 "org.redisson:redisson"
             ]
         },
@@ -2310,11 +2342,122 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver-dns",
+                "io.netty:netty-transport-native-unix-common",
                 "org.redisson:redisson"
             ]
         },
+        "io.netty:netty-transport-native-unix-common": {
+            "locked": "4.1.76.Final",
+            "transitive": [
+                "io.grpc:grpc-netty"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-api-events",
+                "io.opentelemetry:opentelemetry-api-logs",
+                "io.opentelemetry:opentelemetry-exporter-common",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace",
+                "io.opentelemetry:opentelemetry-semconv"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-events": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-context": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-api"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi",
+                "io.sentry:sentry-opentelemetry-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-logs",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-metrics": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-trace": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-semconv": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-trace"
+            ]
+        },
         "io.perfmark:perfmark-api": {
-            "locked": "0.25.0",
+            "locked": "0.26.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-netty"
@@ -2329,7 +2472,7 @@
         "io.prometheus:simpleclient": {
             "locked": "0.12.0",
             "transitive": [
-                "com.netflix.conductor:conductor-metrics",
+                "com.netflix.conductor:metrics",
                 "io.prometheus:simpleclient_common"
             ]
         },
@@ -2369,24 +2512,37 @@
             "transitive": [
                 "com.netflix.conductor:conductor-awssqs-event-queue",
                 "com.netflix.conductor:conductor-core",
-                "com.netflix.conductor:conductor-metrics",
-                "com.netflix.conductor:kafka"
+                "com.netflix.conductor:kafka",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics"
+            ]
+        },
+        "io.sentry:sentry": {
+            "locked": "6.14.0",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
             ]
         },
         "io.swagger.core.v3:swagger-annotations": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
         },
         "io.swagger.core.v3:swagger-core": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-common"
             ]
         },
         "io.swagger.core.v3:swagger-models": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
@@ -2451,7 +2607,8 @@
             "locked": "1.1.1",
             "transitive": [
                 "com.netflix.conductor:conductor-http-task",
-                "com.netflix.conductor:conductor-metrics",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
                 "com.netflix.eureka:eureka-client",
                 "com.sun.jersey:jersey-core"
             ]
@@ -2591,10 +2748,11 @@
                 "com.netflix.conductor:conductor-core",
                 "com.netflix.conductor:conductor-grpc-client",
                 "com.netflix.conductor:conductor-grpc-server",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:es7-persistence",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
                 "com.netflix.dyno:dyno-contrib",
                 "com.netflix.dyno:dyno-core",
@@ -2651,7 +2809,9 @@
         "org.apache.kafka:kafka-clients": {
             "locked": "3.1.0",
             "transitive": [
-                "com.netflix.conductor:kafka"
+                "com.netflix.conductor:kafka",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:workflow-event-listener"
             ]
         },
         "org.apache.logging.log4j:log4j-api": {
@@ -2670,7 +2830,6 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2678,7 +2837,10 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
+                "com.netflix.conductor:workflow-event-listener",
                 "org.apache.logging.log4j:log4j-core",
                 "org.apache.logging.log4j:log4j-jul",
                 "org.apache.logging.log4j:log4j-slf4j-impl",
@@ -2702,7 +2864,6 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2710,7 +2871,10 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
+                "com.netflix.conductor:workflow-event-listener",
                 "org.apache.logging.log4j:log4j-slf4j-impl",
                 "org.apache.logging.log4j:log4j-web",
                 "org.springframework.boot:spring-boot-starter-log4j2"
@@ -2732,7 +2896,6 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2740,7 +2903,10 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
+                "com.netflix.conductor:workflow-event-listener",
                 "org.springframework.boot:spring-boot-starter-log4j2"
             ]
         },
@@ -2760,7 +2926,6 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2768,7 +2933,10 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
                 "com.netflix.conductor:postgres-persistence",
+                "com.netflix.conductor:workflow-event-listener",
                 "org.springframework.boot:spring-boot-starter-log4j2"
             ]
         },
@@ -2788,7 +2956,6 @@
                 "com.netflix.conductor:conductor-grpc-server",
                 "com.netflix.conductor:conductor-http-task",
                 "com.netflix.conductor:conductor-json-jq-task",
-                "com.netflix.conductor:conductor-metrics",
                 "com.netflix.conductor:conductor-redis-concurrency-limit",
                 "com.netflix.conductor:conductor-redis-lock",
                 "com.netflix.conductor:conductor-redis-persistence",
@@ -2796,7 +2963,10 @@
                 "com.netflix.conductor:conductor-server",
                 "com.netflix.conductor:es7-persistence",
                 "com.netflix.conductor:kafka",
-                "com.netflix.conductor:postgres-persistence"
+                "com.netflix.conductor:kafka-publish",
+                "com.netflix.conductor:metrics",
+                "com.netflix.conductor:postgres-persistence",
+                "com.netflix.conductor:workflow-event-listener"
             ]
         },
         "org.apache.lucene:lucene-analyzers-common": {
@@ -3116,7 +3286,7 @@
             ]
         },
         "org.codehaus.mojo:animal-sniffer-annotations": {
-            "locked": "1.19",
+            "locked": "1.23",
             "transitive": [
                 "io.grpc:grpc-core"
             ]
@@ -3533,20 +3703,20 @@
             "locked": "1.3-groovy-2.5"
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "com.netflix.conductor:conductor-rest",
                 "com.netflix.conductor:conductor-server"
             ]
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -3771,7 +3941,7 @@
             ]
         },
         "org.webjars:swagger-ui": {
-            "locked": "4.11.1",
+            "locked": "4.17.1",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -3798,6 +3968,7 @@
             "locked": "1.29",
             "transitive": [
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+                "io.swagger.core.v3:swagger-core",
                 "org.elasticsearch:elasticsearch-x-content",
                 "org.redisson:redisson",
                 "org.springframework.boot:spring-boot-starter"

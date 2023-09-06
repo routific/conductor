@@ -6,7 +6,7 @@
     },
     "compileClasspath": {
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -20,7 +20,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.google.guava:guava",
                 "io.grpc:grpc-api"
@@ -64,7 +64,7 @@
             "project": true
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -73,31 +73,31 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.netty:netty-buffer": {
             "locked": "4.1.76.Final",
@@ -239,7 +239,7 @@
             ]
         },
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -260,7 +260,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.google.guava:guava",
                 "io.grpc:grpc-api",
@@ -323,7 +323,7 @@
             "project": true
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -332,34 +332,34 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc"
             ]
@@ -373,7 +373,8 @@
                 "io.netty:netty-codec-socks",
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
-                "io.netty:netty-transport"
+                "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common"
             ]
         },
         "io.netty:netty-codec": {
@@ -416,7 +417,8 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver",
-                "io.netty:netty-transport"
+                "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common"
             ]
         },
         "io.netty:netty-handler": {
@@ -447,11 +449,18 @@
                 "io.netty:netty-codec-http2",
                 "io.netty:netty-codec-socks",
                 "io.netty:netty-handler",
-                "io.netty:netty-handler-proxy"
+                "io.netty:netty-handler-proxy",
+                "io.netty:netty-transport-native-unix-common"
+            ]
+        },
+        "io.netty:netty-transport-native-unix-common": {
+            "locked": "4.1.76.Final",
+            "transitive": [
+                "io.grpc:grpc-netty"
             ]
         },
         "io.perfmark:perfmark-api": {
-            "locked": "0.25.0",
+            "locked": "0.26.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-netty"
@@ -528,7 +537,7 @@
             ]
         },
         "org.codehaus.mojo:animal-sniffer-annotations": {
-            "locked": "1.19",
+            "locked": "1.23",
             "transitive": [
                 "io.grpc:grpc-core"
             ]
@@ -542,7 +551,7 @@
     },
     "testCompileClasspath": {
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -556,7 +565,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.google.guava:guava",
                 "io.grpc:grpc-api"
@@ -612,7 +621,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -621,31 +630,31 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.netty:netty-buffer": {
             "locked": "4.1.76.Final",
@@ -1049,7 +1058,7 @@
             ]
         },
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -1070,7 +1079,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.google.guava:guava",
                 "io.grpc:grpc-api",
@@ -1145,7 +1154,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -1154,34 +1163,34 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc"
             ]
@@ -1195,7 +1204,8 @@
                 "io.netty:netty-codec-socks",
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
-                "io.netty:netty-transport"
+                "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common"
             ]
         },
         "io.netty:netty-codec": {
@@ -1238,7 +1248,8 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver",
-                "io.netty:netty-transport"
+                "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common"
             ]
         },
         "io.netty:netty-handler": {
@@ -1269,11 +1280,18 @@
                 "io.netty:netty-codec-http2",
                 "io.netty:netty-codec-socks",
                 "io.netty:netty-handler",
-                "io.netty:netty-handler-proxy"
+                "io.netty:netty-handler-proxy",
+                "io.netty:netty-transport-native-unix-common"
+            ]
+        },
+        "io.netty:netty-transport-native-unix-common": {
+            "locked": "4.1.76.Final",
+            "transitive": [
+                "io.grpc:grpc-netty"
             ]
         },
         "io.perfmark:perfmark-api": {
-            "locked": "0.25.0",
+            "locked": "0.26.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-netty"
@@ -1404,7 +1422,7 @@
             ]
         },
         "org.codehaus.mojo:animal-sniffer-annotations": {
-            "locked": "1.19",
+            "locked": "1.23",
             "transitive": [
                 "io.grpc:grpc-core"
             ]
