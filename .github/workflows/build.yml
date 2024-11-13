@@ -27,7 +27,7 @@ jobs:
       - get-environment-name
     environment: ${{ needs.get-environment-name.outputs.environment }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: true
