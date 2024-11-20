@@ -58,8 +58,18 @@ public class SimpleActionProcessor implements ActionProcessor {
         this.jsonUtils = jsonUtils;
     }
 
+    @Override
     public Map<String, Object> execute(
             Action action, Object payloadObject, String event, String messageId) {
+        return execute(action, payloadObject, event, messageId, null);
+    }
+
+    public Map<String, Object> execute(
+            Action action,
+            Object payloadObject,
+            String event,
+            String messageId,
+            String userIdentifier) {
 
         LOGGER.debug(
                 "Executing action: {} for event: {} with messageId:{}",
@@ -74,7 +84,7 @@ public class SimpleActionProcessor implements ActionProcessor {
 
         switch (action.getAction()) {
             case start_workflow:
-                return startWorkflow(action, jsonObject, event, messageId);
+                return startWorkflow(action, jsonObject, event, messageId, userIdentifier);
             case complete_task:
                 return completeTask(
                         action,
@@ -118,6 +128,7 @@ public class SimpleActionProcessor implements ActionProcessor {
         String taskId = (String) replaced.get("taskId");
         String taskRefName = (String) replaced.get("taskRefName");
         Boolean retry = Boolean.TRUE.equals(replaced.get("retry"));
+        String failReason = (String) replaced.get("failReason");
 
         TaskModel taskModel = null;
         if (StringUtils.isNotEmpty(taskId)) {
@@ -164,6 +175,9 @@ public class SimpleActionProcessor implements ActionProcessor {
 
         if (retry) {
             status = TaskModel.Status.FAILED;
+        } else if (status.equals(TaskModel.Status.FAILED_WITH_TERMINAL_ERROR)
+                && failReason != null) {
+            taskModel.setReasonForIncompletion(failReason);
         }
 
         taskModel.setStatus(status);
@@ -199,7 +213,7 @@ public class SimpleActionProcessor implements ActionProcessor {
     }
 
     private Map<String, Object> startWorkflow(
-            Action action, Object payload, String event, String messageId) {
+            Action action, Object payload, String event, String messageId, String userIdentifier) {
         StartWorkflow params = action.getStart_workflow();
         Map<String, Object> output = new HashMap<>();
         try {
@@ -218,13 +232,15 @@ public class SimpleActionProcessor implements ActionProcessor {
             String workflowName = (String) workflowInput.get("workflowName");
             Integer version = (Integer) workflowInput.get("version");
 
-            LOGGER.info("start workflow correlationId: {}", replaced.get("correlationId"));
-
             workflowInput.put("conductor.event.messageId", messageId);
             workflowInput.put("conductor.event.name", event);
 
             params.setName(workflowName);
             params.setVersion(version);
+
+            if (userIdentifier != null) {
+                workflowInput.put("userIdentifier", userIdentifier);
+            }
 
             String workflowId =
                     workflowExecutor.startWorkflow(

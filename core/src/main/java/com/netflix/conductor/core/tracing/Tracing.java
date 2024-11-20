@@ -39,6 +39,12 @@ public class Tracing {
         return Optional.empty();
     }
 
+    public void setUserIdentifier(String userIdentifier) {
+        if (this.span.isPresent()) {
+            this.span.get().setAttribute("id", userIdentifier);
+        }
+    }
+
     public void finish() {
         if (this.span.isPresent()) {
             Span span = this.span.get();

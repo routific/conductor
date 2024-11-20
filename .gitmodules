@@ -1,3 +1,0 @@
-[submodule "contribs"]
-	path = contribs
-	url = git@github.com:routific/conductor-community.git

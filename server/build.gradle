@@ -35,6 +35,7 @@ dependencies {
     implementation project(':contribs:persistence:postgres-persistence')
     implementation project(':contribs:index:es7-persistence')
     implementation project(':contribs:metrics')
+    implementation project(':contribs:workflow-event-listener')
 
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
