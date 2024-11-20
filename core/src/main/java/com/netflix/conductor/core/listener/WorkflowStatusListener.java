@@ -35,9 +35,17 @@ public interface WorkflowStatusListener {
         }
     }
 
+    default void onWorkflowStartedIfEnabled(WorkflowModel workflow) {
+        if (workflow.getWorkflowDefinition().isWorkflowStatusListenerEnabled()) {
+            onWorkflowStarted(workflow);
+        }
+    }
+
     void onWorkflowCompleted(WorkflowModel workflow);
 
     void onWorkflowTerminated(WorkflowModel workflow);
 
     default void onWorkflowFinalized(WorkflowModel workflow) {}
+
+    default void onWorkflowStarted(WorkflowModel workflow) {}
 }

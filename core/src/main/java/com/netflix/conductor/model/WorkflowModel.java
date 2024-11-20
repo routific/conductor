@@ -66,6 +66,8 @@ public class WorkflowModel {
 
     private String correlationId;
 
+    private String userIdentifier;
+
     private String reRunFromWorkflowId;
 
     private String reasonForIncompletion;
@@ -239,6 +241,14 @@ public class WorkflowModel {
 
     public void setCorrelationId(String correlationId) {
         this.correlationId = correlationId;
+    }
+
+    public String getUserIdentifier() {
+        if (this.getInput() != null && this.getInput().containsKey("userIdentifier")) {
+            return this.getInput().get("userIdentifier").toString();
+        }
+
+        return null;
     }
 
     public String getReRunFromWorkflowId() {
