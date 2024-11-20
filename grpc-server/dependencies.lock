@@ -6,7 +6,7 @@
     },
     "compileClasspath": {
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -20,7 +20,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.google.guava:guava",
                 "io.grpc:grpc-api"
@@ -33,7 +33,7 @@
             ]
         },
         "com.google.guava:guava": {
-            "locked": "31.0.1-android",
+            "locked": "31.1-android",
             "transitive": [
                 "io.grpc:grpc-stub"
             ]
@@ -51,7 +51,7 @@
             ]
         },
         "com.google.protobuf:protobuf-java": {
-            "locked": "3.19.2",
+            "locked": "3.22.3",
             "transitive": [
                 "com.google.api.grpc:proto-google-common-protos",
                 "io.grpc:grpc-protobuf"
@@ -67,7 +67,7 @@
             "project": true
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -76,38 +76,38 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-services": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-services"
             ]
@@ -209,12 +209,6 @@
         },
         "org.apache.logging.log4j:log4j-web": {
             "locked": "2.17.1"
-        },
-        "org.checkerframework:checker-compat-qual": {
-            "locked": "2.5.5",
-            "transitive": [
-                "com.google.guava:guava"
-            ]
         },
         "org.checkerframework:checker-qual": {
             "locked": "3.12.0",
@@ -350,7 +344,7 @@
             ]
         },
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -373,7 +367,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.github.ben-manes.caffeine:caffeine",
                 "com.google.guava:guava",
@@ -392,7 +386,7 @@
             ]
         },
         "com.google.guava:guava": {
-            "locked": "31.0.1-android",
+            "locked": "31.1-jre",
             "transitive": [
                 "com.google.protobuf:protobuf-java-util",
                 "io.grpc:grpc-api",
@@ -418,7 +412,7 @@
             ]
         },
         "com.google.protobuf:protobuf-java": {
-            "locked": "3.19.2",
+            "locked": "3.22.3",
             "transitive": [
                 "com.google.api.grpc:proto-google-common-protos",
                 "com.google.protobuf:protobuf-java-util",
@@ -429,7 +423,7 @@
             ]
         },
         "com.google.protobuf:protobuf-java-util": {
-            "locked": "3.19.2",
+            "locked": "3.22.3",
             "transitive": [
                 "io.grpc:grpc-services"
             ]
@@ -471,6 +465,18 @@
                 "com.netflix.conductor:conductor-core"
             ]
         },
+        "com.squareup.okhttp3:okhttp": {
+            "locked": "3.14.9",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "com.squareup.okio:okio": {
+            "locked": "1.17.2",
+            "transitive": [
+                "com.squareup.okhttp3:okhttp"
+            ]
+        },
         "commons-io:commons-io": {
             "locked": "2.7",
             "transitive": [
@@ -478,7 +484,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -487,39 +493,39 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-services": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services"
@@ -534,7 +540,8 @@
                 "io.netty:netty-codec-socks",
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
-                "io.netty:netty-transport"
+                "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common"
             ]
         },
         "io.netty:netty-codec": {
@@ -577,7 +584,8 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver",
-                "io.netty:netty-transport"
+                "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common"
             ]
         },
         "io.netty:netty-handler": {
@@ -608,11 +616,122 @@
                 "io.netty:netty-codec-http2",
                 "io.netty:netty-codec-socks",
                 "io.netty:netty-handler",
-                "io.netty:netty-handler-proxy"
+                "io.netty:netty-handler-proxy",
+                "io.netty:netty-transport-native-unix-common"
+            ]
+        },
+        "io.netty:netty-transport-native-unix-common": {
+            "locked": "4.1.76.Final",
+            "transitive": [
+                "io.grpc:grpc-netty"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-api-events",
+                "io.opentelemetry:opentelemetry-api-logs",
+                "io.opentelemetry:opentelemetry-exporter-common",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace",
+                "io.opentelemetry:opentelemetry-semconv"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-events": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-context": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-api"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi",
+                "io.sentry:sentry-opentelemetry-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-logs",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-metrics": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-trace": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-semconv": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-trace"
             ]
         },
         "io.perfmark:perfmark-api": {
-            "locked": "0.25.0",
+            "locked": "0.26.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-netty"
@@ -620,6 +739,18 @@
         },
         "io.reactivex:rxjava": {
             "locked": "1.3.8",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.sentry:sentry": {
+            "locked": "6.14.0",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0",
             "transitive": [
                 "com.netflix.conductor:conductor-core"
             ]
@@ -720,12 +851,6 @@
                 "com.netflix.conductor:conductor-grpc"
             ]
         },
-        "org.checkerframework:checker-compat-qual": {
-            "locked": "2.5.5",
-            "transitive": [
-                "com.google.guava:guava"
-            ]
-        },
         "org.checkerframework:checker-qual": {
             "locked": "3.19.0",
             "transitive": [
@@ -734,7 +859,7 @@
             ]
         },
         "org.codehaus.mojo:animal-sniffer-annotations": {
-            "locked": "1.19",
+            "locked": "1.23",
             "transitive": [
                 "io.grpc:grpc-core"
             ]
@@ -756,7 +881,7 @@
     },
     "testCompileClasspath": {
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -776,7 +901,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.google.guava:guava",
                 "io.grpc:grpc-api"
@@ -789,7 +914,7 @@
             ]
         },
         "com.google.guava:guava": {
-            "locked": "31.0.1-android",
+            "locked": "31.1-android",
             "transitive": [
                 "io.grpc:grpc-stub"
             ]
@@ -807,7 +932,7 @@
             ]
         },
         "com.google.protobuf:protobuf-java": {
-            "locked": "3.19.2",
+            "locked": "3.22.3",
             "transitive": [
                 "com.google.api.grpc:proto-google-common-protos",
                 "io.grpc:grpc-protobuf"
@@ -835,7 +960,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -844,13 +969,13 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty",
                 "io.grpc:grpc-services",
@@ -858,32 +983,32 @@
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-services": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-services",
                 "io.grpc:grpc-testing"
             ]
         },
         "io.grpc:grpc-testing": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.netty:netty-buffer": {
             "locked": "4.1.76.Final",
@@ -1056,12 +1181,6 @@
             "locked": "3.21.0",
             "transitive": [
                 "org.springframework.boot:spring-boot-starter-test"
-            ]
-        },
-        "org.checkerframework:checker-compat-qual": {
-            "locked": "2.5.5",
-            "transitive": [
-                "com.google.guava:guava"
             ]
         },
         "org.checkerframework:checker-qual": {
@@ -1374,7 +1493,7 @@
             ]
         },
         "com.google.api.grpc:proto-google-common-protos": {
-            "locked": "2.0.1",
+            "locked": "2.17.0",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
@@ -1403,7 +1522,7 @@
             ]
         },
         "com.google.errorprone:error_prone_annotations": {
-            "locked": "2.10.0",
+            "locked": "2.18.0",
             "transitive": [
                 "com.github.ben-manes.caffeine:caffeine",
                 "com.google.guava:guava",
@@ -1422,7 +1541,7 @@
             ]
         },
         "com.google.guava:guava": {
-            "locked": "31.0.1-android",
+            "locked": "31.1-jre",
             "transitive": [
                 "com.google.protobuf:protobuf-java-util",
                 "io.grpc:grpc-api",
@@ -1448,7 +1567,7 @@
             ]
         },
         "com.google.protobuf:protobuf-java": {
-            "locked": "3.19.2",
+            "locked": "3.22.3",
             "transitive": [
                 "com.google.api.grpc:proto-google-common-protos",
                 "com.google.protobuf:protobuf-java-util",
@@ -1459,7 +1578,7 @@
             ]
         },
         "com.google.protobuf:protobuf-java-util": {
-            "locked": "3.19.2",
+            "locked": "3.22.3",
             "transitive": [
                 "io.grpc:grpc-services"
             ]
@@ -1502,6 +1621,18 @@
                 "com.netflix.conductor:conductor-core"
             ]
         },
+        "com.squareup.okhttp3:okhttp": {
+            "locked": "3.14.9",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "com.squareup.okio:okio": {
+            "locked": "1.17.2",
+            "transitive": [
+                "com.squareup.okhttp3:okhttp"
+            ]
+        },
         "com.vaadin.external.google:android-json": {
             "locked": "0.0.20131108.vaadin1",
             "transitive": [
@@ -1515,7 +1646,7 @@
             ]
         },
         "io.grpc:grpc-api": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-protobuf",
@@ -1524,14 +1655,14 @@
             ]
         },
         "io.grpc:grpc-context": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-api",
                 "io.grpc:grpc-testing"
             ]
         },
         "io.grpc:grpc-core": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-netty",
                 "io.grpc:grpc-services",
@@ -1539,26 +1670,26 @@
             ]
         },
         "io.grpc:grpc-netty": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-protobuf": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services"
             ]
         },
         "io.grpc:grpc-protobuf-lite": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "io.grpc:grpc-protobuf"
             ]
         },
         "io.grpc:grpc-services": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.grpc:grpc-stub": {
-            "locked": "1.46.0",
+            "locked": "1.56.1",
             "transitive": [
                 "com.netflix.conductor:conductor-grpc",
                 "io.grpc:grpc-services",
@@ -1566,7 +1697,7 @@
             ]
         },
         "io.grpc:grpc-testing": {
-            "locked": "1.46.0"
+            "locked": "1.56.1"
         },
         "io.netty:netty-buffer": {
             "locked": "4.1.76.Final",
@@ -1577,7 +1708,8 @@
                 "io.netty:netty-codec-socks",
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
-                "io.netty:netty-transport"
+                "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common"
             ]
         },
         "io.netty:netty-codec": {
@@ -1620,7 +1752,8 @@
                 "io.netty:netty-handler",
                 "io.netty:netty-handler-proxy",
                 "io.netty:netty-resolver",
-                "io.netty:netty-transport"
+                "io.netty:netty-transport",
+                "io.netty:netty-transport-native-unix-common"
             ]
         },
         "io.netty:netty-handler": {
@@ -1651,11 +1784,122 @@
                 "io.netty:netty-codec-http2",
                 "io.netty:netty-codec-socks",
                 "io.netty:netty-handler",
-                "io.netty:netty-handler-proxy"
+                "io.netty:netty-handler-proxy",
+                "io.netty:netty-transport-native-unix-common"
+            ]
+        },
+        "io.netty:netty-transport-native-unix-common": {
+            "locked": "4.1.76.Final",
+            "transitive": [
+                "io.grpc:grpc-netty"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-api-events",
+                "io.opentelemetry:opentelemetry-api-logs",
+                "io.opentelemetry:opentelemetry-exporter-common",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace",
+                "io.opentelemetry:opentelemetry-semconv"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-events": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-context": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-api"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi",
+                "io.sentry:sentry-opentelemetry-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-logs",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-metrics": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-trace": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-semconv": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-trace"
             ]
         },
         "io.perfmark:perfmark-api": {
-            "locked": "0.25.0",
+            "locked": "0.26.0",
             "transitive": [
                 "io.grpc:grpc-core",
                 "io.grpc:grpc-netty"
@@ -1663,6 +1907,18 @@
         },
         "io.reactivex:rxjava": {
             "locked": "1.3.8",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.sentry:sentry": {
+            "locked": "6.14.0",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0",
             "transitive": [
                 "com.netflix.conductor:conductor-core"
             ]
@@ -1809,12 +2065,6 @@
                 "org.springframework.boot:spring-boot-starter-test"
             ]
         },
-        "org.checkerframework:checker-compat-qual": {
-            "locked": "2.5.5",
-            "transitive": [
-                "com.google.guava:guava"
-            ]
-        },
         "org.checkerframework:checker-qual": {
             "locked": "3.19.0",
             "transitive": [
@@ -1823,7 +2073,7 @@
             ]
         },
         "org.codehaus.mojo:animal-sniffer-annotations": {
-            "locked": "1.19",
+            "locked": "1.23",
             "transitive": [
                 "io.grpc:grpc-core"
             ]

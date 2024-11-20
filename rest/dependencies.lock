@@ -83,25 +83,25 @@
             "locked": "1.1.4"
         },
         "io.github.classgraph:classgraph": {
-            "locked": "4.8.147",
+            "locked": "4.8.149",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
         },
         "io.swagger.core.v3:swagger-annotations": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
         },
         "io.swagger.core.v3:swagger-core": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-common"
             ]
         },
         "io.swagger.core.v3:swagger-models": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
@@ -196,16 +196,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.9"
+            "locked": "1.6.15"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -318,7 +318,7 @@
             ]
         },
         "org.webjars:swagger-ui": {
-            "locked": "4.11.1",
+            "locked": "4.17.1",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -333,6 +333,7 @@
             "locked": "1.29",
             "transitive": [
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+                "io.swagger.core.v3:swagger-core",
                 "org.springframework.boot:spring-boot-starter"
             ]
         }
@@ -466,6 +467,18 @@
                 "com.netflix.conductor:conductor-core"
             ]
         },
+        "com.squareup.okhttp3:okhttp": {
+            "locked": "3.14.9",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "com.squareup.okio:okio": {
+            "locked": "1.17.2",
+            "transitive": [
+                "com.squareup.okhttp3:okhttp"
+            ]
+        },
         "commons-io:commons-io": {
             "locked": "2.7",
             "transitive": [
@@ -473,9 +486,113 @@
             ]
         },
         "io.github.classgraph:classgraph": {
-            "locked": "4.8.147",
+            "locked": "4.8.149",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-api-events",
+                "io.opentelemetry:opentelemetry-api-logs",
+                "io.opentelemetry:opentelemetry-exporter-common",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace",
+                "io.opentelemetry:opentelemetry-semconv"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-events": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-context": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-api"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi",
+                "io.sentry:sentry-opentelemetry-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-logs",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-metrics": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-trace": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-semconv": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-trace"
             ]
         },
         "io.reactivex:rxjava": {
@@ -484,20 +601,32 @@
                 "com.netflix.conductor:conductor-core"
             ]
         },
+        "io.sentry:sentry": {
+            "locked": "6.14.0",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
         "io.swagger.core.v3:swagger-annotations": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
         },
         "io.swagger.core.v3:swagger-core": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-common"
             ]
         },
         "io.swagger.core.v3:swagger-models": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
@@ -651,16 +780,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.9"
+            "locked": "1.6.15"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -773,7 +902,7 @@
             ]
         },
         "org.webjars:swagger-ui": {
-            "locked": "4.11.1",
+            "locked": "4.17.1",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -788,6 +917,7 @@
             "locked": "1.29",
             "transitive": [
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+                "io.swagger.core.v3:swagger-core",
                 "org.springframework.boot:spring-boot-starter"
             ]
         }
@@ -883,25 +1013,25 @@
             ]
         },
         "io.github.classgraph:classgraph": {
-            "locked": "4.8.147",
+            "locked": "4.8.149",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
         },
         "io.swagger.core.v3:swagger-annotations": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
         },
         "io.swagger.core.v3:swagger-core": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-common"
             ]
         },
         "io.swagger.core.v3:swagger-models": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
@@ -1125,16 +1255,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.9"
+            "locked": "1.6.15"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -1278,7 +1408,7 @@
             ]
         },
         "org.webjars:swagger-ui": {
-            "locked": "4.11.1",
+            "locked": "4.17.1",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -1299,6 +1429,7 @@
             "locked": "1.29",
             "transitive": [
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+                "io.swagger.core.v3:swagger-core",
                 "org.springframework.boot:spring-boot-starter"
             ]
         }
@@ -1433,6 +1564,18 @@
                 "com.netflix.conductor:conductor-core"
             ]
         },
+        "com.squareup.okhttp3:okhttp": {
+            "locked": "3.14.9",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "com.squareup.okio:okio": {
+            "locked": "1.17.2",
+            "transitive": [
+                "com.squareup.okhttp3:okhttp"
+            ]
+        },
         "com.vaadin.external.google:android-json": {
             "locked": "0.0.20131108.vaadin1",
             "transitive": [
@@ -1446,9 +1589,113 @@
             ]
         },
         "io.github.classgraph:classgraph": {
-            "locked": "4.8.147",
+            "locked": "4.8.149",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-api-events",
+                "io.opentelemetry:opentelemetry-api-logs",
+                "io.opentelemetry:opentelemetry-exporter-common",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace",
+                "io.opentelemetry:opentelemetry-semconv"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-events": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-api-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk-logs"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-context": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-api"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-exporter-otlp-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk": {
+            "locked": "1.23.1",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi",
+                "io.sentry:sentry-opentelemetry-core"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-common": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-logs",
+                "io.opentelemetry:opentelemetry-sdk-metrics",
+                "io.opentelemetry:opentelemetry-sdk-trace"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-exporter-otlp-common"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-logs": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-metrics": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk",
+                "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure-spi"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-sdk-trace": {
+            "locked": "1.23.1",
+            "transitive": [
+                "io.opentelemetry:opentelemetry-exporter-otlp",
+                "io.opentelemetry:opentelemetry-sdk"
+            ]
+        },
+        "io.opentelemetry:opentelemetry-semconv": {
+            "locked": "1.23.1-alpha",
+            "transitive": [
+                "com.netflix.conductor:conductor-core",
+                "io.opentelemetry:opentelemetry-sdk-common",
+                "io.opentelemetry:opentelemetry-sdk-trace"
             ]
         },
         "io.reactivex:rxjava": {
@@ -1457,20 +1704,32 @@
                 "com.netflix.conductor:conductor-core"
             ]
         },
+        "io.sentry:sentry": {
+            "locked": "6.14.0",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
+        "io.sentry:sentry-opentelemetry-core": {
+            "locked": "6.14.0",
+            "transitive": [
+                "com.netflix.conductor:conductor-core"
+            ]
+        },
         "io.swagger.core.v3:swagger-annotations": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
         },
         "io.swagger.core.v3:swagger-core": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "org.springdoc:springdoc-openapi-common"
             ]
         },
         "io.swagger.core.v3:swagger-models": {
-            "locked": "2.2.0",
+            "locked": "2.2.8",
             "transitive": [
                 "io.swagger.core.v3:swagger-core"
             ]
@@ -1746,16 +2005,16 @@
             ]
         },
         "org.springdoc:springdoc-openapi-common": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-webmvc-core"
             ]
         },
         "org.springdoc:springdoc-openapi-ui": {
-            "locked": "1.6.9"
+            "locked": "1.6.15"
         },
         "org.springdoc:springdoc-openapi-webmvc-core": {
-            "locked": "1.6.9",
+            "locked": "1.6.15",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -1899,7 +2158,7 @@
             ]
         },
         "org.webjars:swagger-ui": {
-            "locked": "4.11.1",
+            "locked": "4.17.1",
             "transitive": [
                 "org.springdoc:springdoc-openapi-ui"
             ]
@@ -1920,6 +2179,7 @@
             "locked": "1.29",
             "transitive": [
                 "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+                "io.swagger.core.v3:swagger-core",
                 "org.springframework.boot:spring-boot-starter"
             ]
         }
