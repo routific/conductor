@@ -69,6 +69,10 @@ public class SubWorkflow extends WorkflowSystemTask {
         }
         String correlationId = workflow.getCorrelationId();
 
+        if (workflow.getUserIdentifier() != null) {
+            wfInput.put("userIdentifier", workflow.getUserIdentifier());
+        }
+
         try {
             String subWorkflowId;
             if (workflowDefinition != null) {

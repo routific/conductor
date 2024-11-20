@@ -241,7 +241,8 @@ public class DefaultEventProcessor {
                                         execute(
                                                 eventExecution,
                                                 action,
-                                                getPayloadObject(msg.getPayload())),
+                                                getPayloadObject(msg.getPayload()),
+                                                msg.getUserIdentifier()),
                                 eventActionExecutorService));
             } else {
                 LOGGER.warn("Duplicate delivery/execution of message: {}", msg.getId());
@@ -258,7 +259,8 @@ public class DefaultEventProcessor {
      *     completed/failed with non-transient error the input event execution, if the execution
      *     failed due to transient error
      */
-    protected EventExecution execute(EventExecution eventExecution, Action action, Object payload) {
+    protected EventExecution execute(
+            EventExecution eventExecution, Action action, Object payload, String userIdentifier) {
         try {
             LOGGER.debug(
                     "Executing action: {} for event: {} with messageId: {} with payload: {}",
@@ -274,7 +276,8 @@ public class DefaultEventProcessor {
                                             action,
                                             payload,
                                             eventExecution.getEvent(),
-                                            eventExecution.getMessageId()));
+                                            eventExecution.getMessageId(),
+                                            userIdentifier));
             if (output != null) {
                 eventExecution.getOutput().putAll(output);
             }
