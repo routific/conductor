@@ -80,6 +80,12 @@ public class RedisLock implements Lock {
             lock.unlock();
         } catch (IllegalMonitorStateException e) {
             // Releasing a lock twice using Redisson can cause this exception, which can be ignored.
+        } catch (Exception e) {
+            if (handleAcquireLockFailure(lockId, e)) {
+                return;
+            }
+
+            throw e;
         }
     }
 
